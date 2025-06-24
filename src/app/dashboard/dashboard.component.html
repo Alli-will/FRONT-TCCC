@@ -1,0 +1,99 @@
+<app-menu></app-menu>
+<div class="dashboard-container">
+  <div class="dashboard-main">
+    <h2>Dashboard de Bem-Estar</h2>
+    <div class="metricas-grid">
+      <div class="metrica-card">
+        <span class="metrica-titulo">Colaboradores Ativos</span>
+        <span class="metrica-valor">{{ metricas.ativos }}</span>
+      </div>
+      <div class="metrica-card">
+        <span class="metrica-titulo">Bem-Estar Geral</span>
+        <span class="metrica-valor">{{ metricas.bemEstarGeral }}</span>
+      </div>
+      <div class="metrica-card alerta">
+        <span class="metrica-titulo">Alto Risco</span>
+        <span class="metrica-valor">{{ metricas.altoRisco }}</span>
+        <span class="metrica-extra">({{ metricas.altoRiscoPercent }}%)</span>
+      </div>
+      <div class="metrica-card">
+        <span class="metrica-titulo">Sessões de Terapia</span>
+        <span class="metrica-valor">{{ metricas.sessoesTerapia }}</span>
+      </div>
+    </div>
+    <div class="alertas-section" *ngIf="colaboradoresEmRisco.length">
+      <h3>Alertas de Risco</h3>
+      <ul>
+        <li *ngFor="let c of colaboradoresEmRisco">
+          <span class="alerta-nome">{{ c.nome }}</span> -
+          <span class="alerta-depto">{{ c.departamento }}</span> (<span
+            class="alerta-bemestar"
+            >Bem-estar: {{ c.bemEstar }}</span
+          >)
+        </li>
+      </ul>
+    </div>
+    <div class="departamentos-section">
+      <h3>Análise por Departamento</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Departamento</th>
+            <th>Média Bem-Estar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of departamentos">
+            <td>{{ d.nome }}</td>
+            <td>{{ d.mediaBemEstar }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="colaboradores-section">
+      <h3>Colaboradores</h3>
+      <input
+        type="text"
+        placeholder="Buscar colaborador ou departamento..."
+        [(ngModel)]="busca"
+        (input)="buscarColaborador()"
+      />
+      <ul *ngIf="busca && resultadosBusca.length">
+        <li *ngFor="let c of resultadosBusca">
+          {{ c.nome }} - {{ c.departamento }} (Bem-estar: {{ c.bemEstar }})
+        </li>
+      </ul>
+      <ul *ngIf="busca && !resultadosBusca.length">
+        <li>Nenhum colaborador encontrado.</li>
+      </ul>
+      <ul *ngIf="!busca">
+        <li *ngFor="let c of colaboradores">
+          {{ c.nome }} - {{ c.departamento }} (Bem-estar: {{ c.bemEstar }})
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="dashboard-ia-panel" *ngIf="showIA">
+    <div class="ia-header">
+      <span>Assistente de IA</span>
+      <button (click)="showIA = false">×</button>
+    </div>
+    <div class="ia-mensagem">
+      {{ iaMensagem }}
+    </div>
+    <div class="ia-acoes">
+      <h4>Ações Recomendadas</h4>
+      <ul>
+        <li
+          *ngFor="let acao of acoesRecomendadas"
+          [style.background]="acao.cor"
+        >
+          {{ acao.texto }}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <button class="ia-toggle" *ngIf="!showIA" (click)="showIA = true">
+    Abrir IA
+  </button>
+</div>

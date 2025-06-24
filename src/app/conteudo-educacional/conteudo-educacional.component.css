@@ -1,0 +1,113 @@
+.conteudo-educacional-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 0 1rem;
+}
+.conteudo-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.conteudo-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.conteudo-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+.conteudo-info p {
+  margin: 0 0 0.7rem 0;
+  color: #444;
+  font-size: 1.05rem;
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.conteudo-tags {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.conteudo-tipo {
+  color: #444;
+  font-size: 1rem;
+}
+.conteudo-tempo {
+  color: #e67e22;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+.conteudo-badge {
+  background: #baf5d4;
+  color: #1a7f5a;
+  border-radius: 8px;
+  padding: 0.2rem 0.8rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.acessar-btn {
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.acessar-btn:hover {
+  background: #1769aa;
+}
+.modal-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-conteudo {
+  background: #fff;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.15);
+  max-width: 420px;
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+.modal-conteudo h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+.modal-conteudo p {
+  font-size: 1.08rem;
+  margin-top: 1.2rem;
+}
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #888;
+  cursor: pointer;
+}

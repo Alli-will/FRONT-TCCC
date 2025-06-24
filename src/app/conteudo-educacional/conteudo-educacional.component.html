@@ -1,0 +1,32 @@
+<app-menu></app-menu>
+<div class="conteudo-educacional-container">
+  <h2>Conteúdo Educacional</h2>
+  <div class="conteudo-lista">
+    <div class="conteudo-card" *ngFor="let c of conteudos">
+      <div class="conteudo-info">
+        <h3>{{ c.titulo }}</h3>
+        <p>{{ c.descricao }}</p>
+        <div class="conteudo-tags">
+          <span class="conteudo-tipo">
+            <ng-container [ngSwitch]="c.tipo">
+              <span *ngSwitchCase="'Vídeo'">🎬 Vídeo</span>
+              <span *ngSwitchCase="'Texto'">📄 Texto</span>
+              <span *ngSwitchCase="'Áudio'">🎧 Áudio</span>
+            </ng-container>
+          </span>
+          <span *ngIf="c.tempo" class="conteudo-tempo">⏱️ {{ c.tempo }}</span>
+          <span class="conteudo-badge">{{ c.badge }}</span>
+        </div>
+      </div>
+      <button class="acessar-btn" (click)="abrirModal(c)">Acessar</button>
+    </div>
+  </div>
+
+  <div class="modal-bg" *ngIf="modalOpen">
+    <div class="modal-conteudo">
+      <button class="modal-close" (click)="fecharModal()">&times;</button>
+      <h3>{{ conteudoSelecionado?.modalTitulo }}</h3>
+      <p>{{ conteudoSelecionado?.modalDescricao }}</p>
+    </div>
+  </div>
+</div>

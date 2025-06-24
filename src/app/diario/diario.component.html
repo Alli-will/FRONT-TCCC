@@ -1,0 +1,192 @@
+<app-menu></app-menu>
+<section id="diario" class="section-diary" aria-labelledby="diario-title">
+  <div class="container">
+    <div class="diary-main-layout">
+      <!-- Insights Sidebar -->
+      <aside
+        class="insights-panel"
+        aria-label="Painel de insights"
+        tabindex="0"
+      >
+        <h3>Insights</h3>
+        <div class="insight-box">
+          <span>Emoção mais frequente</span>
+          <strong class="insight-main">{{ emocaoMaisFrequente }}</strong>
+        </div>
+        <div class="insight-box">
+          <span>Energia</span>
+          <strong class="insight-main">{{ nivelEnergia }}</strong>
+        </div>
+        <div class="insight-box">
+          <span>Nível de estresse</span>
+          <strong class="insight-main">{{ nivelEstresse }}</strong>
+        </div>
+      </aside>
+
+      <!-- Main Diary Content -->
+      <section class="diary-content" aria-label="Conteúdo principal do diário">
+        <h1 id="diario-title">Diário Emocional</h1>
+        <p class="subtitle">
+          Registre como você está se sentindo e acompanhe seu bem-estar
+          emocional
+        </p>
+        <form
+          (ngSubmit)="onSubmit()"
+          #diarioForm="ngForm"
+          autocomplete="off"
+          aria-label="Formulário de registro emocional"
+        >
+          <div
+            class="emotion-selector"
+            role="radiogroup"
+            aria-label="Seleção de emoção"
+          >
+            <div
+              class="emotion-item"
+              *ngFor="
+                let emo of [
+                  { nome: 'Feliz', emoji: '😊', valor: 'feliz' },
+                  { nome: 'Neutro', emoji: '😐', valor: 'neutro' },
+                  { nome: 'Triste', emoji: '😢', valor: 'triste' },
+                  { nome: 'Irritado', emoji: '😠', valor: 'irritado' },
+                  { nome: 'Ansioso', emoji: '😰', valor: 'ansioso' }
+                ]
+              "
+            >
+              <button
+                type="button"
+                class="emotion-btn"
+                [ngClass]="{ selected: emocao === emo.valor }"
+                (click)="emocao = emo.valor"
+                [attr.aria-label]="emo.nome"
+                [attr.aria-checked]="emocao === emo.valor"
+                role="radio"
+                tabindex="0"
+              >
+                <span aria-hidden="true">{{ emo.emoji }}</span>
+              </button>
+              <div class="emotion-label">{{ emo.nome }}</div>
+            </div>
+          </div>
+          <label for="diario-descricao" class="sr-only"
+            >Descrição do sentimento</label
+          >
+          <textarea
+            id="diario-descricao"
+            class="diary-textarea"
+            placeholder="Conte mais sobre como você está se sentindo..."
+            [(ngModel)]="descricao"
+            name="descricao"
+            required
+            aria-label="Descrição do sentimento"
+          ></textarea>
+          <button
+            class="register-btn"
+            type="submit"
+            [disabled]="!emocao || !descricao"
+            [attr.aria-disabled]="!emocao || !descricao"
+          >
+            Registrar
+          </button>
+        </form>
+
+        <div class="history-insights">
+          <div class="history-panel" aria-label="Histórico de emoções">
+            <div class="history-header">
+              <strong>Histórico de Emoções</strong>
+              <div
+                class="history-toggle"
+                role="tablist"
+                aria-label="Alternar período do histórico"
+              >
+                <button
+                  [class.active]="filtroGrafico === 'semana'"
+                  role="tab"
+                  [attr.aria-selected]="filtroGrafico === 'semana'"
+                  tabindex="0"
+                  (click)="selecionarFiltroGrafico('semana')"
+                >
+                  Semana
+                </button>
+                <button
+                  [class.active]="filtroGrafico === 'mes'"
+                  role="tab"
+                  [attr.aria-selected]="filtroGrafico === 'mes'"
+                  tabindex="0"
+                  (click)="selecionarFiltroGrafico('mes')"
+                >
+                  Mês
+                </button>
+                <button
+                  [class.active]="filtroGrafico === 'ano'"
+                  role="tab"
+                  [attr.aria-selected]="filtroGrafico === 'ano'"
+                  tabindex="0"
+                  (click)="selecionarFiltroGrafico('ano')"
+                >
+                  Ano
+                </button>
+              </div>
+            </div>
+            <div class="history-graph">
+              <canvas
+                baseChart
+                [data]="barChartData"
+                type="bar"
+                [options]="barChartOptions"
+                style="
+                  max-width: 100%;
+                  height: 300px;
+                  display: block;
+                  margin: 0 auto;
+                "
+                aria-label="Gráfico de Emoções"
+              ></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="lareais-ansiedade">
+          <h2>Exemplos reais para você</h2>
+          <ul class="lareais-list">
+            <li *ngFor="let item of ansiedadeLareais">
+              <div class="lareais-card">
+                <div class="lareais-card-content">
+                  <strong>{{ item.titulo }}</strong>
+                  <div class="lareais-descricao">{{ item.descricao }}</div>
+                  <div class="lareais-meta">
+                    <span *ngIf="item.icone === 'video'">
+                      <span class="icon-video"></span> Vídeo
+                    </span>
+                    <span *ngIf="item.icone === 'audio'">
+                      <span class="icon-audio"></span> Áudio
+                    </span>
+                    <span *ngIf="item.icone === 'texto'">
+                      <span class="icon-text"></span> Texto
+                    </span>
+                    <span *ngIf="item.duracao">
+                      <span class="icon-clock"></span> {{ item.duracao }}
+                    </span>
+                    <span class="lareais-tag">{{ item.categoria }}</span>
+                  </div>
+                </div>
+                <button
+                  class="lareais-btn"
+                  (click)="abrirDetalhe(item)"
+                  [attr.aria-label]="'Abrir detalhe de ' + item.titulo"
+                >
+                  Acessar
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <app-detalhe-modal
+          *ngIf="detalheSelecionado"
+          [detalhe]="detalheSelecionado"
+          (fechar)="fecharDetalhe()"
+        ></app-detalhe-modal>
+      </section>
+    </div>
+  </div>
+</section>
+<!-- Comentários adicionados para facilitar manutenção e acessibilidade -->

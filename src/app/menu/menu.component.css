@@ -1,0 +1,262 @@
+header {
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  color: #0000ff;
+  padding: 15px;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 1.8rem;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+nav ul li {
+  display: inline-block;
+  margin: 0 15px;
+}
+
+nav ul li a {
+  color: #0000ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  cursor: pointer;
+  padding: 10px;
+  text-decoration: none;
+  background: none;
+  border: none;
+  font-size: 16px;
+}
+
+.dropdown-content {
+  display: block;
+  position: absolute;
+  background-color: #fff;
+  min-width: 160px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  display: none;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content li {
+  padding: 10px;
+  text-align: left;
+  list-style: none;
+}
+
+.dropdown-content li a {
+  color: black;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content li a:hover {
+  background-color: #f1f1f1;
+}
+
+/* Barra de título fixa e centralizada */
+.title-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.center-title {
+  font-size: 2.1rem;
+  color: #0000ff;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Sidebar styles refinados */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -180px;
+  width: 160px;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.07);
+  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1250;
+  padding-top: 70px;
+  border-radius: 0 12px 12px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+/* Move o conteúdo principal quando o sidebar está aberto */
+main {
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: 0;
+  margin-top: 70px;
+}
+main.sidebar-opened {
+  margin-left: 160px;
+}
+
+.container {
+  margin-left: 0;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+}
+.container.sidebar-opened {
+  margin-left: 160px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0 0 0 10px;
+  flex: 1 1 auto;
+}
+
+.sidebar ul li {
+  margin: 18px 0;
+  text-align: left;
+}
+
+.sidebar ul li a {
+  color: #0000cc;
+  text-decoration: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+  opacity: 0.85;
+  transition: color 0.2s, opacity 0.2s;
+}
+
+.sidebar ul li a:hover {
+  color: #0033cc;
+  opacity: 1;
+}
+
+.menu-toggle {
+  position: fixed;
+  top: 20px;
+  left: 22px;
+  background: #0000ff;
+  color: #fff;
+  border: none;
+  font-size: 1.5rem;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 1300;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+/* Esconde o menu antigo */
+header nav {
+  display: none;
+}
+
+/* Aplica o deslocamento do menu lateral em todas as telas */
+.page-content {
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: 0;
+}
+.sidebar-opened ~ .page-content,
+.page-content.sidebar-opened {
+  margin-left: 160px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 20px 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: 1px solid #eee;
+}
+
+.profile-link {
+  display: flex;
+  align-items: center;
+  color: #0000cc;
+  text-decoration: none;
+  font-size: 1.08rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  transition: color 0.2s;
+}
+
+.profile-link:hover {
+  color: #0033cc;
+}
+
+.profile-icon {
+  font-size: 1.5rem;
+  margin-right: 8px;
+}
+
+.logout-button {
+  width: 80%;
+  margin: 0 10% 10px 10%;
+  padding: 10px 0;
+  background: #ff4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: block;
+}
+.logout-button:hover {
+  background: #cc0000;
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  padding: 18px 0 8px 18px;
+  font-size: 1.1rem;
+  color: #222;
+  font-weight: 500;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 8px;
+}
+.sidebar-user .profile-icon {
+  font-size: 1.6rem;
+  margin-right: 10px;
+}
+.sidebar-user-name {
+  font-size: 1.08rem;
+  color: #222;
+  font-weight: 600;
+}
