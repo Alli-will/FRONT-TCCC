@@ -48,10 +48,14 @@ export class PerfilComponent implements OnInit {
     };
     this.userService.updateUser(userPayload).subscribe(
       (response) => {
-        alert("Dados atualizados com sucesso!");
+        if (typeof window !== 'undefined') {
+          alert("Dados atualizados com sucesso!");
+        }
       },
       (error) => {
-        alert("Erro ao atualizar dados.");
+        if (typeof window !== 'undefined') {
+          alert("Erro ao atualizar dados.");
+        }
       }
     );
   }

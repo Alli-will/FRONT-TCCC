@@ -41,11 +41,15 @@ export class CadastroComponent {
     };
     this.userService.createUser(userPayload).subscribe(
       (response) => {
-        alert("Usuário cadastrado com sucesso!");
+        if (typeof window !== 'undefined') {
+          alert("Usuário cadastrado com sucesso!");
+        }
         this.router.navigate(["/login"]); // Redireciona para login
       },
       (error) => {
-        alert("Erro ao cadastrar. Tente novamente.");
+        if (typeof window !== 'undefined') {
+          alert("Erro ao cadastrar. Tente novamente.");
+        }
       }
     );
   }

@@ -7,7 +7,9 @@ export class DiaryExitGuard implements CanDeactivate<DiarioComponent> {
   canDeactivate(component: DiarioComponent): boolean {
     // Só permite sair se o diário foi respondido hoje
     if (!(component as any).diarioRespondidoHoje) {
-      alert('Você precisa responder o diário de hoje antes de sair!');
+      if (typeof window !== 'undefined') {
+        alert('Você precisa responder o diário de hoje antes de sair!');
+      }
       return false;
     }
     return true;

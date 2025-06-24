@@ -5,7 +5,9 @@ import { CanActivate, Router } from '@angular/router';
 export class EmBreveGuard implements CanActivate {
   constructor(private router: Router) {}
   canActivate(): boolean {
-    alert('Em breve');
+    if (typeof window !== 'undefined') {
+      alert('Em breve');
+    }
     this.router.navigate(['/diario']);
     return false;
   }

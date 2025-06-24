@@ -39,7 +39,9 @@ export class HistoricoComponent implements OnInit {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      alert('Você precisa estar logado para visualizar o diário.');
+      if (typeof window !== 'undefined') {
+        alert('Você precisa estar logado para visualizar o diário.');
+      }
       return;
     }
 
@@ -57,7 +59,9 @@ export class HistoricoComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erro ao carregar entradas:', err);
-        alert('Erro ao carregar entradas. Tente novamente.');
+        if (typeof window !== 'undefined') {
+          alert('Erro ao carregar entradas. Tente novamente.');
+        }
       },
     });
   }

@@ -186,13 +186,17 @@ export class DiarioComponent implements OnInit {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      alert('Você precisa estar logado para criar uma entrada.');
+      if (typeof window !== 'undefined') {
+        alert('Você precisa estar logado para criar uma entrada.');
+      }
       return;
     }
 
     this.diaryService.createDiaryEntry(novaEntrada, token).subscribe({
       next: () => {
-        alert('Entrada criada com sucesso!');
+        if (typeof window !== 'undefined') {
+          alert('Entrada criada com sucesso!');
+        }
         this.diarioRespondidoHoje = true;
         // Removido window.onbeforeunload = null
         this.carregarEntradas();
@@ -204,7 +208,9 @@ export class DiarioComponent implements OnInit {
           err?.error?.message ||
           err?.message ||
           'Erro ao criar entrada. Tente novamente.';
-        alert('Erro ao criar entrada: ' + JSON.stringify(msg));
+        if (typeof window !== 'undefined') {
+          alert('Erro ao criar entrada: ' + JSON.stringify(msg));
+        }
       },
     });
   }
@@ -212,7 +218,9 @@ export class DiarioComponent implements OnInit {
   carregarEntradas(): void {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Você precisa estar logado para visualizar o diário.');
+      if (typeof window !== 'undefined') {
+        alert('Você precisa estar logado para visualizar o diário.');
+      }
       return;
     }
     this.diaryService.getDiaryEntries(token).subscribe({
@@ -220,7 +228,9 @@ export class DiarioComponent implements OnInit {
         this.entradas = data;
       },
       error: (err) => {
-        alert('Erro ao carregar entradas. Tente novamente.');
+        if (typeof window !== 'undefined') {
+          alert('Erro ao carregar entradas. Tente novamente.');
+        }
       },
     });
   }

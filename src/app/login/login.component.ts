@@ -44,7 +44,9 @@ export class LoginComponent {
         });
       },
       (error) => {
-        alert("Credenciais inválidas.");
+        if (typeof window !== 'undefined') {
+          alert("Credenciais inválidas.");
+        }
       }
     );
   }
