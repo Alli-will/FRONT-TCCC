@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  private apiUrl = 'http://localhost:3000/dashboard/metrics'; // ajuste se necessário
+  private apiUrl = 'https://tcc-main.up.railway.app/dashboard/metrics'; // ajuste se necessário
 
   constructor(private http: HttpClient) {}
 

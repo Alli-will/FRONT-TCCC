@@ -1,27 +1,48 @@
-# AppTeste
+# Front-end TCC
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.11.
+Este projeto é o front-end de um sistema de acompanhamento de bem-estar corporativo, desenvolvido em Angular 17. Ele se integra a um backend NestJS e oferece funcionalidades como:
 
-## Development server
+- Login e autenticação JWT
+- Dashboard administrativo com métricas de bem-estar
+- Diário emocional para colaboradores
+- Gráficos e insights automáticos
+- Controle de acesso por perfil (admin/colaborador)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Como rodar o projeto
 
-## Code scaffolding
+1. **Pré-requisitos:**
+   - Node.js 18+
+   - Angular CLI (`npm install -g @angular/cli`)
+   - Backend rodando em http://localhost:3000 (NestJS)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
 
-## Build
+3. **Inicie o servidor de desenvolvimento:**
+   ```bash
+   ng serve
+   ```
+   Acesse em [http://localhost:4200](http://localhost:4200)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Estrutura de pastas
+- `src/app/` — componentes, serviços e módulos principais
+- `src/app/services/` — serviços de integração com o backend
+- `src/app/shared/` — componentes compartilhados (ex: modal de alerta)
+- `src/app/diario/` — diário emocional do colaborador
+- `src/app/dashboard/` — dashboard administrativo
 
-## Running unit tests
+## Funcionalidades principais
+- **Dashboard:** Visualização de métricas globais, colaboradores em risco, análise por departamento
+- **Diário:** Registro diário de emoções, motivos e descrição
+- **Gráficos:** Evolução emocional por semana, mês e ano
+- **Controle de acesso:** Apenas admins acessam o dashboard, colaboradores acessam apenas seu diário
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Observações
+- O front-end depende do backend NestJS para autenticação e dados.
+- As métricas e cálculos sensíveis são feitos no backend, garantindo segurança.
+- O token JWT é salvo no localStorage após login.
+---
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Projeto desenvolvido para TCC — 2025.
