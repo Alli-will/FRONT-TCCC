@@ -42,9 +42,10 @@ export class DashboardComponent implements OnInit {
     if (preload) {
       const data = preload.metrics;
       this.metricas = data.metricas || {};
-      this.colaboradores = data.colaboradores || [];
+      // Filtra colaboradores para exibir apenas quem já respondeu ao diário (bemEstar > 0)
+      this.colaboradores = (data.colaboradores || []).filter((c: any) => c.bemEstar && c.bemEstar > 0);
       this.departamentos = data.departamentos || [];
-      this.colaboradoresEmRisco = data.colaboradoresEmRisco || [];
+      this.colaboradoresEmRisco = (data.colaboradoresEmRisco || []).filter((c: any) => c.bemEstar && c.bemEstar > 0);
       this.essGeral = preload.essGeral.ess ?? 0;
     }
     this.fetchEmotionPercentages();
@@ -55,9 +56,10 @@ export class DashboardComponent implements OnInit {
     this.dashboardService.getMetrics().subscribe({
       next: (data) => {
         this.metricas = data.metricas || {};
-        this.colaboradores = data.colaboradores || [];
+        // Filtra colaboradores para exibir apenas quem já respondeu ao diário (bemEstar > 0)
+        this.colaboradores = (data.colaboradores || []).filter((c: any) => c.bemEstar && c.bemEstar > 0);
         this.departamentos = data.departamentos || [];
-        this.colaboradoresEmRisco = data.colaboradoresEmRisco || [];
+        this.colaboradoresEmRisco = (data.colaboradoresEmRisco || []).filter((c: any) => c.bemEstar && c.bemEstar > 0);
         // Removido cálculo local de ESS geral para não sobrescrever o valor do backend
       },
       error: (err) => {
