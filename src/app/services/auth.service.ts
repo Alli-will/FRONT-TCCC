@@ -7,7 +7,7 @@ import { tap } from "rxjs/operators";
   providedIn: "root",
 })
 export class AuthService {
-  private apiUrl = "http://localhost:3000/auth";
+  private apiUrl = "https://tcc-main.up.railway.app/auth";
   private currentUserSubject: BehaviorSubject<string | null>;
   public currentUser: Observable<string | null>;
 
