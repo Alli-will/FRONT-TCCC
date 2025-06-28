@@ -1,23 +1,17 @@
-<div class="title-bar">
-  <h1 class="center-title">CalmaMente</h1>
-</div>
 <div class="sidebar open">
+  <div class="sidebar-header">
+    <h1 class="sidebar-title">CalmaMente</h1>
+  </div>
   <div class="sidebar-user" *ngIf="isLoggedIn && userName">
     <span class="profile-icon">👤</span>
     <span class="sidebar-user-name">{{ userName }}</span>
   </div>
   <ul>
-    <li><a routerLink="/home">Início</a></li>
-    <li><a routerLink="/diario">Diário</a></li>
-    <li>
-      <a routerLink="/conteudo-educacional">Conteúdo Educacional</a>
-    </li>
-    <li *ngIf="isAdmin">
-      <a routerLink="/dashboard">Dashboard</a>
-    </li>
-    <li *ngIf="!isLoggedIn">
-      <a routerLink="/login">Login</a>
-    </li>
+    <li><a routerLink="/home"><span class="sidebar-menu-icon material-icons">home</span> Início</a></li>
+    <li><a routerLink="/diario"><span class="sidebar-menu-icon material-icons">menu_book</span> Diário</a></li>
+    <li><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">school</span> Conteúdo Educacional</a></li>
+    <li *ngIf="isAdmin"><a routerLink="/dashboard"><span class="sidebar-menu-icon material-icons">bar_chart</span> Dashboard</a></li>
+    <li *ngIf="!isLoggedIn"><a routerLink="/login"><span class="sidebar-menu-icon material-icons">login</span> Login</a></li>
   </ul>
   <div class="sidebar-footer">
     <a
@@ -26,11 +20,12 @@
       (click)="preencherCadastroComUsuarioLogado()"
       class="profile-link"
     >
-      <span class="profile-icon">👤</span> Meu Perfil
+      <span class="profile-icon material-icons">person</span> Meu Perfil
     </a>
     <button *ngIf="isLoggedIn" class="logout-button" (click)="logout()">
       Sair
     </button>
+    <div class="sidebar-copyright">© 2025 CalmaMente</div>
   </div>
 </div>
 <main class="sidebar-opened">

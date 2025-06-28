@@ -1,0 +1,158 @@
+.card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  width: 100% !important;
+  min-width: 500px !important;
+  max-width: 900px !important;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
+.thermometer {
+  position: relative;
+  width: 60px;
+  height: 200px;
+  border-radius: 30px;
+  border: 2px solid #ccc;
+  background-color: #f9f9f9;
+  margin: 0 auto 8px auto;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+.thermometer.horizontal {
+  position: relative;
+  width: 100% !important;
+  min-width: 500px !important;
+  max-width: 900px !important;
+  height: 32px; /* diminui a altura da barra */
+  border-radius: 16px;
+  border: 2px solid #ccc;
+  background-color: #f9f9f9;
+  margin: 0 auto 8px auto;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.thermometer.horizontal.full-bar {
+  position: relative;
+  width: 100% !important;
+  min-width: 500px !important;
+  max-width: 900px !important;
+  height: 32px; /* diminui a altura da barra */
+  border-radius: 16px;
+  border: 2px solid #ccc;
+  background: linear-gradient(
+    to right,
+    #dc3545 0%,
+    #dc3545 49%,
+    #fd7e14 50%,
+    #fd7e14 59%,
+    #ffc107 60%,
+    #ffc107 74%,
+    #28a745 75%,
+    #28a745 100%
+  );
+  margin: 0 auto 8px auto;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.thermo-fill {
+  width: 100%;
+  transition: height 0.5s ease;
+  background: linear-gradient(
+    to top,
+    #dc3545 0%,
+    #dc3545 49%,
+    #fd7e14 50%,
+    #fd7e14 64%,
+    #ffc107 65%,
+    #ffc107 79%,
+    #28a745 80%,
+    #28a745 100%
+  );
+}
+.thermo-fill {
+  height: 100%;
+  transition: width 0.5s ease;
+  background: linear-gradient(
+    to right,
+    #dc3545 0%,
+    #dc3545 49%,
+    #fd7e14 50%,
+    #fd7e14 64%,
+    #ffc107 65%,
+    #ffc107 79%,
+    #28a745 80%,
+    #28a745 100%
+  );
+}
+.ess-value {
+  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 12px;
+}
+.legend {
+  font-size: 0.85em;
+}
+.legend div {
+  margin-bottom: 6px;
+}
+.ess-arrow {
+  position: absolute;
+  top: -8px;
+  left: unset;
+  transform: none;
+  z-index: 2;
+  pointer-events: none;
+  width: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.arrow-icon {
+  font-size: 1.7rem;
+  color: #222;
+  text-shadow: 0 2px 8px #fff, 0 0 2px #0002;
+  display: block;
+  line-height: 1;
+  margin: 0;
+  /* seta para baixo */
+  transform: rotate(180deg);
+}
+.ess-arrow-label {
+  background: #fff;
+  color: #222;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 1px 6px;
+  margin-bottom: 0px;
+  box-shadow: 0 1px 4px #0001;
+  border: 1px solid #eee;
+  position: relative;
+  top: 2px;
+}
+.card.wide {
+  width: 100% !important;
+  min-width: 500px !important;
+  max-width: 900px !important;
+}
+.thermometer.horizontal.full-bar.wide {
+  width: 100% !important;
+  min-width: 500px !important;
+  max-width: 900px !important;
+}
+.card:not(.wide) {
+  width: 320px !important;
+  min-width: 280px !important;
+  max-width: 400px !important;
+  padding: 18px !important;
+}
+.thermometer.horizontal.full-bar:not(.wide) {
+  width: 260px !important;
+  min-width: 220px !important;
+  max-width: 340px !important;
+}

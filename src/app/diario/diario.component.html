@@ -2,27 +2,8 @@
 <section id="diario" class="section-diary" aria-labelledby="diario-title">
   <div class="container">
     <div class="diary-main-layout">
-      <!-- Insights Sidebar -->
-      <aside
-        class="insights-panel"
-        aria-label="Painel de insights"
-        tabindex="0"
-      >
-        <h3>Insights</h3>
-        <div class="insight-box">
-          <span>Emoção mais frequente</span>
-          <strong class="insight-main">{{ emocaoMaisFrequente }}</strong>
-        </div>
-        <div class="insight-box">
-          <span>Energia</span>
-          <strong class="insight-main">{{ nivelEnergia }}</strong>
-        </div>
-        <div class="insight-box">
-          <span>Nível de estresse</span>
-          <strong class="insight-main">{{ nivelEstresse }}</strong>
-        </div>
-      </aside>
-
+      <!-- Card ESS substitui insights -->
+      <app-ess-thermometer [ess]="ess"></app-ess-thermometer>
       <!-- Main Diary Content -->
       <section class="diary-content" aria-label="Conteúdo principal do diário">
         <h1 id="diario-title">Diário Emocional</h1>
@@ -45,11 +26,11 @@
               class="emotion-item"
               *ngFor="
                 let emo of [
-                  { nome: 'Feliz', emoji: '😊', valor: 'feliz' },
-                  { nome: 'Neutro', emoji: '😐', valor: 'neutro' },
                   { nome: 'Triste', emoji: '😢', valor: 'triste' },
-                  { nome: 'Irritado', emoji: '😠', valor: 'irritado' },
-                  { nome: 'Ansioso', emoji: '😰', valor: 'ansioso' }
+                  { nome: 'Frustrado', emoji: '😠', valor: 'frustrado' },
+                  { nome: 'Neutro', emoji: '😐', valor: 'neutro' },
+                  { nome: 'Tranquilo', emoji: '🙂', valor: 'tranquilo' },
+                  { nome: 'Realizado', emoji: '😄', valor: 'realizado' }
                 ]
               "
             >

@@ -19,6 +19,7 @@ export class CadastroComponent {
     password: "",
     companyId: 1,
   };
+  errorMessage: string | null = null;
 
   constructor(private userService: UserService, private router: Router) {
     // Preenche o formulário se houver dados no localStorage (apenas no browser)
@@ -32,6 +33,7 @@ export class CadastroComponent {
   }
 
   onSubmit() {
+    this.errorMessage = null;
     const userPayload = {
       first_Name: this.user.firstName,
       last_Name: this.user.lastName,
@@ -47,8 +49,26 @@ export class CadastroComponent {
         this.router.navigate(["/login"]); // Redireciona para login
       },
       (error) => {
+        // Mostra mensagem detalhada se disponível
+        let msg = "Erro ao cadastrar. Tente novamente.";
+        if (error?.error?.details) {
+          if (Array.isArray(error.error.details)) {
+            msg = error.error.details.join(' ');
+          } else {
+            msg = error.error.details;
+          }
+        } else if (error?.error?.message) {
+          if (Array.isArray(error.error.message)) {
+            msg = error.error.message.join(' ');
+          } else {
+            msg = error.error.message;
+          }
+        } else if (error?.error?.error) {
+          msg = error.error.error;
+        }
+        this.errorMessage = msg;
         if (typeof window !== 'undefined') {
-          alert("Erro ao cadastrar. Tente novamente.");
+          alert(msg);
         }
       }
     );

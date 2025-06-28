@@ -15,7 +15,7 @@ body, .cadastro-container {
     align-items: flex-start;
     height: 100vh;
     background-color: #f0f4f8;
-    padding-top: 60px;
+    padding-top: 120px; /* aumentado para descer o card */
   }
   
   .cadastro-card {
@@ -100,12 +100,22 @@ body, .cadastro-container {
   }
   
   .voltar-button {
-    background-color: #f44336; /* Vermelho */
+    background: linear-gradient(90deg, #4f8cff 60%, #38b6ff 100%);
+    color: #fff;
     margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    transition: background 0.2s;
   }
   
   .voltar-button:hover {
-    background-color: #d32f2f;
+    background: linear-gradient(90deg, #38b6ff 60%, #4f8cff 100%);
   }
   
   .signup-link {

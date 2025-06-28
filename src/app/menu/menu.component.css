@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
 header {
   background: white;
   border-bottom: 1px solid #e0e0e0;
@@ -74,43 +76,24 @@ nav ul li a {
 
 /* Barra de título fixa e centralizada */
 .title-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1200;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-}
-
-.center-title {
-  font-size: 2.1rem;
-  color: #0000ff;
-  font-weight: bold;
-  margin: 0;
+  display: none;
 }
 
 /* Sidebar styles refinados */
 .sidebar {
   position: fixed;
   top: 0;
-  left: -180px;
-  width: 160px;
+  left: 0;
+  width: 220px;
   height: 100vh;
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.07);
-  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1250;
+  background: #23213a;
+  box-shadow: none;
+  border-radius: 0;
   padding-top: 70px;
-  border-radius: 0 12px 12px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  z-index: 1250;
 }
 
 .sidebar.open {
@@ -124,7 +107,8 @@ main {
   margin-top: 70px;
 }
 main.sidebar-opened {
-  margin-left: 160px;
+  margin-left: 220px;
+  margin-top: 0 !important;
 }
 
 .container {
@@ -136,12 +120,28 @@ main.sidebar-opened {
   height: 70px;
 }
 .container.sidebar-opened {
-  margin-left: 160px;
+  margin-left: 220px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+  width: 100%;
+}
+
+.sidebar-title {
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 0.5px;
 }
 
 .sidebar ul {
   list-style: none;
-  padding: 0 0 0 10px;
+  padding: 0 0 0 0;
   flex: 1 1 auto;
 }
 
@@ -151,17 +151,36 @@ main.sidebar-opened {
 }
 
 .sidebar ul li a {
-  color: #0000cc;
+  color: #fff;
   text-decoration: none;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  opacity: 0.85;
-  transition: color 0.2s, opacity 0.2s;
+  opacity: 0.95;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
 }
 
-.sidebar ul li a:hover {
-  color: #0033cc;
+.sidebar-menu-icon.material-icons {
+  font-size: 1.5rem;
+  margin-right: 12px;
+  color: #fff;
+  transition: color 0.2s;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+  background: linear-gradient(90deg, #4f8cff 60%, #38b6ff 100%);
+  color: #fff;
   opacity: 1;
+}
+
+.sidebar ul li a:hover .sidebar-menu-icon,
+.sidebar ul li a.active .sidebar-menu-icon {
+  color: #38b6ff;
 }
 
 .menu-toggle {
@@ -191,7 +210,7 @@ header nav {
 }
 .sidebar-opened ~ .page-content,
 .page-content.sidebar-opened {
-  margin-left: 160px;
+  margin-left: 220px;
 }
 
 .sidebar-footer {
@@ -200,13 +219,13 @@ header nav {
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #38365a;
 }
 
 .profile-link {
   display: flex;
   align-items: center;
-  color: #0000cc;
+  color: #fff;
   text-decoration: none;
   font-size: 1.08rem;
   font-weight: 500;
@@ -215,19 +234,20 @@ header nav {
 }
 
 .profile-link:hover {
-  color: #0033cc;
+  color: #38b6ff;
 }
 
 .profile-icon {
   font-size: 1.5rem;
   margin-right: 8px;
+  color: #fff;
 }
 
 .logout-button {
   width: 80%;
   margin: 0 10% 10px 10%;
   padding: 10px 0;
-  background: #ff4444;
+  background: #4f8cff;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -238,25 +258,68 @@ header nav {
   display: block;
 }
 .logout-button:hover {
-  background: #cc0000;
+  background: #38b6ff;
 }
 
 .sidebar-user {
   display: flex;
   align-items: center;
-  padding: 18px 0 8px 18px;
+  padding: 18px 0 8px 24px;
   font-size: 1.1rem;
-  color: #222;
+  color: #fff;
   font-weight: 500;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #38365a;
   margin-bottom: 8px;
 }
 .sidebar-user .profile-icon {
   font-size: 1.6rem;
   margin-right: 10px;
+  color: #fff;
 }
 .sidebar-user-name {
   font-size: 1.08rem;
-  color: #222;
+  color: #fff;
   font-weight: 600;
+}
+
+.sidebar-copyright {
+  color: #bbb;
+  font-size: 0.95rem;
+  margin-top: 18px;
+  text-align: center;
+}
+
+.sidebar ul li a .profile-icon {
+  margin-right: 10px;
+  font-size: 1.3rem;
+  filter: grayscale(1) brightness(2.2) contrast(1.2);
+  /* Deixa o emoji mais neutro, simulando um ícone branco */
+  transition: filter 0.2s;
+}
+
+.sidebar ul li a:hover .profile-icon,
+.sidebar ul li a.active .profile-icon {
+  filter: none;
+  /* Emoji colorido ao hover/ativo */
+}
+
+/* Remove qualquer espaçamento ou cor de fundo extra do topo */
+body, html, app-root, .main-content, .page-content, main.sidebar-opened {
+  margin: 0;
+  padding: 0;
+  background: #f9fafc !important;
+  box-shadow: none !important;
+}
+
+/* Remove possíveis sombras ou bordas do topo */
+header, .title-bar {
+  display: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: none !important;
+}
+
+/* Garante que o conteúdo fique alinhado com a sidebar */
+main.sidebar-opened {
+  margin-top: 0 !important;
 }

@@ -9,10 +9,12 @@ import { ConteudoEducacionalComponent } from "../conteudo-educacional/conteudo-e
 import { DashboardComponent } from "../dashboard/dashboard.component";
 import { DiaryEntryGuard } from '../services/diary-entry.guard';
 import { DiaryExitGuard } from '../services/diary-exit.guard';
+import { DiarioResolver } from '../diario/diario.resolver';
+import { DashboardResolver } from '../dashboard/dashboard.resolver';
 
 export const routes: Routes = [
   { path: "", redirectTo: "dashboard", pathMatch: "full" },
-  { path: "diario", component: DiarioComponent, canActivate: [AuthGuard], canDeactivate: [DiaryExitGuard] },
+  { path: "diario", component: DiarioComponent, canActivate: [AuthGuard], canDeactivate: [DiaryExitGuard], resolve: { preload: DiarioResolver } },
   {
     path: "conteudo-educacional",
     component: ConteudoEducacionalComponent,
@@ -31,5 +33,6 @@ export const routes: Routes = [
     path: "dashboard",
     component: DashboardComponent,
     canActivate: [AuthGuard, DiaryEntryGuard],
+    resolve: { preload: DashboardResolver }
   },
 ];

@@ -3,16 +3,17 @@ import { MenuComponent } from '../menu/menu.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Para usar [(ngModel)]
 import { DiaryService } from '../services/diary.service'; // Serviço para integração com o back-end
-import { Router } from '@angular/router'; // Importando o Router para navegação
+import { Router, ActivatedRoute } from '@angular/router'; // Importando o Router para navegação
 import { DetalheModalComponent } from '../shared/detalhe-modal.component';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
+import { EssThermometerComponent } from '../ess-thermometer/ess-thermometer.component';
 
 
 @Component({
   selector: 'app-diario',
   standalone: true,
-  imports: [MenuComponent, CommonModule, FormsModule, DetalheModalComponent, NgChartsModule],
+  imports: [MenuComponent, CommonModule, FormsModule, DetalheModalComponent, NgChartsModule, EssThermometerComponent],
   templateUrl: './diario.component.html',
   styleUrls: ['./diario.component.css'],
 })
@@ -30,6 +31,7 @@ export class DiarioComponent implements OnInit {
   descricao: string = '';
   pesquisa: string = '';
   entradas: any[] = [];
+  ess: number = 0; // Valor inicial do ESS, pode ser dinâmico depois
 
   reasons = [
     { id: 1, nome: 'Trabalho' },
@@ -129,21 +131,32 @@ export class DiarioComponent implements OnInit {
 
   // Mapa de cores fixas para cada emoção
   private corEmocao: { [emocao: string]: string } = {
-    'feliz': '#4caf50',      // verde
-    'neutro': '#9e9e9e',    // cinza
-    'triste': '#2196f3',    // azul
-    'irritado': '#f44336',  // vermelho
-    'ansioso': '#ff9800',   // laranja
-    'cansado': '#7e57c2',   // roxo
-    'raiva': '#f44336',     // vermelho
-    'Sem emoção': '#bdbdbd' // cinza claro
+    'triste': '#2196f3',      // azul
+    'frustrado': '#f44336',  // vermelho
+    'neutro': '#9e9e9e',     // cinza
+    'tranquilo': '#4caf50',  // verde
+    'realizado': '#ffd600',  // amarelo
+    'Sem emoção': '#bdbdbd'  // cinza claro
   };
 
   private diarioRespondidoHoje = false;
 
-  constructor(private diaryService: DiaryService, private router: Router) {}
+  constructor(private diaryService: DiaryService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    const preload = this.route.snapshot.data['preload'];
+    if (preload) {
+      this.ess = preload.ess.ess ?? 0;
+      this.barChartData = {
+        labels: preload.grafico.labels,
+        datasets: preload.grafico.datasets.map((ds: any) => ({
+          ...ds,
+          backgroundColor: this.corEmocao[ds.label] || '#bdbdbd',
+          borderColor: this.corEmocao[ds.label] || '#bdbdbd',
+          borderWidth: 1,
+        }))
+      };
+    }
     // Verifica se já respondeu o diário hoje ao carregar a tela
     const token = localStorage.getItem('token');
     if (token) {
@@ -153,6 +166,15 @@ export class DiarioComponent implements OnInit {
         },
         error: () => {
           this.diarioRespondidoHoje = false;
+        }
+      });
+      // Busca o ESS individual do usuário
+      this.diaryService.getUserEss(token).subscribe({
+        next: (res) => {
+          this.ess = res.ess ?? 0;
+        },
+        error: () => {
+          this.ess = 0;
         }
       });
     }
@@ -198,8 +220,13 @@ export class DiarioComponent implements OnInit {
           alert('Entrada criada com sucesso!');
         }
         this.diarioRespondidoHoje = true;
-        // Removido window.onbeforeunload = null
         this.carregarEntradas();
+        // Atualiza ESS e gráfico imediatamente após nova entrada
+        this.diaryService.getUserEss(token).subscribe({
+          next: (res) => { this.ess = res.ess ?? 0; },
+          error: () => { this.ess = 0; }
+        });
+        this.carregarGrafico();
         this.resetarFormulario();
       },
       error: (err) => {

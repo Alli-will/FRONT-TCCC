@@ -3,11 +3,13 @@ import { CommonModule } from "@angular/common";
 import { MenuComponent } from "../menu/menu.component";
 import { FormsModule } from "@angular/forms";
 import { DashboardService } from '../services/dashboard.service';
+import { EssThermometerComponent } from '../ess-thermometer/ess-thermometer.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: "app-dashboard",
   standalone: true,
-  imports: [CommonModule, MenuComponent, FormsModule],
+  imports: [CommonModule, MenuComponent, FormsModule, EssThermometerComponent],
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.css"],
 })
@@ -22,17 +24,31 @@ export class DashboardComponent implements OnInit {
     altoRiscoPercent: 0,
     sessoesTerapia: 0,
     variacaoSessoes: 0,
+    totalRespostasDiario: 0,
   };
+  essGeral: number = 0;
   showIA: boolean = true;
   iaMensagem: string =
     "Olá! Sou sua assistente de IA para análise de bem-estar dos colaboradores. Posso ajudar você a identificar riscos psicossociais, analisar tendências emocionais e sugerir ações para melhorar o clima da equipe.";
   busca: string = "";
   resultadosBusca: any[] = [];
+  emotionPercentages: any[] = [];
+  loadingEmotions = false;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.carregarDadosDashboard();
+    const preload = this.route.snapshot.data['preload'];
+    if (preload) {
+      const data = preload.metrics;
+      this.metricas = data.metricas || {};
+      this.colaboradores = data.colaboradores || [];
+      this.departamentos = data.departamentos || [];
+      this.colaboradoresEmRisco = data.colaboradoresEmRisco || [];
+      this.essGeral = preload.essGeral.ess ?? 0;
+    }
+    this.fetchEmotionPercentages();
+    // Remover chamadas duplicadas de carregamento
   }
 
   carregarDadosDashboard() {
@@ -42,6 +58,7 @@ export class DashboardComponent implements OnInit {
         this.colaboradores = data.colaboradores || [];
         this.departamentos = data.departamentos || [];
         this.colaboradoresEmRisco = data.colaboradoresEmRisco || [];
+        // Removido cálculo local de ESS geral para não sobrescrever o valor do backend
       },
       error: (err) => {
         // Trate erros de permissão ou conexão
@@ -49,6 +66,21 @@ export class DashboardComponent implements OnInit {
         this.colaboradores = [];
         this.departamentos = [];
         this.colaboradoresEmRisco = [];
+        this.essGeral = 0;
+      }
+    });
+  }
+
+  fetchEmotionPercentages() {
+    this.loadingEmotions = true;
+    this.dashboardService.getEmotionPercentages().subscribe({
+      next: (data) => {
+        this.emotionPercentages = data;
+        this.loadingEmotions = false;
+      },
+      error: () => {
+        this.emotionPercentages = [];
+        this.loadingEmotions = false;
       }
     });
   }
@@ -97,5 +129,23 @@ export class DashboardComponent implements OnInit {
       acoes.push({ texto: 'Nenhuma ação urgente recomendada no momento.', cor: '#4CAF50' });
     }
     return acoes;
+  }
+
+  getEmotionColor(key: string): string {
+    switch (key) {
+      case 'triste': return '#f44336'; // vermelho
+      case 'frustrado': return '#ff9800'; // laranja
+      case 'neutro': return '#ffc107'; // amarelo
+      case 'tranquilo': return '#2196f3'; // azul claro
+      case 'realizado': return '#1976d2'; // azul escuro
+      default: return '#bbb';
+    }
+  }
+
+  getCircleDash(percent: number): string {
+    const radius = 30;
+    const circ = 2 * Math.PI * radius;
+    const dash = (percent / 100) * circ;
+    return `${dash} ${circ - dash}`;
   }
 }

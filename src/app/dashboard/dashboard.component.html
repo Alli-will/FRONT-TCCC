@@ -2,23 +2,75 @@
 <div class="dashboard-container">
   <div class="dashboard-main">
     <h2>Dashboard de Bem-Estar</h2>
-    <div class="metricas-grid">
-      <div class="metrica-card">
-        <span class="metrica-titulo">Colaboradores Ativos</span>
-        <span class="metrica-valor">{{ metricas.ativos }}</span>
+    <div class="dashboard-header-row stretch-ess">
+      <!-- Termômetro ESS geral -->
+      <div class="ess-thermometer-stretch">
+        <app-ess-thermometer [ess]="essGeral" [wide]="true"></app-ess-thermometer>
       </div>
-      <div class="metrica-card">
-        <span class="metrica-titulo">Bem-Estar Geral</span>
-        <span class="metrica-valor">{{ metricas.bemEstarGeral }}</span>
+      <div class="metricas-col">
+        <div class="metrica-card">
+          <span class="metrica-titulo">Colaboradores Ativos</span>
+          <span class="metrica-valor">{{ metricas.ativos }}</span>
+        </div>
+        <div class="metrica-card">
+          <span class="metrica-titulo">Total de Respostas do Diário</span>
+          <span class="metrica-valor">{{ metricas.totalRespostasDiario }}</span>
+        </div>
       </div>
-      <div class="metrica-card alerta">
-        <span class="metrica-titulo">Alto Risco</span>
-        <span class="metrica-valor">{{ metricas.altoRisco }}</span>
-        <span class="metrica-extra">({{ metricas.altoRiscoPercent }}%)</span>
-      </div>
-      <div class="metrica-card">
-        <span class="metrica-titulo">Sessões de Terapia</span>
-        <span class="metrica-valor">{{ metricas.sessoesTerapia }}</span>
+    </div>
+    <div class="emotion-indicators-section">
+      <h3>Distribuição das Emoções do Diário</h3>
+      <div class="emotion-indicators-grid">
+        <ng-container *ngIf="!loadingEmotions; else loadingEmotionsTpl">
+          <div class="emotion-indicator" *ngFor="let e of emotionPercentages">
+            <div class="circle-indicator">
+              <svg width="70" height="70">
+                <circle
+                  cx="35"
+                  cy="35"
+                  r="30"
+                  stroke="#eee"
+                  stroke-width="8"
+                  fill="none"
+                />
+                <circle
+                  cx="35"
+                  cy="35"
+                  r="30"
+                  [attr.stroke]="getEmotionColor(e.key)"
+                  stroke-width="8"
+                  fill="none"
+                  [attr.stroke-dasharray]="getCircleDash(e.percent)"
+                  stroke-linecap="round"
+                  transform="rotate(-90 35 35)"
+                />
+                <text
+                  x="35"
+                  y="42"
+                  text-anchor="middle"
+                  font-size="1.1em"
+                  fill="#222"
+                >
+                  {{ e.percent }}%
+                </text>
+              </svg>
+            </div>
+            <div class="emotion-emoji">{{ e.emoji }}</div>
+            <div class="emotion-label">{{ e.label }}</div>
+          </div>
+        </ng-container>
+        <ng-template #loadingEmotionsTpl>
+          <div
+            class="emotion-indicator loading"
+            *ngFor="let i of [1, 2, 3, 4, 5]"
+          >
+            <div class="circle-indicator">
+              <div class="loading-spinner"></div>
+            </div>
+            <div class="emotion-emoji">...</div>
+            <div class="emotion-label">Carregando</div>
+          </div>
+        </ng-template>
       </div>
     </div>
     <div class="alertas-section" *ngIf="colaboradoresEmRisco.length">

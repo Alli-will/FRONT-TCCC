@@ -29,13 +29,8 @@ export class MenuComponent implements OnInit {
       if (token) {
         const payload = this.authService.getUserInfoFromToken();
         this.isAdmin = payload?.role === 'admin';
-        if (payload?.email) {
-          this.userService
-            .getUserByEmail(payload.email)
-            .subscribe((user: any) => {
-              this.userName = user?.nome || null;
-            });
-        }
+        // Removido getUserByEmail: agora pega nome do payload ou deixa nulo
+        this.userName = payload?.nome || null;
       } else {
         this.userName = null;
         this.isAdmin = false;
@@ -52,20 +47,18 @@ export class MenuComponent implements OnInit {
 
   preencherCadastroComUsuarioLogado() {
     const payload = this.authService.getUserInfoFromToken();
-    if (payload?.email) {
-      this.userService.getUserByEmail(payload.email).subscribe((user: any) => {
-        // Salva os dados no localStorage para o cadastro pegar
-        localStorage.setItem(
-          "cadastroUser",
-          JSON.stringify({
-            firstName: user.first_Name || user.firstName || "",
-            lastName: user.last_Name || user.lastName || "",
-            email: user.email || "",
-            password: "", // nunca preenche senha
-            companyId: user.companyId || 1,
-          })
-        );
-      });
+    if (payload) {
+      // Preenche localStorage diretamente com dados do payload
+      localStorage.setItem(
+        "cadastroUser",
+        JSON.stringify({
+          firstName: payload.first_Name || payload.firstName || "",
+          lastName: payload.last_Name || payload.lastName || "",
+          email: payload.email || "",
+          password: "", // nunca preenche senha
+          companyId: payload.companyId || 1,
+        })
+      );
     }
   }
 }

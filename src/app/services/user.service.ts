@@ -6,8 +6,8 @@ import { Observable } from "rxjs";
   providedIn: "root",
 })
 export class UserService {
-  private apiUrl = "https://tcc-main.up.railway.app/user/register-access";
-  private apiAllUsersUrl = "https://tcc-main.up.railway.app/user";
+  private apiUrl = "http://localhost:3000/user/register-access";
+  private apiAllUsersUrl = "http://localhost:3000/user";
 
   constructor(private http: HttpClient) {}
 
@@ -15,12 +15,7 @@ export class UserService {
     return this.http.post(this.apiUrl, user);
   }
 
-  getUserByEmail(email: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}?email=${encodeURIComponent(email)}`);
-  }
-
   updateUser(user: any): Observable<any> {
-    // Ajuste o endpoint conforme o backend
     return this.http.put(this.apiUrl, user);
   }
 
