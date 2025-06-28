@@ -6,8 +6,8 @@ import { Observable } from "rxjs";
   providedIn: "root",
 })
 export class UserService {
-  private apiUrl = "http://localhost:3000/user/register-access";
-  private apiAllUsersUrl = "http://localhost:3000/user";
+  private apiUrl = "https://tcc-main.up.railway.app/user/register-access";
+  private apiAllUsersUrl = "https://tcc-main.up.railway.app/user";
 
   constructor(private http: HttpClient) {}
 
