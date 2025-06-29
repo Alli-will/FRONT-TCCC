@@ -14,6 +14,7 @@ import { SafeUrlPipe } from './safe-url.pipe';
       </button>
       <ng-container *ngIf="detalhe">
         <h2>{{ detalhe.titulo }}</h2>
+        <ng-content></ng-content>
         <div *ngIf="detalhe.tipo === 'texto'">
           <p class="detalhe-conteudo-completo">{{ detalhe.conteudo }}</p>
         </div>
@@ -51,9 +52,9 @@ import { SafeUrlPipe } from './safe-url.pipe';
           </div>
         </div>
         <div *ngIf="!detalhe.conteudo">
-          <p class="detalhe-vazio">
+          <!-- <p class="detalhe-vazio">
             Nenhum conteúdo disponível para este exemplo.
-          </p>
+          </p> -->
         </div>
       </ng-container>
     </div>

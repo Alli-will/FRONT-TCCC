@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: "app-dashboard",
   standalone: true,
-  imports: [CommonModule, MenuComponent, FormsModule, EssThermometerComponent],
+  imports: [CommonModule, MenuComponent, FormsModule],
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.css"],
 })
@@ -135,11 +135,11 @@ export class DashboardComponent implements OnInit {
 
   getEmotionColor(key: string): string {
     switch (key) {
-      case 'triste': return '#f44336'; // vermelho
-      case 'frustrado': return '#ff9800'; // laranja
-      case 'neutro': return '#ffc107'; // amarelo
-      case 'tranquilo': return '#2196f3'; // azul claro
-      case 'realizado': return '#1976d2'; // azul escuro
+      case 'Muito mal': return '#f44336'; // vermelho
+      case 'Mal': return '#ff9800'; // laranja
+      case 'Neutro': return '#ffc107'; // amarelo
+      case 'Bem': return '#2196f3'; // azul claro
+      case 'Muito bem': return '#1976d2'; // azul escuro
       default: return '#bbb';
     }
   }
@@ -149,5 +149,56 @@ export class DashboardComponent implements OnInit {
     const circ = 2 * Math.PI * radius;
     const dash = (percent / 100) * circ;
     return `${dash} ${circ - dash}`;
+  }
+
+
+  getScoreColor(): string {
+    if (this.essGeral >= 80) {
+      return '#38b6a5'; // verde
+    } else if (this.essGeral >= 60) {
+      return '#fbc02d'; // amarelo
+    } else {
+      return '#ff7043'; // laranja
+    }
+  }
+
+  getScoreLabel(): string {
+    if (this.essGeral >= 80) {
+      return 'Bom';
+    } else if (this.essGeral >= 60) {
+      return 'Atenção';
+    } else {
+      return 'Crítica';
+    }
+  }
+
+  getScoreDesc(): string {
+    if (this.essGeral >= 80) {
+      return 'O bem-estar emocional geral da empresa está bom!';
+    } else if (this.essGeral >= 60) {
+      return 'O bem-estar emocional da empresa requer acompanhamento.';
+    } else {
+      return 'A saúde emocional da empresa precisa de cuidado imediato.';
+    }
+  }
+
+  getScoreDescBg(): string {
+    if (this.essGeral >= 80) {
+      return '#e6f9f3'; // verde claro
+    } else if (this.essGeral >= 60) {
+      return '#fff8e1'; // amarelo claro
+    } else {
+      return '#fff3e6'; // laranja claro
+    }
+  }
+
+  getScoreDescColor(): string {
+    if (this.essGeral >= 80) {
+      return '#38b6a5';
+    } else if (this.essGeral >= 60) {
+      return '#fbc02d';
+    } else {
+      return '#ff7043';
+    }
   }
 }

@@ -1,6 +1,6 @@
-<app-menu></app-menu>
 <div class="login-container">
   <div class="login-card">
+    <img src="assets/logo_login.png" alt="Logo da empresa" style="max-width: 120px; margin-bottom: 18px; display: block; margin-left: auto; margin-right: auto;" />
     <h2>Login</h2>
     <p>Bem-vindo!<br>Faça login ou cadastro para continuar.</p>
     <form (ngSubmit)="onSubmit()">
@@ -12,10 +12,10 @@
         <label for="password">Senha</label>
         <input type="password" id="password" [(ngModel)]="password" placeholder="Digite sua senha" name="senha" />
       </div>
-      <button type="submit" class="login-button" >Entrar</button>
+      <button type="submit" class="login-button submit-btn">Entrar</button>
     </form>
     <p class="signup-link">
-      Não tem uma conta? <a href="/cadastro">Cadastre-se</a>
+      Não tem uma conta? <a routerLink="/cadastro" style="cursor:pointer; color:#4A4E69; text-decoration:underline;">Cadastre-se</a>
     </p>
   </div>
 </div>

@@ -2,10 +2,68 @@
 <div class="dashboard-container">
   <div class="dashboard-main">
     <h2>Dashboard de Bem-Estar</h2>
-    <div class="dashboard-header-row stretch-ess">
-      <!-- Termômetro ESS geral -->
-      <div class="ess-thermometer-stretch">
-        <app-ess-thermometer [ess]="essGeral" [wide]="true"></app-ess-thermometer>
+    <div class="dashboard-header-row stretch-ess" style="align-items: flex-start; gap: 32px;">
+      <!-- Score Emocional Geral -->
+      <div class="diary-card score-card" style="margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start;">
+        <div class="score-title" style="text-align: left; width: 100%;">
+          <strong>Score Emocional Geral</strong>
+          <div class="score-sub">Últimos 30 dias</div>
+        </div>
+        <div class="score-circle-svg" style="position: relative; display: flex; justify-content: center; align-items: center; width: 100%;">
+          <svg width="170" height="170">
+            <circle
+              cx="85"
+              cy="85"
+              r="76"
+              stroke="#eaf6ff"
+              stroke-width="16"
+              fill="none"
+            />
+            <circle
+              cx="85"
+              cy="85"
+              r="76"
+              [attr.stroke]="getScoreColor()"
+              stroke-width="16"
+              fill="none"
+              [attr.stroke-dasharray]="477.52"
+              [attr.stroke-dashoffset]="477.52 - (essGeral) * 4.7752"
+              stroke-linecap="round"
+              style="transition: stroke-dashoffset 0.6s;"
+              transform="rotate(-90 85 85)"
+            />
+            <text
+              x="85"
+              y="90"
+              text-anchor="middle"
+              font-size="2.5em"
+              fill="#222"
+              font-weight="bold"
+              alignment-baseline="middle"
+              dominant-baseline="middle"
+            >
+              {{ essGeral }}%
+            </text>
+            <text
+              x="85"
+              y="120"
+              text-anchor="middle"
+              font-size="1.2em"
+              [attr.fill]="getScoreColor()"
+              font-weight="600"
+            >
+              {{ getScoreLabel() }}
+            </text>
+          </svg>
+        </div>
+        <div
+          class="score-desc"
+          [style.background]="getScoreDescBg()"
+          [style.color]="getScoreDescColor()"
+          style="text-align: center; margin-top: 32px;"
+        >
+          {{ getScoreDesc() }}
+        </div>
       </div>
       <div class="metricas-col">
         <div class="metrica-card">
@@ -73,11 +131,13 @@
         </ng-template>
       </div>
     </div>
-    <div class="alertas-section" *ngIf="colaboradoresEmRisco.length">
-      <h3>Alertas de Risco</h3>
-      <ul>
-        <li *ngFor="let c of colaboradoresEmRisco">
-          <span class="alerta-nome">{{ c.nome }}</span> -
+    <div class="alertas-section" *ngIf="colaboradoresEmRisco.length" style="background: #fff8f6; border: 1px solid #f44336; box-shadow: 0 1px 6px #f4433612; padding: 1.1rem 1.2rem 1rem 1.2rem; margin-bottom: 1.5rem; margin-top: 1.2rem;">
+      <h3 style="color: #f44336; font-size: 1.2em; font-weight: bold; letter-spacing: 0.2px; margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.4em;">
+        <span style="font-size: 1.2em;">&#9888;&#65039;</span> Alertas de Risco
+      </h3>
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        <li *ngFor="let c of colaboradoresEmRisco" style="margin-bottom: 0.5em; font-size: 1em; background: #fff; border-radius: 0.4em; box-shadow: 0 1px 2px #f4433612; padding: 0.5em 0.9em; border-left: 4px solid #f44336; display: flex; align-items: center; gap: 0.4em;">
+          <span class="alerta-nome" style="font-size: 1em;">{{ c.nome }}</span> -
           <span class="alerta-depto">{{ c.departamento }}</span> (<span
             class="alerta-bemestar"
             >Bem-estar: {{ c.bemEstar }}</span

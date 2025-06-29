@@ -16,6 +16,7 @@ export class MenuComponent implements OnInit {
   dropdownOpen: boolean = false;
   sidebarOpen: boolean = true; // Sidebar sempre expandido
   userName: string | null = null;
+  userEmail: string | null = null;
   isAdmin = false;
 
   constructor(
@@ -29,10 +30,13 @@ export class MenuComponent implements OnInit {
       if (token) {
         const payload = this.authService.getUserInfoFromToken();
         this.isAdmin = payload?.role === 'admin';
-        // Removido getUserByEmail: agora pega nome do payload ou deixa nulo
-        this.userName = payload?.nome || null;
+        this.userName = (payload?.first_Name && payload?.last_Name)
+          ? `${payload.first_Name} ${payload.last_Name}`
+          : payload?.first_Name || payload?.last_Name || payload?.email || null;
+        this.userEmail = payload?.email || null;
       } else {
         this.userName = null;
+        this.userEmail = null;
         this.isAdmin = false;
       }
     });
@@ -60,5 +64,9 @@ export class MenuComponent implements OnInit {
         })
       );
     }
+  }
+
+  showComingSoon() {
+    alert('Em breve!');
   }
 }

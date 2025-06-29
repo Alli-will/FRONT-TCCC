@@ -5,11 +5,12 @@ import { MenuComponent } from "../menu/menu.component";
 import { Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { DiaryService } from '../services/diary.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: "app-login",
   standalone: true,
-  imports: [FormsModule, MenuComponent, CommonModule],
+  imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.css"],
 })

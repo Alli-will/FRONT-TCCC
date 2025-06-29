@@ -12,10 +12,11 @@ body, .cadastro-container {
   .cadastro-container {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     height: 100vh;
+    min-height: 0;
     background-color: #f0f4f8;
-    padding-top: 120px; /* aumentado para descer o card */
+    padding-top: 40px !important;
   }
   
   .cadastro-card {
@@ -26,7 +27,7 @@ body, .cadastro-container {
     max-width: 400px;
     width: 100%;
     text-align: center;
-    margin-top: 0;
+    margin-top: 0 !important;
   }
   
   h2 {
@@ -71,51 +72,46 @@ body, .cadastro-container {
     outline: none;
   }
   
-  button[type="submit"] {
-    background: linear-gradient(90deg, #4f8cff 60%, #38b6ff 100%);
+  button[type="submit"],
+  .cadastro-button {
+    background: linear-gradient(90deg, #38b6a5 60%, #4f8cff 100%) !important;
     color: #fff;
     border: none;
-    border-radius: 6px;
-    padding: 10px 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
+    border-radius: 10px;
+    padding: 13px 0;
+    font-size: 1.13rem;
+    font-weight: 700;
     width: 100%;
     margin-top: 10px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 8px rgba(56, 182, 165, 0.07);
+    cursor: pointer;
     transition: background 0.2s;
   }
   
-  button[type="submit"]:hover {
-    background: linear-gradient(90deg, #38b6ff 60%, #4f8cff 100%);
-  }
-  
-  .cadastro-button {
-    background-color: #4A4E69;
-    color: white;
-  }
-  
+  button[type="submit"]:hover,
   .cadastro-button:hover {
-    background-color: #9A8C98;
+    background: linear-gradient(90deg, #4f8cff 60%, #38b6a5 100%) !important;
   }
   
   .voltar-button {
-    background: linear-gradient(90deg, #4f8cff 60%, #38b6ff 100%);
+    background: linear-gradient(90deg, #38b6a5 60%, #4f8cff 100%) !important;
     color: #fff;
-    margin-top: 10px;
     border: none;
-    border-radius: 6px;
-    padding: 10px 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
+    border-radius: 10px;
+    padding: 13px 0;
+    font-size: 1.13rem;
+    font-weight: 700;
     width: 100%;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 8px rgba(56, 182, 165, 0.07);
+    cursor: pointer;
     transition: background 0.2s;
   }
   
   .voltar-button:hover {
-    background: linear-gradient(90deg, #38b6ff 60%, #4f8cff 100%);
+    background: linear-gradient(90deg, #4f8cff 60%, #38b6a5 100%) !important;
   }
   
   .signup-link {

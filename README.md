@@ -24,7 +24,7 @@ Este projeto é o front-end de um sistema de acompanhamento de bem-estar corpora
    ```bash
    ng serve
    ```
-   Acesse em [http://localhost:4200](http://localhost:4200)
+   Acesse em [https://front-tccc.vercel.app/](https://front-tccc.vercel.app/)
 
 ## Estrutura de pastas
 - `src/app/` — componentes, serviços e módulos principais

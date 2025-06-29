@@ -1,31 +1,27 @@
 <div class="sidebar open">
   <div class="sidebar-header">
-    <h1 class="sidebar-title">CalmaMente</h1>
-  </div>
-  <div class="sidebar-user" *ngIf="isLoggedIn && userName">
-    <span class="profile-icon">👤</span>
-    <span class="sidebar-user-name">{{ userName }}</span>
+    <img src="assets/favicon.png" alt="Logo CalmaMente" class="sidebar-logo" />
+    <span class="sidebar-title">CalmaMente</span>
   </div>
   <ul>
-    <li><a routerLink="/home"><span class="sidebar-menu-icon material-icons">home</span> Início</a></li>
     <li><a routerLink="/diario"><span class="sidebar-menu-icon material-icons">menu_book</span> Diário</a></li>
-    <li><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">school</span> Conteúdo Educacional</a></li>
+    <li><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">layers</span> Conteúdos</a></li>
     <li *ngIf="isAdmin"><a routerLink="/dashboard"><span class="sidebar-menu-icon material-icons">bar_chart</span> Dashboard</a></li>
+    <li><a href="#" (click)="showComingSoon(); $event.preventDefault()"><span class="sidebar-menu-icon material-icons">group</span> Usuários</a></li>
     <li *ngIf="!isLoggedIn"><a routerLink="/login"><span class="sidebar-menu-icon material-icons">login</span> Login</a></li>
   </ul>
   <div class="sidebar-footer">
-    <a
-      *ngIf="isLoggedIn"
-      routerLink="/cadastro"
-      (click)="preencherCadastroComUsuarioLogado()"
-      class="profile-link"
-    >
-      <span class="profile-icon material-icons">person</span> Meu Perfil
-    </a>
-    <button *ngIf="isLoggedIn" class="logout-button" (click)="logout()">
-      Sair
-    </button>
-    <div class="sidebar-copyright">© 2025 CalmaMente</div>
+    <div *ngIf="isLoggedIn" class="sidebar-profile-block sidebar-profile-card">
+      <div class="sidebar-avatar">
+        <span class="material-icons">person</span>
+      </div>
+      <div class="sidebar-profile-info">
+        <div class="sidebar-profile-name">{{ userName }}</div>
+        <div class="sidebar-profile-email" style="font-size: 0.8em; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ userEmail || 'email@...' }}</div>
+      </div>
+      <button class="sidebar-logout-btn material-icons" (click)="logout()" title="Sair">logout</button>
+    </div>
+    <!-- <div class="sidebar-copyright">© 2025 CalmaMente</div> -->
   </div>
 </div>
 <main class="sidebar-opened">

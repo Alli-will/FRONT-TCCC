@@ -25,8 +25,8 @@ import { Component } from '@angular/core';
       gap: 18px;
     }
     .loading-logo {
-      width: 64px;
-      height: 64px;
+      width: 90px;
+      height: 90px;
       margin-bottom: 0;
       border-radius: 0;
       object-fit: contain;
@@ -36,7 +36,7 @@ import { Component } from '@angular/core';
     }
     .loading-spinner {
       border: 6px solid #eee;
-      border-top: 6px solid #2196f3;
+      border-top: 6px solid #38b6a5; 
       border-radius: 50%;
       width: 48px;
       height: 48px;
@@ -50,7 +50,7 @@ import { Component } from '@angular/core';
       100% { transform: rotate(360deg);}
     }
     span {
-      color: #2196f3;
+      color: #38b6a5;
       font-weight: 600;
       font-size: 1.1rem;
       margin-top: 0;

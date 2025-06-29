@@ -8,12 +8,13 @@ import { DetalheModalComponent } from '../shared/detalhe-modal.component';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
 import { EssThermometerComponent } from '../ess-thermometer/ess-thermometer.component';
+import { LoadingIndicatorComponent } from '../loading-indicator.component';
 
 
 @Component({
   selector: 'app-diario',
   standalone: true,
-  imports: [MenuComponent, CommonModule, FormsModule, DetalheModalComponent, NgChartsModule, EssThermometerComponent],
+  imports: [MenuComponent, CommonModule, FormsModule, NgChartsModule, LoadingIndicatorComponent, DetalheModalComponent],
   templateUrl: './diario.component.html',
   styleUrls: ['./diario.component.css'],
 })
@@ -27,11 +28,12 @@ export class DiarioComponent implements OnInit {
     const dia = String(hoje.getDate()).padStart(2, '0');
     return `${ano}-${mes}-${dia}`;
   })();
-  emocao: string = '';
+  emocao: number | null = null;
   descricao: string = '';
   pesquisa: string = '';
   entradas: any[] = [];
   ess: number = 0; // Valor inicial do ESS, pode ser dinâmico depois
+  isLoading: boolean = true;
 
   reasons = [
     { id: 1, nome: 'Trabalho' },
@@ -44,7 +46,34 @@ export class DiarioComponent implements OnInit {
     { id: 8, nome: 'Outro' },
     // Adicione aqui os motivos reais do seu seed
   ];
+  modalRazaoAberto = false;
   reasonIdSelecionado: number | null = null;
+
+  abrirModalRazao() {
+    if (!this.emocao) {
+      alert('Por favor, selecione um emoji para o seu sentimento.');
+      return;
+    }
+    if (!this.descricao || this.descricao.trim().length < 1) {
+      alert('Por favor, preencha a descrição do seu sentimento.');
+      return;
+    }
+    this.modalRazaoAberto = true;
+    this.reasonIdSelecionado = null;
+  }
+
+  fecharModalRazao() {
+    this.modalRazaoAberto = false;
+  }
+
+  selecionarRazao(id: number) {
+    this.reasonIdSelecionado = id;
+  }
+
+  confirmarRazao() {
+    this.modalRazaoAberto = false;
+    this.onSubmit(); 
+  }
 
   ansiedadeLareais = [
     {
@@ -98,9 +127,16 @@ export class DiarioComponent implements OnInit {
       tooltip: {
         callbacks: {
           title: (items) => {
-            // Mostra a data no tooltip
-            if (items.length > 0) {
-              return items[0].label || '';
+            // Mostra a data no tooltip no formato brasileiro
+            if (items.length > 0 && items[0].label) {
+              const partes = items[0].label.split('-');
+              if (partes.length === 3) {
+                // formato AAAA-MM-DD
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+              } else if (partes.length === 1 && items[0].label.length === 4) {
+                // formato apenas ano
+                return items[0].label;
+              }
             }
             return '';
           },
@@ -114,7 +150,25 @@ export class DiarioComponent implements OnInit {
     scales: {
       x: {
         ticks: {
-          display: false, // Esconde as datas do eixo X
+          callback: function(value, index, values) {
+            let label = value;
+            if (typeof this.getLabelForValue === 'function') {
+              label = this.getLabelForValue(Number(value));
+            }
+            if (typeof label === 'string' && label.includes('-')) {
+              const partes = label.split('-');
+              if (partes.length === 3) {
+                // formato AAAA-MM-DD
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+              } else if (partes.length === 1 && label.length === 4) {
+                // formato apenas ano
+                return label;
+              }
+            }
+            // Se não for data, retorna o label original
+            return label;
+          },
+          display: true,
         },
       },
       y: {
@@ -131,22 +185,52 @@ export class DiarioComponent implements OnInit {
 
   // Mapa de cores fixas para cada emoção
   private corEmocao: { [emocao: string]: string } = {
-    'triste': '#2196f3',      // azul
-    'frustrado': '#f44336',  // vermelho
-    'neutro': '#9e9e9e',     // cinza
-    'tranquilo': '#4caf50',  // verde
-    'realizado': '#ffd600',  // amarelo
-    'Sem emoção': '#bdbdbd'  // cinza claro
+    'Muito mal': '#2196f3',      // azul (triste)
+    'Mal': '#f44336',            // vermelho (frustrado)
+    'Neutro': '#9e9e9e',         // cinza
+    'Bem': '#4caf50',            // verde (tranquilo)
+    'Muito bem': '#ffd600',      // amarelo (realizado)
+    'Sem emoção': '#bdbdbd'      // cinza claro
   };
 
   private diarioRespondidoHoje = false;
 
+  // Novas propriedades para o dashboard emocional
+  scorePercent: number = 0;
+  mediaPeriodo: number = 0;
+  melhorDia: number = 0;
+  lineChartData: any[] = [{ data: [], label: 'Humor diário', fill: false, borderColor: '#38b6a5', tension: 0.3 }];
+  lineChartLabels: string[] = [];
+  lineChartOptions: any = {
+    responsive: true,
+    spanGaps: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true }
+    },
+    scales: {
+      y: { min: 1, max: 5, ticks: { stepSize: 1 }, title: { display: true, text: 'Humor (1 = muito mal, 5 = muito bem)' } }
+    }
+  };
+  lineChartType: any = 'line';
+
+  private emocaoMap: { [key: number]: string } = {
+    1: 'Muito mal',
+    2: 'Mal',
+    3: 'Neutro',
+    4: 'Bem',
+    5: 'Muito bem',
+  };
+
   constructor(private diaryService: DiaryService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    this.isLoading = true;
     const preload = this.route.snapshot.data['preload'];
     if (preload) {
       this.ess = preload.ess.ess ?? 0;
+      this.scorePercent = preload.ess.ess ?? 0;
+      this.isLoading = false;
       this.barChartData = {
         labels: preload.grafico.labels,
         datasets: preload.grafico.datasets.map((ds: any) => ({
@@ -168,15 +252,21 @@ export class DiarioComponent implements OnInit {
           this.diarioRespondidoHoje = false;
         }
       });
-      // Busca o ESS individual do usuário
+      // Busca o ESS individual do usuário e usa para o scorePercent
       this.diaryService.getUserEss(token).subscribe({
         next: (res) => {
           this.ess = res.ess ?? 0;
+          this.scorePercent = res.ess ?? 0;
+          this.isLoading = false;
         },
         error: () => {
           this.ess = 0;
+          this.scorePercent = 0;
+          this.isLoading = false;
         }
       });
+    } else {
+      this.isLoading = false;
     }
     // Garantir que o array reasons esteja inicializado corretamente
     this.reasons = [
@@ -195,12 +285,13 @@ export class DiarioComponent implements OnInit {
     this.carregarEntradas();
     this.carregarInsights();
     this.carregarGrafico();
+    // Não chama mais carregarDashboardEmocional para não sobrescrever scorePercent
   }
 
   onSubmit(): void {
     const novaEntrada = {
       date: this.data,
-      emotion: this.emocao,
+      emotion: this.emocao ? this.emocaoMap[this.emocao] : '',
       description: this.descricao,
       reasonIds: this.reasonIdSelecionado ? [this.reasonIdSelecionado] : [],
     };
@@ -223,8 +314,14 @@ export class DiarioComponent implements OnInit {
         this.carregarEntradas();
         // Atualiza ESS e gráfico imediatamente após nova entrada
         this.diaryService.getUserEss(token).subscribe({
-          next: (res) => { this.ess = res.ess ?? 0; },
-          error: () => { this.ess = 0; }
+          next: (res) => {
+            this.ess = res.ess ?? 0;
+            this.scorePercent = res.ess ?? 0;
+          },
+          error: () => {
+            this.ess = 0;
+            this.scorePercent = 0;
+          }
         });
         this.carregarGrafico();
         this.resetarFormulario();
@@ -284,6 +381,26 @@ export class DiarioComponent implements OnInit {
     if (!token) return;
     this.diaryService.getDiaryGraphData(token, this.filtroGrafico).subscribe({
       next: (data: any) => {
+        // Filtra apenas datas que têm valor (diário registrado)
+        const filteredLabels: string[] = [];
+        const filteredLineData: any[] = [];
+        const labels = data.lineLabels || data.labels;
+        const lineData = data.lineData || [];
+        labels.forEach((label: string, idx: number) => {
+          if (lineData[idx] != null) {
+            filteredLabels.push(label);
+            filteredLineData.push(lineData[idx]);
+          }
+        });
+        this.lineChartLabels = filteredLabels;
+        this.lineChartData = [{
+          data: filteredLineData,
+          label: 'Humor diário',
+          fill: false,
+          borderColor: '#38b6a5',
+          tension: 0.3
+        }];
+        // Preenche o gráfico de barras (quantidade por emoção)
         this.barChartData = {
           labels: data.labels,
           datasets: data.datasets.map((ds: any) => ({
@@ -293,9 +410,14 @@ export class DiarioComponent implements OnInit {
             borderWidth: 1,
           }))
         };
+        // Atualiza média e melhor dia
+        this.mediaPeriodo = data.mediaPeriodo || 0;
+        this.melhorDia = data.melhorDia || 0;
       },
       error: () => {
         this.barChartData = { labels: [], datasets: [] };
+        this.lineChartLabels = [];
+        this.lineChartData = [];
       }
     });
   }
@@ -312,7 +434,7 @@ export class DiarioComponent implements OnInit {
     const mes = String(hoje.getMonth() + 1).padStart(2, '0');
     const dia = String(hoje.getDate()).padStart(2, '0');
     this.data = `${ano}-${mes}-${dia}`;
-    this.emocao = '';
+    this.emocao = null;
     this.descricao = '';
   }
 
@@ -335,5 +457,62 @@ export class DiarioComponent implements OnInit {
 
   fecharDetalhe() {
     this.detalheSelecionado = null;
+  }
+
+  getScoreColor(nota?: number): string {
+    if (typeof nota === 'number') {
+      if (nota >= 4.5) return '#009e7f'; // verde escuro
+      if (nota >= 3.5) return '#38b6a5'; // verde
+      if (nota >= 2.5) return '#fbc02d'; // amarelo
+      return '#e74c3c'; // vermelho
+    }
+    // fallback para scorePercent
+    if (this.scorePercent >= 80) {
+      return '#38b6a5'; // verde
+    } else if (this.scorePercent >= 60) {
+      return '#fbc02d'; // amarelo
+    } else {
+      return '#ff7043'; // laranja
+    }
+  }
+
+  getScoreLabel(): string {
+    if (this.scorePercent >= 80) {
+      return 'Bom';
+    } else if (this.scorePercent >= 60) {
+      return 'Atenção';
+    } else {
+      return 'Crítica';
+    }
+  }
+
+  getScoreDesc(): string {
+    if (this.scorePercent >= 80) {
+      return 'Sua saúde emocional está bem!';
+    } else if (this.scorePercent >= 60) {
+      return 'Fique atento à sua saúde emocional.';
+    } else {
+      return 'Sua saúde emocional precisa de cuidado.';
+    }
+  }
+
+  getScoreDescBg(): string {
+    if (this.scorePercent >= 80) {
+      return '#e6f9f3'; // verde claro
+    } else if (this.scorePercent >= 60) {
+      return '#fff8e1'; // amarelo claro
+    } else {
+      return '#fff3e6'; // laranja claro
+    }
+  }
+
+  getScoreDescColor(): string {
+    if (this.scorePercent >= 80) {
+      return '#38b6a5';
+    } else if (this.scorePercent >= 60) {
+      return '#fbc02d';
+    } else {
+      return '#ff7043';
+    }
   }
 }

@@ -61,23 +61,26 @@ input[type="password"]:focus {
   outline: none;
 }
 
-button[type="submit"] {
-  background: linear-gradient(90deg, #4f8cff 60%, #38b6ff 100%);
+button[type="submit"],
+.login-button.submit-btn {
+  background: linear-gradient(90deg, #38b6a5 60%, #4f8cff 100%);
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 10px 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
+  border-radius: 10px;
+  padding: 13px 0;
+  font-size: 1.13rem;
+  font-weight: 700;
   width: 100%;
   margin-top: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(56, 182, 165, 0.07);
+  cursor: pointer;
   transition: background 0.2s;
 }
 
-button[type="submit"]:hover {
-  background: linear-gradient(90deg, #38b6ff 60%, #4f8cff 100%);
+button[type="submit"]:hover,
+.login-button.submit-btn:hover {
+  background: linear-gradient(90deg, #4f8cff 60%, #38b6a5 100%);
 }
 
 .signup-link {
