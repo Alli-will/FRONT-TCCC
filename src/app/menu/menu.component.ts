@@ -1,20 +1,20 @@
 import { Component, OnInit } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { NgIf } from "@angular/common";
+import { NgIf, NgClass } from "@angular/common";
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/user.service";
 
 @Component({
   selector: "app-menu",
   standalone: true,
-  imports: [RouterLink, NgIf],
+  imports: [RouterLink, NgIf, NgClass],
   templateUrl: "./menu.component.html",
   styleUrls: ["./menu.component.css"],
 })
 export class MenuComponent implements OnInit {
   isLoggedIn = false;
   dropdownOpen: boolean = false;
-  sidebarOpen: boolean = true; // Sidebar sempre expandido
+  sidebarOpen: boolean = window.innerWidth > 900; // Sidebar sempre expandido em telas grandes
   userName: string | null = null;
   userEmail: string | null = null;
   isAdmin = false;
@@ -25,6 +25,9 @@ export class MenuComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    window.addEventListener('resize', () => {
+      this.sidebarOpen = window.innerWidth > 900;
+    });
     this.authService.currentUser.subscribe((token) => {
       this.isLoggedIn = !!token;
       if (token) {
@@ -68,5 +71,13 @@ export class MenuComponent implements OnInit {
 
   showComingSoon() {
     alert('Em breve!');
+  }
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  get isMobileScreen(): boolean {
+    return window.innerWidth <= 900;
   }
 }

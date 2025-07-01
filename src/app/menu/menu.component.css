@@ -100,6 +100,44 @@ nav ul li a {
   left: 0;
 }
 
+@media (max-width: 900px) {
+  .sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  main.sidebar-opened {
+    margin-left: 0 !important;
+    margin-top: 60px !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  main {
+    margin-top: 60px !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  .hamburger-btn {
+    display: flex;
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 3000; /* valor maior para garantir sobreposição */
+  }
+}
+
 main {
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   margin-left: 0;
@@ -209,8 +247,27 @@ main.sidebar-opened {
   cursor: pointer;
   z-index: 1300;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  display: none;
 }
 
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: flex;
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 2100;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}
 
 header nav {
   display: none;
@@ -347,6 +404,13 @@ header nav {
 }
 
 
+html, body, app-root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
+  box-sizing: border-box;
+}
+
 body, html, app-root, .main-content, .page-content, main.sidebar-opened {
   margin: 0;
   padding: 0;
@@ -365,4 +429,108 @@ header, .title-bar {
 
 main.sidebar-opened {
   margin-top: 0 !important;
+}
+
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: #fff;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+  transition: transform 0.3s ease;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  main.sidebar-opened {
+    margin-left: 0 !important;
+    margin-top: 60px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  main {
+    margin-top: 60px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  .dashboard-container,
+  .diary-container,
+  .dashboard-main,
+  .diary-main,
+  main,
+  main.sidebar-opened {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 2vw !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+  .dashboard-header-row,
+  .dashboard-header-row.stretch-ess {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .score-circle-svg,
+  .score-circle-svg svg {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+  }
+}
+
+.hamburger-btn {
+  position: fixed !important;
+  top: 16px !important;
+  left: 16px !important;
+  z-index: 3000 !important;
+  background: none;
+  border: none;
+  padding: 8px;
+  margin: 0;
+  box-shadow: none;
+  display: flex !important;
+  align-items: center;
+}
+.hamburger-btn svg {
+  color: #2ec4b6;
+  width: 32px;
+  height: 32px;
+}
+
+@media (max-width: 600px) {
+  .hamburger-btn {
+    top: 8px !important;
+    left: 8px !important;
+    padding: 4px !important;
+  }
 }

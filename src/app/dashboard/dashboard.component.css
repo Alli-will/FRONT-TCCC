@@ -389,6 +389,39 @@
   }
 }
 
+@media (max-width: 900px) {
+  .dashboard-container {
+    margin-left: 0 !important;
+    flex-direction: column;
+    padding: 0 0.5rem;
+  }
+  .dashboard-main {
+    padding: 1rem 0.2rem 1rem 0.2rem;
+    max-width: 100vw;
+    min-width: 0;
+  }
+  .dashboard-header-row,
+  .dashboard-header-row.stretch-ess {
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: stretch;
+  }
+  .stretch-ess app-ess-thermometer .card {
+    min-width: 0;
+    max-width: 100vw;
+    width: 100%;
+  }
+  .stretch-ess app-ess-thermometer {
+    min-width: 0;
+    max-width: 100vw;
+    width: 100%;
+  }
+  .score-circle-svg svg {
+    width: 100px !important;
+    height: 100px !important;
+  }
+}
+
 .metricas-col .metrica-card:last-child {
   margin-top: 1.0rem;
 }

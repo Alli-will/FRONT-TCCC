@@ -199,7 +199,7 @@ export class DiarioComponent implements OnInit {
   scorePercent: number = 0;
   mediaPeriodo: number = 0;
   melhorDia: number = 0;
-  lineChartData: any[] = [{ data: [], label: 'Humor diário', fill: false, borderColor: '#38b6a5', tension: 0.3 }];
+  lineChartData: any[] = [];
   lineChartLabels: string[] = [];
   lineChartOptions: any = {
     responsive: true,
@@ -209,7 +209,7 @@ export class DiarioComponent implements OnInit {
       tooltip: { enabled: true }
     },
     scales: {
-      y: { min: 1, max: 5, ticks: { stepSize: 1 }, title: { display: true, text: 'Humor (1 = muito mal, 5 = muito bem)' } }
+      y: { min: 1, max: 5, ticks: { stepSize: 1 }, title: { display: true, text: '' } }
     }
   };
   lineChartType: any = 'line';

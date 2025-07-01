@@ -12,45 +12,7 @@
     </div>
     <div class="container diary-dashboard">
       <div class="diary-main-layout">
-        <div class="diary-side-cards">
-          <div class="diary-card score-card">
-            <div class="score-title">
-              <strong>Score emocional</strong>
-              <div class="score-sub">Últimos 30 dias</div>
-            </div>
-            <div class="score-circle-svg">
-              <svg width="170" height="170">
-                <circle
-                  cx="85"
-                  cy="85"
-                  r="76"
-                  stroke="#eaf6ff"
-                  stroke-width="16"
-                  fill="none"
-                />
-                <circle
-                  cx="85"
-                  cy="85"
-                  r="76"
-                  [attr.stroke]="getScoreColor()"
-                  stroke-width="16"
-                  fill="none"
-                  [attr.stroke-dasharray]="477.52"
-                  [attr.stroke-dashoffset]="477.52 - (scorePercent / 100) * 477.52"
-                  stroke-linecap="round"
-                  style="transition: stroke-dashoffset 0.6s;"
-                  transform="rotate(-90 85 85)"
-                />
-              </svg>
-              <div class="score-center">
-                <span class="score-value">{{ scorePercent }}%</span>
-                <span class="score-label" [style.color]="getScoreColor()">{{ getScoreLabel() }}</span>
-              </div>
-            </div>
-            <div class="score-desc" [style.background]="getScoreDescBg()" [style.color]="getScoreDescColor()">{{ getScoreDesc() }}</div>
-          </div>
-        </div>
-        <div class="diary-form-graph-wrapper">
+        <div class="diary-top-cards">
           <div class="diary-card diary-form-card">
             <div class="emotion-scale">
               <button
@@ -118,11 +80,11 @@
               <div class="scale-desc">Escala de bem-estar emocional</div>
             </div>
             <label class="share-more-label"
-              >Gostaria de compartilhar algo mais?</label
+              >Compartilhe algo mais!</label
             >
             <textarea
               class="diary-textarea"
-              placeholder="Gostaria de compartilhar algo sobre como está se sentindo ou o que está acontecendo?"
+              placeholder="Compartilhe algo sobre como está se sentindo ou o que está acontecendo?"
               [(ngModel)]="descricao"
               name="descricao"
             ></textarea>
@@ -134,39 +96,73 @@
               do bem-estar de todos.
             </div>
           </div>
-          <div class="diary-card chart-card">
-            <div class="chart-title">
-              Evolução emocional
-              <span class="chart-sub">Últimos 30 dias</span>
+          <div class="diary-card score-card">
+            <div class="score-title">
+              <strong>Score emocional</strong>
+              <div class="score-sub">Últimos 30 dias</div>
             </div>
-            <div class="grafico-linha-grande">
-              <canvas
-                baseChart
-                [datasets]="lineChartData"
-                [labels]="lineChartLabels"
-                [options]="lineChartOptions"
-                [legend]="false"
-                [type]="lineChartType"
-              >
-              </canvas>
+            <div class="score-circle-svg">
+              <svg width="170" height="170">
+                <circle
+                  cx="85"
+                  cy="85"
+                  r="76"
+                  stroke="#eaf6ff"
+                  stroke-width="16"
+                  fill="none"
+                />
+                <circle
+                  cx="85"
+                  cy="85"
+                  r="76"
+                  [attr.stroke]="getScoreColor()"
+                  stroke-width="16"
+                  fill="none"
+                  [attr.stroke-dasharray]="477.52"
+                  [attr.stroke-dashoffset]="477.52 - (scorePercent / 100) * 477.52"
+                  stroke-linecap="round"
+                  style="transition: stroke-dashoffset 0.6s;"
+                  transform="rotate(-90 85 85)"
+                />
+              </svg>
+              <div class="score-center">
+                <span class="score-value">{{ scorePercent }}%</span>
+                <span class="score-label" [style.color]="getScoreColor()">{{ getScoreLabel() }}</span>
+              </div>
             </div>
-            <div class="chart-footer">
-              <span>
-                Média do período
-                <b [style.color]="getScoreColor(mediaPeriodo)">{{ mediaPeriodo }}/5</b>
-              </span>
-              <span>
-                Melhor dia
-                <b [style.color]="getScoreColor(melhorDia)">{{ melhorDia }}/5</b>
-              </span>
-            </div>
+            <div class="score-desc" [style.background]="getScoreDescBg()" [style.color]="getScoreDescColor()">{{ getScoreDesc() }}</div>
+          </div>
+        </div>
+        <div class="diary-card chart-card">
+          <div class="chart-title">
+            Evolução emocional
+            <span class="chart-sub">Últimos 30 dias</span>
+          </div>
+          <div class="grafico-linha-grande">
+            <canvas
+              baseChart
+              [datasets]="lineChartData"
+              [labels]="lineChartLabels"
+              [options]="lineChartOptions"
+              [legend]="false"
+              [type]="lineChartType"
+            >
+            </canvas>
+          </div>
+          <div class="chart-footer">
+            <span>
+              Média do período
+              <b [style.color]="getScoreColor(mediaPeriodo)">{{ mediaPeriodo }}/5</b>
+            </span>
+            <span>
+              Melhor dia
+              <b [style.color]="getScoreColor(melhorDia)">{{ melhorDia }}/5</b>
+            </span>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <!-- Comentários adicionados para facilitar manutenção e acessibilidade -->
-
   <!-- Modal de seleção de razão do sentimento -->
   <app-detalhe-modal *ngIf="modalRazaoAberto" [detalhe]="{
     titulo: 'Selecione o motivo do seu sentimento',
