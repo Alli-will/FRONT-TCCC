@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MenuComponent } from "../menu/menu.component";
 import { FormsModule } from "@angular/forms";
@@ -13,7 +13,10 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.css"],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
+  @ViewChild('chatContainer') chatContainerRef!: ElementRef<HTMLDivElement>;
+  mensagensChat: { tipo: 'ia' | 'user', texto: string }[] = [];
+  mensagemUsuario: string = '';
   colaboradores: any[] = [];
   departamentos: any[] = [];
   colaboradoresEmRisco: any[] = [];
@@ -27,15 +30,47 @@ export class DashboardComponent implements OnInit {
     totalRespostasDiario: 0,
   };
   essGeral: number = 0;
-  showIA: boolean = true;
-  iaMensagem: string =
-    "Olá! Sou sua assistente de IA para análise de bem-estar dos colaboradores. Posso ajudar você a identificar riscos psicossociais, analisar tendências emocionais e sugerir ações para melhorar o clima da equipe.";
+  showIA: boolean = false;
+  iaMensagem: string = "Olá! Sou sua assistente de IA para análise de bem-estar dos colaboradores. Posso ajudar você a identificar riscos psicossociais, analisar tendências emocionais e sugerir ações para melhorar o clima da equipe.";
   busca: string = "";
   resultadosBusca: any[] = [];
   emotionPercentages: any[] = [];
   loadingEmotions = false;
 
-  constructor(private dashboardService: DashboardService, private route: ActivatedRoute) {}
+
+  constructor(private dashboardService: DashboardService, private route: ActivatedRoute) {
+    this.iaMensagem = "Olá! Sou sua assistente de IA para análise de bem-estar dos colaboradores. Posso ajudar você a identificar riscos psicossociais, analisar tendências emocionais e sugerir ações para melhorar o clima da equipe.";
+    this.mensagensChat = [
+      { tipo: 'ia', texto: this.iaMensagem }
+    ];
+  }
+
+
+  enviarMensagem() {
+    const texto = this.mensagemUsuario.trim();
+    if (!texto) return;
+    this.mensagensChat.push({ tipo: 'user', texto });
+    this.mensagemUsuario = '';
+    setTimeout(() => {
+      this.mensagensChat.push({ tipo: 'ia', texto: 'No momento não estou Disponivel mas em breve estarei!' });
+      setTimeout(() => this.scrollChatToBottom(), 10);
+    }, 500);
+    setTimeout(() => {
+      this.scrollChatToBottom();
+    }, 10);
+  }
+
+  ngAfterViewInit() {
+    this.scrollChatToBottom();
+  }
+
+  private scrollChatToBottom() {
+    try {
+      if (this.chatContainerRef && this.chatContainerRef.nativeElement) {
+        this.chatContainerRef.nativeElement.scrollTop = this.chatContainerRef.nativeElement.scrollHeight;
+      }
+    } catch (err) {}
+  }
 
   ngOnInit() {
     const preload = this.route.snapshot.data['preload'];
@@ -87,51 +122,18 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  buscarColaborador() {
-    const termo = this.busca.trim().toLowerCase();
-    if (!termo) {
-      this.resultadosBusca = [];
-      return;
-    }
-    this.resultadosBusca = this.colaboradores.filter(
-      (c) =>
-        c.nome.toLowerCase().includes(termo) ||
-        c.departamento.toLowerCase().includes(termo)
-    );
-  }
-
-  // Simulação de ações recomendadas pela IA
-  get acoesRecomendadas() {
-    const acoes: { texto: string; cor: string }[] = [];
-    // Conversa urgente e apoio psicológico para colaboradores em alto risco
-    this.colaboradoresEmRisco.forEach(c => {
-      acoes.push({
-        texto: `Conversa urgente com ${c.nome}`,
-        cor: '#F44336',
-      });
-      acoes.push({
-        texto: `Oferecer apoio psicológico para ${c.nome}`,
-        cor: '#2196F3',
-      });
-    });
-    // Ações comportamentais para departamentos com média baixa
-    this.departamentos.forEach(dep => {
-      if (dep.mediaBemEstar < 6) {
-        acoes.push({
-          texto: `Promover roda de conversa no departamento ${dep.nome}`,
-          cor: '#FF9800',
-        });
-        acoes.push({
-          texto: `Oferecer palestra sobre bem-estar emocional para o departamento ${dep.nome}`,
-          cor: '#9C27B0',
-        });
-      }
-    });
-    if (acoes.length === 0) {
-      acoes.push({ texto: 'Nenhuma ação urgente recomendada no momento.', cor: '#4CAF50' });
-    }
-    return acoes;
-  }
+  // buscarColaborador() {
+  //   const termo = this.busca.trim().toLowerCase();
+  //   if (!termo) {
+  //     this.resultadosBusca = [];
+  //     return;
+  //   }
+  //   this.resultadosBusca = this.colaboradores.filter(
+  //     (c) =>
+  //       c.nome.toLowerCase().includes(termo) ||
+  //       c.departamento.toLowerCase().includes(termo)
+  //   );
+  // }
 
   getEmotionColor(key: string): string {
     switch (key) {

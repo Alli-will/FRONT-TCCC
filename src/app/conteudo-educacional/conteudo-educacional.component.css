@@ -57,18 +57,22 @@
   font-weight: 500;
 }
 .acessar-btn {
-  background: #2196f3;
+  background: linear-gradient(90deg, #38b6a5 60%, #4f8cff 100%);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 0.7rem 1.5rem;
-  font-size: 1.1rem;
-  font-weight: bold;
+  border-radius: 10px;
+  padding: 13px 0;
+  font-size: 1.13rem;
+  font-weight: 700;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(56, 182, 165, 0.07);
   cursor: pointer;
   transition: background 0.2s;
 }
 .acessar-btn:hover {
-  background: #1769aa;
+  background: linear-gradient(90deg, #4f8cff 60%, #38b6a5 100%);
 }
 .modal-bg {
   position: fixed;

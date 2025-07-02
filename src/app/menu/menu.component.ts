@@ -55,14 +55,13 @@ export class MenuComponent implements OnInit {
   preencherCadastroComUsuarioLogado() {
     const payload = this.authService.getUserInfoFromToken();
     if (payload) {
-      // Preenche localStorage diretamente com dados do payload
       localStorage.setItem(
         "cadastroUser",
         JSON.stringify({
           firstName: payload.first_Name || payload.firstName || "",
           lastName: payload.last_Name || payload.lastName || "",
           email: payload.email || "",
-          password: "", // nunca preenche senha
+          password: "", 
           companyId: payload.companyId || 1,
         })
       );

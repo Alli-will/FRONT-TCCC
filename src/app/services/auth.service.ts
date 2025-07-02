@@ -7,7 +7,7 @@ import { tap } from "rxjs/operators";
   providedIn: "root",
 })
 export class AuthService {
-  private apiUrl = "https://tcc-main.up.railway.app/auth";
+  private apiUrl = "http://localhost:3000/auth";
   private currentUserSubject: BehaviorSubject<string | null>;
   public currentUser: Observable<string | null>;
 
@@ -37,7 +37,7 @@ export class AuthService {
       sessionStorage.removeItem("token");
     }
     this.currentUserSubject.next(null);
-    window.location.reload(); // força atualização do estado de autenticação
+    window.location.reload(); 
   }
 
   get currentUserValue(): string | null {

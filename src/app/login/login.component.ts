@@ -39,8 +39,8 @@ export class LoginComponent {
             }
           },
           error: () => {
-            // fallback: vai para dashboard se der erro na verificação
-            this.router.navigate(["/dashboard"]);
+            // fallback
+            this.router.navigate(["/login"]);
           }
         });
       },

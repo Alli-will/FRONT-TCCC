@@ -19,8 +19,7 @@ import { LoadingIndicatorComponent } from '../loading-indicator.component';
   styleUrls: ['./diario.component.css'],
 })
 export class DiarioComponent implements OnInit {
-  // Propriedades para capturar os dados do formulário
-  // Inicializa a data com a data local correta (yyyy-MM-dd)
+
   data: string = (() => {
     const hoje = new Date();
     const ano = hoje.getFullYear();
@@ -32,7 +31,7 @@ export class DiarioComponent implements OnInit {
   descricao: string = '';
   pesquisa: string = '';
   entradas: any[] = [];
-  ess: number = 0; // Valor inicial do ESS, pode ser dinâmico depois
+  ess: number = 0; 
   isLoading: boolean = true;
 
   reasons = [
@@ -44,7 +43,7 @@ export class DiarioComponent implements OnInit {
     { id: 6, nome: 'Financeiro' },
     { id: 7, nome: 'Amizades' },
     { id: 8, nome: 'Outro' },
-    // Adicione aqui os motivos reais do seu seed
+   
   ];
   modalRazaoAberto = false;
   reasonIdSelecionado: number | null = null;
@@ -80,7 +79,7 @@ export class DiarioComponent implements OnInit {
       id: 1,
       titulo: 'Exercícios rápidos para fazer na mesa de trabalho',
       tipo: 'video',
-      conteudo: 'https://www.youtube.com/embed/1nZEdqcGVzo', // Link embed correto
+      conteudo: 'https://www.youtube.com/embed/1nZEdqcGVzo', 
       descricao:
         'Vídeo demonstrando exercícios simples que ajudam a aliviar a tensão e melhorar o bem-estar durante o expediente. Assista e pratique junto!',
       categoria: 'Bem-estar',
@@ -113,7 +112,6 @@ export class DiarioComponent implements OnInit {
   ];
   detalheSelecionado: any = null;
 
-  // Dados para o gráfico de barras
   barChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [],
     datasets: [{ data: [], label: 'Emoções' }],
@@ -195,7 +193,7 @@ export class DiarioComponent implements OnInit {
 
   private diarioRespondidoHoje = false;
 
-  // Novas propriedades para o dashboard emocional
+  // propriedades para o dashboard emocional
   scorePercent: number = 0;
   mediaPeriodo: number = 0;
   melhorDia: number = 0;

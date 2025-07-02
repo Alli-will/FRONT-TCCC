@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
-        setTimeout(() => this.isLoading = false, 400); // pequeno delay para UX
+        setTimeout(() => this.isLoading = false, 400); 
       }
     });
   }

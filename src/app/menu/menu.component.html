@@ -21,7 +21,7 @@
     <li><a routerLink="/diario"><span class="sidebar-menu-icon material-icons">menu_book</span> Diário</a></li>
     <li><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">layers</span> Conteúdos</a></li>
     <li *ngIf="isAdmin"><a routerLink="/dashboard"><span class="sidebar-menu-icon material-icons">bar_chart</span> Dashboard</a></li>
-    <li><a href="#" (click)="showComingSoon(); $event.preventDefault()"><span class="sidebar-menu-icon material-icons">group</span> Usuários</a></li>
+    <li><a routerLink="/usuarios"><span class="sidebar-menu-icon material-icons">group</span> Usuários</a></li>
     <li *ngIf="!isLoggedIn"><a routerLink="/login"><span class="sidebar-menu-icon material-icons">login</span> Login</a></li>
   </ul>
   <div class="sidebar-footer">

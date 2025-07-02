@@ -162,6 +162,7 @@
         </tbody>
       </table>
     </div>
+    <!--
     <div class="colaboradores-section">
       <h3>Colaboradores</h3>
       <input
@@ -184,25 +185,29 @@
         </li>
       </ul>
     </div>
+    -->
   </div>
   <div class="dashboard-ia-panel" *ngIf="showIA">
     <div class="ia-header">
       <span>Assistente de IA</span>
       <button (click)="showIA = false">×</button>
     </div>
-    <div class="ia-mensagem">
-      {{ iaMensagem }}
-    </div>
-    <div class="ia-acoes">
-      <h4>Ações Recomendadas</h4>
-      <ul>
-        <li
-          *ngFor="let acao of acoesRecomendadas"
-          [style.background]="acao.cor"
-        >
-          {{ acao.texto }}
-        </li>
-      </ul>
+    <div class="ia-chat-container">
+      <div class="ia-chat-messages" #chatContainer>
+        <div *ngFor="let msg of mensagensChat" [ngClass]="{'ia-msg': true, 'ia-msg-ia': msg.tipo === 'ia', 'ia-msg-user': msg.tipo === 'user'}">
+          <div [ngClass]="{'ia-avatar': true, 'ia-avatar-user': msg.tipo === 'user'}">
+            <span *ngIf="msg.tipo === 'ia'">🤖</span>
+            <span *ngIf="msg.tipo === 'user'">👤</span>
+          </div>
+          <div [ngClass]="{'ia-msg-bubble': msg.tipo === 'ia', 'ia-msg-bubble-user': msg.tipo === 'user'}">
+            {{ msg.texto }}
+          </div>
+        </div>
+      </div>
+      <form class="ia-chat-input-row" (ngSubmit)="enviarMensagem()">
+        <input class="ia-chat-input" type="text" [(ngModel)]="mensagemUsuario" name="mensagemUsuario" placeholder="Digite sua mensagem..." autocomplete="off" />
+        <button class="ia-chat-send-btn" type="submit" [disabled]="!mensagemUsuario.trim()">Enviar</button>
+      </form>
     </div>
   </div>
   <button class="ia-toggle" *ngIf="!showIA" (click)="showIA = true">

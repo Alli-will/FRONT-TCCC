@@ -7,6 +7,7 @@ import { AuthGuard } from "./auth.guard";
 import { EmBreveGuard } from "./em-breve.guard";
 import { ConteudoEducacionalComponent } from "../conteudo-educacional/conteudo-educacional.component";
 import { DashboardComponent } from "../dashboard/dashboard.component";
+import { UsuariosComponent } from '../usuarios/usuarios.component';
 import { DiaryEntryGuard } from '../services/diary-entry.guard';
 import { DiaryExitGuard } from '../services/diary-exit.guard';
 import { DiarioResolver } from '../diario/diario.resolver';
@@ -27,12 +28,13 @@ export const routes: Routes = [
     component: HistoricoComponent,
     canActivate: [AuthGuard, DiaryEntryGuard],
   },
+  { path: "usuarios", component: UsuariosComponent, canActivate: [AuthGuard] },
   { path: "home", canActivate: [EmBreveGuard], component: LoginComponent },
-  { path: "**", redirectTo: "dashboard" },
   {
     path: "dashboard",
     component: DashboardComponent,
     canActivate: [AuthGuard, DiaryEntryGuard],
     resolve: { preload: DashboardResolver }
   },
+  { path: "**", redirectTo: "dashboard" },
 ];

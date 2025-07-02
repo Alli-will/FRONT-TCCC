@@ -1,0 +1,25 @@
+.usuarios-container {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px #0001;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  margin: 2rem auto;
+  max-width: 700px;
+}
+h2 {
+  color: #38b6a5;
+  margin-bottom: 1.5rem;
+}
+ul {
+  list-style: none;
+  padding: 0;
+}
+li {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+  font-size: 1.1rem;
+}
+li:last-child {
+  border-bottom: none;
+}

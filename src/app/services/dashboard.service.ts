@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  private apiUrl = 'https://tcc-main.up.railway.app/dashboard/metrics'; // ajuste se necessário
+  private apiUrl = 'http://localhost:3000/dashboard/metrics';
 
   constructor(private http: HttpClient) {}
 
@@ -13,10 +13,10 @@ export class DashboardService {
   }
 
   getEssGeral() {
-    return this.http.get<{ ess: number, valores: number[] }>('https://tcc-main.up.railway.app/dashboard/ess-geral');
+    return this.http.get<{ ess: number, valores: number[] }>('http://localhost:3000/dashboard/ess-geral');
   }
 
   getEmotionPercentages(): Observable<any> {
-    return this.http.get<any>('https://tcc-main.up.railway.app/diary/emotion-percentages');
+    return this.http.get<any>('http://localhost:3000/diary/emotion-percentages');
   }
 }

@@ -27,24 +27,22 @@ export class PerfilComponent implements OnInit {
     const payload = this.authService.getUserInfoFromToken();
     if (payload?.email) {
       this.userService.getUserByEmail(payload.email).subscribe((user: any) => {
-        // Ajuste para compatibilizar campos do backend
+        
         this.user = {
           firstName: user.first_Name || user.firstName || "",
           lastName: user.last_Name || user.lastName || "",
           email: user.email || "",
-          // outros campos se necessário
+         
         };
       });
     }
   }
 
   onSubmit() {
-    // Atualizar dados do usuário (implementar endpoint no backend se necessário)
     const userPayload = {
       first_Name: this.user.firstName,
       last_Name: this.user.lastName,
       email: this.user.email,
-      // outros campos se necessário
     };
     this.userService.updateUser(userPayload).subscribe(
       (response) => {

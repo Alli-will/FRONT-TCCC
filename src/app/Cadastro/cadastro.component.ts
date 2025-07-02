@@ -22,7 +22,6 @@ export class CadastroComponent {
   errorMessage: string | null = null;
 
   constructor(private userService: UserService, private router: Router) {
-    // Preenche o formulário se houver dados no localStorage (apenas no browser)
     if (typeof window !== 'undefined' && window.localStorage) {
       const cadastroUser = localStorage.getItem("cadastroUser");
       if (cadastroUser) {
@@ -46,10 +45,10 @@ export class CadastroComponent {
         if (typeof window !== 'undefined') {
           alert("Usuário cadastrado com sucesso!");
         }
-        this.router.navigate(["/login"]); // Redireciona para login
+        this.router.navigate(["/login"]);
       },
       (error) => {
-        // Mostra mensagem detalhada se disponível
+       
         let msg = "Erro ao cadastrar. Tente novamente.";
         if (error?.error?.details) {
           if (Array.isArray(error.error.details)) {
