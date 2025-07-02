@@ -598,6 +598,8 @@
   }
 }
 
+
+/* Ajustes responsivos e centralização para o Score Emocional Geral */
 @media (max-width: 900px) {
   .dashboard-container {
     margin-left: 0 !important;
@@ -613,21 +615,45 @@
   .dashboard-header-row.stretch-ess {
     flex-direction: column;
     gap: 1.2rem;
-    align-items: stretch;
+    align-items: center !important;
+    justify-content: center !important;
   }
-  .stretch-ess app-ess-thermometer .card {
+  .score-card {
+    width: 100%;
+    max-width: 350px;
     min-width: 0;
-    max-width: 100vw;
+    margin: 0 auto 1.2rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+  .score-title, .score-desc {
+    text-align: center;
     width: 100%;
   }
-  .stretch-ess app-ess-thermometer {
-    min-width: 0;
-    max-width: 100vw;
+  .score-circle-svg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
+    margin: 0 auto 0.5rem auto;
   }
   .score-circle-svg svg {
-    width: 100px !important;
-    height: 100px !important;
+    width: 120px !important;
+    height: 120px !important;
+    display: block;
+    margin: 0 auto;
+  }
+  .score-desc {
+    font-size: 1em;
+    padding: 0.5em 0.7em;
+    border-radius: 0.6em;
+    margin-top: 0.5em;
+    margin-bottom: 0.2em;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 
