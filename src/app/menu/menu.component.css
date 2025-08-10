@@ -306,14 +306,48 @@ header nav {
 }
 
 .sidebar-avatar {
-  width: 44px;
-  height: 44px;
+  position: relative;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: #eaf6ff;
+  background: linear-gradient(135deg,#eaf6ff,#d2f1ec);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08), 0 0 0 1px rgba(56,182,165,0.15);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  /* Evita que o avatar achate quando o espaço apertar (nome/email longos) */
+  flex: 0 0 48px;
+  min-width: 48px;
+}
+.sidebar-avatar.tem-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: smooth;
+  transform: translateZ(0);
+  filter: contrast(1.03) saturate(1.05);
+  transition: filter .25s;
+}
+.sidebar-avatar.tem-avatar:hover img { filter: contrast(1.08) saturate(1.1); }
+.sidebar-avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(56,182,165,0.25), 0 0 0 2px rgba(255,255,255,0.6);
+  mix-blend-mode: normal;
+}
+.sidebar-avatar:not(.tem-avatar) {
+  font-size: 1.9rem;
+  color: #38b6a5;
 }
 .sidebar-avatar .material-icons {
   color: #38b6a5;
@@ -332,9 +366,11 @@ header nav {
   color: #23213a;
   font-weight: 500;
   line-height: 1.1;
+  /* Permite truncar corretamente dentro do flex sem empurrar avatar */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 140px; /* Aumenta espaço para nomes maiores, ajuste se precisar */
 }
 
 .sidebar-profile-email {

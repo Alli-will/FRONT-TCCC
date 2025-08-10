@@ -7,7 +7,7 @@ import { tap } from "rxjs/operators";
   providedIn: "root",
 })
 export class AuthService {
-  private apiUrl = "https://tcc-main.up.railway.app/auth";
+  private apiUrl = "http://localhost:3000/auth";
   private currentUserSubject: BehaviorSubject<string | null>;
   public currentUser: Observable<string | null>;
 
@@ -58,5 +58,15 @@ export class AuthService {
     } catch (e) {
       return null;
     }
+  }
+
+  isAdmin(): boolean {
+    const info = this.getUserInfoFromToken();
+    return info?.role === 'admin';
+  }
+
+  isSupport(): boolean {
+    const info = this.getUserInfoFromToken();
+    return info?.role === 'support';
   }
 }

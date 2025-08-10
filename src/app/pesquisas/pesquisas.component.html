@@ -1,0 +1,43 @@
+<app-menu></app-menu>
+<div class="pesquisas-page">
+  <div class="header-row">
+    <h2></h2>
+    <div class="tabs">
+      <button (click)="modo='listar'" [class.ativo]="modo==='listar'">Pesquisas</button>
+      <button *ngIf="isAdmin" (click)="modo='cadastrar'" [class.ativo]="modo==='cadastrar'">Nova Pesquisa</button>
+    </div>
+  </div>
+
+  <div class="content-grid" *ngIf="modo==='listar'">
+    <div class="card full">
+      <h3 class="card-title">Pesquisas Disponíveis</h3>
+      <div *ngIf="erro" class="alert erro">{{ erro }}</div>
+      <ul class="lista" *ngIf="pesquisas.length">
+        <li *ngFor="let pesquisa of pesquisas">
+          <div class="item">
+            <div class="info">
+              <span class="titulo">{{ pesquisa.titulo }}</span>
+              <span class="tag" [class.pulso]="pesquisa.tipo==='pulso'" [class.clima]="pesquisa.tipo==='clima'">{{ pesquisa.tipo }}</span>
+            </div>
+            <div class="meta">
+              <a class="responder-link" [routerLink]="['/responder-pesquisa', pesquisa.id]">Responder</a>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class="empty" *ngIf="!pesquisas.length && !erro">Nenhuma pesquisa Disponível no momento.</div>
+
+      <div class="paginacao" *ngIf="totalPages > 1">
+        <button (click)="mudarPagina(-1)" [disabled]="page===1">«</button>
+        <span>Página {{ page }} de {{ totalPages }}</span>
+        <button (click)="mudarPagina(1)" [disabled]="page===totalPages">»</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-grid" *ngIf="modo==='cadastrar' && isAdmin">
+    <div class="card form-card">
+      <app-cadastro-pesquisa (criado)="carregar(); modo='listar'"></app-cadastro-pesquisa>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,10 @@
 import { Routes } from "@angular/router";
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 import { DiarioComponent } from "../diario/diario.component";
+import { BlockSupportDashboardGuard } from './block-support-dashboard.guard';
+import { BlockSupportDiaryGuard } from './block-support-diary.guard';
 import { LoginComponent } from "../login/login.component";
 import { CadastroComponent } from "../Cadastro/cadastro.component";
 import { HistoricoComponent } from "../diario/consulta/historico.component";
@@ -13,14 +18,39 @@ import { DiaryExitGuard } from '../services/diary-exit.guard';
 import { DiarioResolver } from '../diario/diario.resolver';
 import { DashboardResolver } from '../dashboard/dashboard.resolver';
 
+
+import { Component } from '@angular/core';
+
+@Component({ template: '' })
+class RootRedirectComponent {
+  constructor() {
+    const auth = inject(AuthService);
+    const router = inject(Router);
+    const info = auth.getUserInfoFromToken();
+    // Redireciona:
+    // support -> /empresa
+    // employee -> /diario (nova página inicial para colaboradores)
+    // admin (ou outros) -> /dashboard
+    if (info?.role === 'support') {
+      router.navigate(['/empresa']);
+    } else if (info?.role === 'employee') {
+      router.navigate(['/diario']);
+    } else {
+      router.navigate(['/dashboard']);
+    }
+  }
+}
+
 export const routes: Routes = [
-  { path: "", redirectTo: "dashboard", pathMatch: "full" },
-  { path: "diario", component: DiarioComponent, canActivate: [AuthGuard], canDeactivate: [DiaryExitGuard], resolve: { preload: DiarioResolver } },
+  { path: '', component: RootRedirectComponent, canActivate: [AuthGuard], children: [], pathMatch: 'full' },
+  { path: "diario", component: DiarioComponent, canActivate: [AuthGuard, BlockSupportDiaryGuard], canDeactivate: [DiaryExitGuard], resolve: { preload: DiarioResolver } },
   {
     path: "conteudo-educacional",
     component: ConteudoEducacionalComponent,
     canActivate: [AuthGuard, DiaryEntryGuard],
   },
+  { path: 'empresa', canActivate: [AuthGuard], loadComponent: () => import('../empresa/empresa.component').then(m => m.EmpresaComponent) },
+  { path: 'departamentos/novo', canActivate: [AuthGuard], loadComponent: () => import('../departamentos/departamento-novo.component').then(m => m.DepartamentoNovoComponent) },
   { path: "login", component: LoginComponent },
   { path: "cadastro", component: CadastroComponent },
   {
@@ -29,12 +59,30 @@ export const routes: Routes = [
     canActivate: [AuthGuard, DiaryEntryGuard],
   },
   { path: "usuarios", component: UsuariosComponent, canActivate: [AuthGuard] },
+  { path: "perfil", canActivate: [AuthGuard], loadComponent: () => import('../perfil/perfil.component').then(m => m.PerfilComponent) },
+  { path: 'usuarios/cadastrar', canActivate: [AuthGuard], loadComponent: () => import('../usuarios/cadastrar-colaborador.component').then(m => m.CadastrarColaboradorComponent) },
   { path: "home", canActivate: [EmBreveGuard], component: LoginComponent },
   {
     path: "dashboard",
     component: DashboardComponent,
-    canActivate: [AuthGuard, DiaryEntryGuard],
+    canActivate: [AuthGuard, DiaryEntryGuard, BlockSupportDashboardGuard],
     resolve: { preload: DashboardResolver }
+  },
+  // --- ROTAS DE PESQUISA (standalone components) ---
+  {
+    path: 'pesquisa',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('../cadastro-pesquisa/cadastro-pesquisa.component').then(m => m.CadastroPesquisaComponent)
+  },
+  {
+    path: 'pesquisas',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('../pesquisas/pesquisas.component').then(m => m.PesquisasComponent)
+  },
+  {
+    path: 'responder-pesquisa/:id',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('../responder-pesquisa/responder-pesquisa.component').then(m => m.ResponderPesquisaComponent)
   },
   { path: "**", redirectTo: "dashboard" },
 ];

@@ -1,0 +1,54 @@
+<div class="cadastro-pesquisa">
+  <form (ngSubmit)="cadastrar()" autocomplete="off">
+    <div class="titulo-row">
+      <h3>Nova Pesquisa</h3>
+      <span class="badge" [class.pulso]="tipo==='pulso'" [class.clima]="tipo==='clima'">{{ tipo }}</span>
+    </div>
+    <div class="field">
+      <label for="titulo">Título</label>
+      <input id="titulo" [(ngModel)]="titulo" name="titulo" maxlength="80" placeholder="Ex: Termômetro semanal" required>
+      <small class="hint">Máx. 80 caracteres</small>
+    </div>
+    <div class="field">
+      <label for="tipo">Tipo</label>
+      <div class="tipo-switch">
+        <button type="button" [class.ativo]="tipo==='pulso'" (click)="tipo='pulso'; onChangeTipo();">Pulso</button>
+        <button type="button" [class.ativo]="tipo==='clima'" (click)="tipo='clima'; onChangeTipo();">Clima</button>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="submit" [disabled]="!titulo.trim() || carregando">
+        <span *ngIf="!carregando">Cadastrar</span>
+        <span *ngIf="carregando" class="loader"></span>
+      </button>
+    </div>
+    <div *ngIf="sucesso" class="sucesso">Salvo!</div>
+    <div *ngIf="erro" class="erro">{{ erro }}</div>
+    <div class="questions-box" *ngIf="!carregandoPerguntas">
+      <div class="qb-header">
+        <h4>Perguntas Padrão</h4>
+        <button type="button" class="restore" (click)="restaurarPadrao()" [disabled]="perguntasSelecionadas.length===perguntasPadrao.length">Restaurar</button>
+      </div>
+      <ul class="qs-list" *ngIf="perguntasSelecionadas.length; else noneTpl">
+        <li *ngFor="let p of perguntasSelecionadas; let i = index">
+          <span class="idx">{{ i+1 }}.</span>
+          <span class="txt">{{ p.texto }}</span>
+          <button type="button" class="rem" (click)="removerPergunta(i)">Remover</button>
+        </li>
+      </ul>
+      <ng-template #noneTpl>
+        <div class="placeholder">Todas removidas. Clique em Restaurar para trazer novamente.</div>
+      </ng-template>
+      <div class="add-custom">
+        <label>Nova pergunta personalizada</label>
+        <input type="text" [(ngModel)]="novaPerguntaTexto" name="novaPerguntaTexto" placeholder="Digite o enunciado" maxlength="200">
+        <div class="inline">
+          <button type="button" (click)="addPerguntaCustom()" [disabled]="!novaPerguntaTexto.trim()">Adicionar</button>
+        </div>
+        <small class="hint" *ngIf="tipo==='pulso'">Escala 0–10 aplicada automaticamente (todas as perguntas são obrigatórias).</small>
+        <small class="hint" *ngIf="tipo==='clima'">Escala 1–5 (Likert) aplicada automaticamente (todas as perguntas são obrigatórias).</small>
+      </div>
+    </div>
+    <div *ngIf="carregandoPerguntas" class="loading-mini">Carregando perguntas...</div>
+  </form>
+</div>

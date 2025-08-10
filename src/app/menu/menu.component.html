@@ -18,16 +18,23 @@
     <span class="sidebar-title">CalmaMente</span>
   </div>
   <ul>
-    <li><a routerLink="/diario"><span class="sidebar-menu-icon material-icons">menu_book</span> Diário</a></li>
-    <li><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">layers</span> Conteúdos</a></li>
+  <li *ngIf="!isSupport"><a routerLink="/diario"><span class="sidebar-menu-icon material-icons">menu_book</span> Diário</a></li>
+  <li *ngIf="!isSupport"><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">layers</span> Conteúdos</a></li>
+  <li *ngIf="isSupport || isAdmin || isEmployee"><a routerLink="/empresa"><span class="sidebar-menu-icon material-icons">business</span> Empresa</a></li>
     <li *ngIf="isAdmin"><a routerLink="/dashboard"><span class="sidebar-menu-icon material-icons">bar_chart</span> Dashboard</a></li>
-    <li><a routerLink="/usuarios"><span class="sidebar-menu-icon material-icons">group</span> Usuários</a></li>
+  <li *ngIf="!isSupport"><a routerLink="/usuarios"><span class="sidebar-menu-icon material-icons">group</span> Usuários</a></li>
+  <li *ngIf="!isSupport"><a routerLink="/pesquisas"><span class="sidebar-menu-icon material-icons">fact_check</span> Pesquisas</a></li>
     <li *ngIf="!isLoggedIn"><a routerLink="/login"><span class="sidebar-menu-icon material-icons">login</span> Login</a></li>
   </ul>
   <div class="sidebar-footer">
-    <div *ngIf="isLoggedIn" class="sidebar-profile-block sidebar-profile-card">
-      <div class="sidebar-avatar">
-        <span class="material-icons">person</span>
+  <div *ngIf="isLoggedIn" class="sidebar-profile-block sidebar-profile-card" routerLink="/perfil" style="cursor:pointer" title="Ver perfil">
+      <div class="sidebar-avatar" [class.tem-avatar]="avatarUrl">
+        <ng-container *ngIf="avatarUrl; else noAvatar">
+          <img [src]="avatarUrl" alt="Avatar" decoding="async" loading="lazy" fetchpriority="high" />
+        </ng-container>
+        <ng-template #noAvatar>
+          <span class="material-icons">person</span>
+        </ng-template>
       </div>
       <div class="sidebar-profile-info">
         <div class="sidebar-profile-name">{{ userName }}</div>

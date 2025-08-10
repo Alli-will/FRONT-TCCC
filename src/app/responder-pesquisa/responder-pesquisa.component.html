@@ -1,0 +1,44 @@
+<app-menu>
+  <div class="responder-page" *ngIf="!carregando && pesquisa && !jaRespondida; else estadoTpl">
+    <h2>{{ pesquisa.titulo }}</h2>
+    <div class="tipo-tag" [class.pulso]="pesquisa.tipo==='pulso'" [class.clima]="pesquisa.tipo==='clima'">{{ pesquisa.tipo }}</div>
+
+    <div class="perguntas" *ngIf="pesquisa.perguntas?.length; else semPerguntas">
+  <div class="pergunta-card" *ngFor="let p of pesquisa.perguntas; let i = index" [class.incompleta]="isIncompleta(i)">
+        <div class="texto">{{ i+1 }}. {{ p.texto }}</div>
+  <div class="opcoes escala" *ngIf="p.opcoes?.length">
+    <button type="button" *ngFor="let v of p.opcoes"
+      (click)="selecionar(i, v)"
+      [class.sel]="respostas[i]===v"
+      [class.likert]="pesquisa?.tipo==='clima'">{{ labelOpcao(v) }}</button>
+  </div>
+      </div>
+    </div>
+
+    <div *ngIf="erro" class="alert erro">{{ erro }}</div>
+    <div *ngIf="sucesso" class="alert sucesso">Respostas enviadas!</div>
+
+    <button class="enviar-btn" (click)="enviar()" [disabled]="sucesso">Enviar</button>
+  </div>
+
+  <ng-template #estadoTpl>
+    <div class="responder-page" *ngIf="jaRespondida; else outras">
+      <h2>Pesquisa já respondida</h2>
+      <p>Você já respondeu esta pesquisa. Voltando para a lista...</p>
+    </div>
+    <ng-template #outras>
+      <div *ngIf="erro && !jaRespondida" class="responder-page">
+        <h2>Erro</h2>
+        <p>{{ erro }}</p>
+      </div>
+      <div *ngIf="carregando" class="loading">Carregando...</div>
+    </ng-template>
+  </ng-template>
+
+  <ng-template #carregandoTpl>
+    <div class="loading">Carregando...</div>
+  </ng-template>
+  <ng-template #semPerguntas>
+    <div class="empty">Nenhuma pergunta cadastrada.</div>
+  </ng-template>
+</app-menu>

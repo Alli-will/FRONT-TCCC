@@ -1,14 +1,38 @@
 <app-menu></app-menu>
 <div class="usuarios-container">
-  <h2>Colaboradores Ativos</h2>
+  <div class="header-row">
+    <h2>Colaboradores Ativos</h2>
+  <button *ngIf="isAdmin" routerLink="/usuarios/cadastrar" class="btn-primario" aria-label="Cadastrar novo colaborador">
+      <span class="btn-icone" aria-hidden="true">＋</span>
+      <span>Cadastrar Novo</span>
+    </button>
+  </div>
+  <div *ngIf="erro" class="erro">{{ erro }}</div>
   <div *ngIf="loading">Carregando colaboradores...</div>
-  <div *ngIf="erro">{{ erro }}</div>
-  <ul *ngIf="!loading && colaboradoresAtivos.length">
-    <li *ngFor="let c of colaboradoresAtivos">
-      {{ c.nomeCompleto }} - {{ c.departamento }}
+  <div *ngIf="!loading && colaboradoresAtivos.length === 0">Nenhum colaborador ativo encontrado.</div>
+  <ul *ngIf="!loading && colaboradoresAtivos.length > 0" class="lista-colaboradores">
+    <li *ngFor="let c of colaboradoresAtivos" class="colab-item">
+      <div class="colab-avatar" [class.tem-avatar]="c.avatarUrl">
+        <ng-container *ngIf="c.avatarUrl; else icone">
+          <img [src]="c.avatarUrl" alt="Avatar de {{ c.nomeCompleto }}" loading="lazy" decoding="async" />
+        </ng-container>
+        <ng-template #icone>
+          <span class="material-icons">person</span>
+        </ng-template>
+      </div>
+      <div class="colab-texto">
+        <strong class="colab-nome">{{ c.nomeCompleto }}</strong>
+        <span *ngIf="editandoId !== c.id" class="colab-depto" (click)="iniciarEdicao(c)" [class.editavel]="isAdmin" title="Clique para editar" >
+          {{ c.departamento }}
+        </span>
+        <div *ngIf="editandoId === c.id" class="dept-editor">
+          <select #selDept [disabled]="salvandoDept" [value]="c.departmentId || ''" (change)="salvarDepartamento(c, selDept.value)">
+            <option value="">Sem departamento</option>
+            <option *ngFor="let d of departamentos" [value]="d.id">{{ d.name || d.nome || d.title || d.label || d.departmentName || d.description || d }}</option>
+          </select>
+          <button type="button" class="btn-cancelar" (click)="cancelarEdicao()" [disabled]="salvandoDept">×</button>
+        </div>
+      </div>
     </li>
   </ul>
-  <div *ngIf="!loading && !colaboradoresAtivos.length && !erro">
-    Nenhum colaborador ativo encontrado.
-  </div>
 </div>

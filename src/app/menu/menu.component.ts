@@ -18,6 +18,11 @@ export class MenuComponent implements OnInit {
   userName: string | null = null;
   userEmail: string | null = null;
   isAdmin = false;
+  isSupport = false;
+  isEmployee = false;
+  avatarUrl: string | null = null; // agora endpoint dinâmico
+  private avatarTs: number = Date.now();
+  private objectUrl?: string;
 
   constructor(
     private authService: AuthService,
@@ -28,20 +33,54 @@ export class MenuComponent implements OnInit {
     window.addEventListener('resize', () => {
       this.sidebarOpen = window.innerWidth > 900;
     });
+    // ouvir evento de atualização do avatar
+    window.addEventListener('avatar-updated', (e: any) => {
+      this.avatarTs = e?.detail?.ts || Date.now();
+      this.refreshAvatar();
+    });
+
     this.authService.currentUser.subscribe((token) => {
       this.isLoggedIn = !!token;
       if (token) {
         const payload = this.authService.getUserInfoFromToken();
         this.isAdmin = payload?.role === 'admin';
+  this.isSupport = payload?.role === 'support';
+  this.isEmployee = payload?.role === 'employee';
         this.userName = (payload?.first_Name && payload?.last_Name)
           ? `${payload.first_Name} ${payload.last_Name}`
           : payload?.first_Name || payload?.last_Name || payload?.email || null;
         this.userEmail = payload?.email || null;
+        this.refreshAvatar();
       } else {
         this.userName = null;
         this.userEmail = null;
         this.isAdmin = false;
+  this.isSupport = false;
+  this.isEmployee = false;
+        this.avatarUrl = null;
       }
+    });
+  }
+
+  private refreshAvatar() {
+    if (!this.isLoggedIn) {
+      if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+      this.avatarUrl = null;
+      return;
+    }
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch(`http://localhost:3000/user/me/avatar?${this.avatarTs}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).then(async r => {
+      if (!r.ok) throw new Error('no avatar');
+      const blob = await r.blob();
+      if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+      this.objectUrl = URL.createObjectURL(blob);
+      this.avatarUrl = this.objectUrl;
+    }).catch(()=>{
+      // sem avatar: mantém null
+      this.avatarUrl = null;
     });
   }
 

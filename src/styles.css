@@ -2,3 +2,37 @@ html, body {
   background: #f7f8fa !important;
 }
 
+/* Botão primário global */
+.btn-primario {
+  background: linear-gradient(135deg,#38b6a5,#2d998b);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: .5px;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(56,182,165,0.35);
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  text-decoration: none;
+}
+.btn-primario::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -40%;
+  width: 40%; height: 100%;
+  background: rgba(255,255,255,0.25);
+  transform: skewX(-25deg);
+  transition: left .5s ease;
+}
+.btn-primario:hover::before { left: 140%; }
+.btn-primario:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(56,182,165,0.45); }
+.btn-primario:active { transform: translateY(0); box-shadow: 0 3px 10px rgba(56,182,165,0.35); }
+.btn-primario:disabled { opacity:.55; cursor:not-allowed; transform:none; box-shadow:0 2px 6px rgba(56,182,165,0.25); }
+

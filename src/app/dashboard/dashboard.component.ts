@@ -1,10 +1,12 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MenuComponent } from "../menu/menu.component";
+import { CadastroPesquisaComponent } from '../cadastro-pesquisa/cadastro-pesquisa.component';
 import { FormsModule } from "@angular/forms";
 import { DashboardService } from '../services/dashboard.service';
 import { EssThermometerComponent } from '../ess-thermometer/ess-thermometer.component';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: "app-dashboard",
@@ -22,23 +24,53 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   colaboradoresEmRisco: any[] = [];
   metricas: any = {
     ativos: 0,
-    bemEstarGeral: 0,
-    altoRisco: 0,
-    altoRiscoPercent: 0,
-    sessoesTerapia: 0,
-    variacaoSessoes: 0,
-    totalRespostasDiario: 0,
+    respondentes: 0,
+    nps: 0,
+    promotores: 0,
+    detratores: 0,
+    neutros: 0,
+    promotoresPercent: 0,
+    detratoresPercent: 0,
   };
+  // Gauge interno (0-100) derivado do NPS real (-100 a 100)
   essGeral: number = 0;
+  npsReal: number = 0;
   showIA: boolean = false;
   iaMensagem: string = "Olá! Sou sua assistente de IA para análise de bem-estar dos colaboradores. Posso ajudar você a identificar riscos psicossociais, analisar tendências emocionais e sugerir ações para melhorar o clima da equipe.";
   busca: string = "";
   resultadosBusca: any[] = [];
   emotionPercentages: any[] = [];
   loadingEmotions = false;
+  isAdmin = false;
+
+  // Pulse e Clima
+  pulseScore: number = 0;
+  pulseComment: string = '';
+  pulseResults: any[] = [];
+  climaQuestion: string = '';
+  climaAnswer: string = '';
+  climaResults: any[] = [];
+
+  sendPulse() {
+    // Exemplo: envie pulseScore e pulseComment via serviço
+    // Substitua pelo seu PulseService real
+    // this.pulseService.sendPulse(this.pulseScore, this.pulseComment).subscribe(...)
+    this.pulseResults.push({ score: this.pulseScore, comment: this.pulseComment });
+    this.pulseScore = 0;
+    this.pulseComment = '';
+  }
+
+  sendClima() {
+    // Exemplo: envie climaQuestion e climaAnswer via serviço
+    // Substitua pelo seu ClimaService real
+    // this.climaService.sendClima(this.climaQuestion, this.climaAnswer).subscribe(...)
+    this.climaResults.push({ question: this.climaQuestion, answer: this.climaAnswer });
+    this.climaQuestion = '';
+    this.climaAnswer = '';
+  }
 
 
-  constructor(private dashboardService: DashboardService, private route: ActivatedRoute) {
+  constructor(private dashboardService: DashboardService, private route: ActivatedRoute, private authService: AuthService) {
     this.iaMensagem = "Olá! Sou sua assistente de IA para análise de bem-estar dos colaboradores. Posso ajudar você a identificar riscos psicossociais, analisar tendências emocionais e sugerir ações para melhorar o clima da equipe.";
     this.mensagensChat = [
       { tipo: 'ia', texto: this.iaMensagem }
@@ -73,15 +105,19 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+  this.isAdmin = this.authService.isAdmin();
     const preload = this.route.snapshot.data['preload'];
     if (preload) {
       const data = preload.metrics;
-      this.metricas = data.metricas || {};
-      // Filtra colaboradores para exibir apenas quem já respondeu ao diário (bemEstar > 0)
-      this.colaboradores = (data.colaboradores || []).filter((c: any) => c.bemEstar && c.bemEstar > 0);
-      this.departamentos = data.departamentos || [];
-      this.colaboradoresEmRisco = (data.colaboradoresEmRisco || []).filter((c: any) => c.bemEstar && c.bemEstar > 0);
-      this.essGeral = preload.essGeral.ess ?? 0;
+  this.metricas = data.metricas || {};
+  // Guarda NPS real (-100..100)
+  this.npsReal = this.metricas.nps || 0;
+  // Mapeia para 0..100 para o círculo: (-100 -> 0) (0 -> 50) (100 -> 100)
+  this.essGeral = Math.round(((this.npsReal + 100) / 200) * 100);
+  // Agora filtramos por quem respondeu (tem npsDriverScore != null)
+  this.colaboradores = (data.colaboradores || []).filter((c: any) => c.npsDriverScore != null);
+  this.departamentos = data.departamentos || [];
+  this.colaboradoresEmRisco = (data.colaboradoresEmRisco || []);
     }
     this.fetchEmotionPercentages();
     // Remover chamadas duplicadas de carregamento
@@ -90,20 +126,22 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   carregarDadosDashboard() {
     this.dashboardService.getMetrics().subscribe({
       next: (data) => {
-        this.metricas = data.metricas || {};
-        // Filtra colaboradores para exibir apenas quem já respondeu ao diário (bemEstar > 0)
-        this.colaboradores = (data.colaboradores || []).filter((c: any) => c.bemEstar && c.bemEstar > 0);
-        this.departamentos = data.departamentos || [];
-        this.colaboradoresEmRisco = (data.colaboradoresEmRisco || []).filter((c: any) => c.bemEstar && c.bemEstar > 0);
+  this.metricas = data.metricas || {};
+  this.npsReal = this.metricas.nps || 0;
+  this.essGeral = Math.round(((this.npsReal + 100) / 200) * 100);
+  this.colaboradores = (data.colaboradores || []).filter((c: any) => c.npsDriverScore != null);
+  this.departamentos = data.departamentos || [];
+  this.colaboradoresEmRisco = (data.colaboradoresEmRisco || []);
         // Removido cálculo local de ESS geral para não sobrescrever o valor do backend
       },
       error: (err) => {
         // Trate erros de permissão ou conexão
-        this.metricas = { ativos: 0, bemEstarGeral: 0, altoRisco: 0, altoRiscoPercent: 0 };
+  this.metricas = { ativos: 0, respondentes: 0, nps: 0, promotores: 0, detratores: 0, neutros: 0, promotoresPercent: 0, detratoresPercent: 0 };
         this.colaboradores = [];
         this.departamentos = [];
         this.colaboradoresEmRisco = [];
-        this.essGeral = 0;
+  this.npsReal = 0;
+  this.essGeral = 0;
       }
     });
   }
@@ -154,53 +192,39 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
 
+  // Cores e textos baseados em NPS real
   getScoreColor(): string {
-    if (this.essGeral >= 80) {
-      return '#38b6a5'; // verde
-    } else if (this.essGeral >= 60) {
-      return '#fbc02d'; // amarelo
-    } else {
-      return '#ff7043'; // laranja
-    }
+    if (this.npsReal >= 75) return '#2e7d32'; // verde mais forte para "excelente"
+    if (this.npsReal >= 50) return '#38b6a5'; // verde normal para "muito bom"
+    if (this.npsReal >= 0) return '#fbc02d';  // amarelo para "neutro"
+    return '#ff7043';                         // laranja/vermelho para "crítico"
   }
 
   getScoreLabel(): string {
-    if (this.essGeral >= 80) {
-      return 'Bom';
-    } else if (this.essGeral >= 60) {
-      return 'Atenção';
-    } else {
-      return 'Crítica';
-    }
+    if (this.npsReal >= 75) return 'Excelente';
+    if (this.npsReal >= 50) return 'Muito bom';
+    if (this.npsReal >= 0) return 'Neutro';
+    return 'Crítico';
   }
 
   getScoreDesc(): string {
-    if (this.essGeral >= 80) {
-      return 'O bem-estar emocional geral da empresa está bom!';
-    } else if (this.essGeral >= 60) {
-      return 'O bem-estar emocional da empresa requer acompanhamento.';
-    } else {
-      return 'A saúde emocional da empresa precisa de cuidado imediato.';
-    }
+    if (this.npsReal >= 75) return 'Excelente: colaboradores altamente engajados.';
+    if (this.npsReal >= 50) return 'Muito bom: clima positivo e engajamento elevado.';
+    if (this.npsReal >= 0) return 'Neutro: oportunidade de melhoria.';
+    return 'Negativo: prioridade de ações corretivas.';
   }
 
   getScoreDescBg(): string {
-    if (this.essGeral >= 80) {
-      return '#e6f9f3'; // verde claro
-    } else if (this.essGeral >= 60) {
-      return '#fff8e1'; // amarelo claro
-    } else {
-      return '#fff3e6'; // laranja claro
-    }
+    if (this.npsReal >= 75) return '#e0f2f1'; // verde claro para excelente
+    if (this.npsReal >= 50) return '#e6f9f3'; // verde água para muito bom
+    if (this.npsReal >= 0) return '#fff8e1';  // amarelo claro para neutro
+    return '#fff3e6';                         // laranja claro para crítico
   }
 
   getScoreDescColor(): string {
-    if (this.essGeral >= 80) {
-      return '#38b6a5';
-    } else if (this.essGeral >= 60) {
-      return '#fbc02d';
-    } else {
-      return '#ff7043';
-    }
+    if (this.npsReal >= 75) return '#2e7d32'; // verde forte
+    if (this.npsReal >= 50) return '#38b6a5'; // verde normal
+    if (this.npsReal >= 0) return '#fbc02d';  // amarelo
+    return '#ff7043';                         // laranja/vermelho
   }
 }

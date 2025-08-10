@@ -1,0 +1,71 @@
+<app-menu></app-menu>
+<div class="empresa-container" *ngIf="companyLoaded">
+  <h2 *ngIf="isSupport && !showCreateForSupport">Empresas Cadastradas</h2>
+  <h2 *ngIf="isSupport && showCreateForSupport">Cadastrar Empresa</h2>
+  <h2 *ngIf="!isSupport && !hasCompany">Cadastrar Empresa</h2>
+  <h2 *ngIf="!isSupport && hasCompany">Empresa</h2>
+
+  <div *ngIf="!isSupport && hasCompany && companyData" class="empresa-box">
+    <p><strong>Nome:</strong> {{ companyData.name }}</p>
+    <p><strong>CNPJ:</strong> {{ companyData.cnpj }}</p>
+    <p><strong>Endereço:</strong> {{ companyData.address }} - {{ companyData.neighborhood }}</p>
+    <p><strong>Cidade/UF:</strong> {{ companyData.municipality }} / {{ companyData.state }}</p>
+    <p><strong>País:</strong> {{ companyData.country }}</p>
+    <p><strong>Telefone:</strong> {{ companyData.phone }}</p>
+  </div>
+
+  <!-- Form de criação para admin/employee sem empresa -->
+  <form *ngIf="!isSupport && !hasCompany" (ngSubmit)="enviar()" #empresaForm="ngForm">
+    <div class="row"><label>Nome*</label><input name="name" [(ngModel)]="form.name" required /></div>
+    <div class="row"><label>CNPJ*</label><input name="cnpj" [(ngModel)]="form.cnpj" required /></div>
+    <div class="row"><label>Endereço*</label><input name="address" [(ngModel)]="form.address" required /></div>
+    <div class="row"><label>CEP*</label><input name="addressZipCode" type="number" [(ngModel)]="form.addressZipCode" required /></div>
+    <div class="row"><label>Bairro*</label><input name="neighborhood" [(ngModel)]="form.neighborhood" required /></div>
+    <div class="row"><label>Município*</label><input name="municipality" [(ngModel)]="form.municipality" required /></div>
+    <div class="row"><label>Estado*</label><input name="state" [(ngModel)]="form.state" required /></div>
+    <div class="row"><label>País*</label><input name="country" [(ngModel)]="form.country" required /></div>
+    <div class="row"><label>Telefone*</label><input name="phone" type="number" [(ngModel)]="form.phone" required /></div>
+  <button type="submit" class="btn-primario" [disabled]="loading || empresaForm.invalid">{{ loading ? 'Enviando...' : 'Cadastrar' }}</button>
+  </form>
+  <div *ngIf="error" class="erro">{{ error }}</div>
+  <div *ngIf="success" class="sucesso">{{ success }}</div>
+
+  <!-- Listagem para suporte -->
+  <div *ngIf="isSupport">
+    <div class="support-actions">
+      <button class="btn-primario" type="button" (click)="showCreateForSupport = !showCreateForSupport">{{ showCreateForSupport ? 'Voltar' : 'Cadastrar Nova Empresa' }}</button>
+    </div>
+    <!-- Formulário (exclusivo quando criando) -->
+    <form *ngIf="showCreateForSupport" (ngSubmit)="enviar()" #empresaFormSup="ngForm" class="empresa-form-suporte">
+      <div class="row"><label>Nome*</label><input name="name" [(ngModel)]="form.name" required /></div>
+      <div class="row"><label>CNPJ*</label><input name="cnpj" [(ngModel)]="form.cnpj" required /></div>
+      <div class="row"><label>Endereço*</label><input name="address" [(ngModel)]="form.address" required /></div>
+      <div class="row"><label>CEP*</label><input name="addressZipCode" type="number" [(ngModel)]="form.addressZipCode" required /></div>
+      <div class="row"><label>Bairro*</label><input name="neighborhood" [(ngModel)]="form.neighborhood" required /></div>
+      <div class="row"><label>Município*</label><input name="municipality" [(ngModel)]="form.municipality" required /></div>
+      <div class="row"><label>Estado*</label><input name="state" [(ngModel)]="form.state" required /></div>
+      <div class="row"><label>País*</label><input name="country" [(ngModel)]="form.country" required /></div>
+      <div class="row"><label>Telefone*</label><input name="phone" type="number" [(ngModel)]="form.phone" required /></div>
+  <button type="submit" class="btn-primario" [disabled]="loading || empresaFormSup.invalid">{{ loading ? 'Enviando...' : 'Salvar' }}</button>
+    </form>
+    <!-- Lista só quando NÃO está criando -->
+    <ng-container *ngIf="!showCreateForSupport">
+      <div *ngIf="loadingCompanies">Carregando empresas...</div>
+      <div *ngIf="!loadingCompanies && allCompanies.length === 0">Nenhuma empresa cadastrada.</div>
+      <div class="lista-empresas" *ngIf="!loadingCompanies && allCompanies.length > 0">
+        <div class="empresa-item" *ngFor="let c of allCompanies">
+          <h4>{{ c.name }}</h4>
+          <p class="cid"><strong>CNPJ:</strong> {{ c.cnpj }}</p>
+          <p><strong>Local:</strong> {{ c.municipality }} / {{ c.state }}</p>
+          <p><strong>Telefone:</strong> {{ c.phone }}</p>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div *ngIf="!isSupport && canCreateDepartment()" class="departamento-section">
+    <h3>Departamentos</h3>
+    <button type="button" class="btn-primario" routerLink="/departamentos/novo">Cadastrar Departamento</button>
+  </div>
+</div>
+<div *ngIf="!companyLoaded">Carregando...</div>

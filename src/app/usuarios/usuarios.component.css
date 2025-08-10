@@ -10,6 +10,30 @@ h2 {
   color: #38b6a5;
   margin-bottom: 1.5rem;
 }
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.lista-colaboradores li strong {
+  color: #222;
+}
+.lista-colaboradores li {
+  position: relative;
+  padding-left: 1.2rem;
+}
+.lista-colaboradores li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  width: 8px; height: 8px;
+  background: #38b6a5;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
 ul {
   list-style: none;
   padding: 0;
@@ -23,3 +47,24 @@ li {
 li:last-child {
   border-bottom: none;
 }
+
+/* --- Avatares dos colaboradores --- */
+.colab-item { display:flex; align-items:center; gap:.9rem; padding:.75rem 0; position:relative; }
+.colab-avatar { width:46px; height:46px; border-radius:50%; background:#eaf6ff; display:flex; align-items:center; justify-content:center; font-size:1.9rem; color:#38b6a5; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.06), 0 0 0 1px rgba(56,182,165,.18); position:relative; }
+.colab-avatar.tem-avatar img { width:100%; height:100%; object-fit:cover; display:block; border-radius:50%; filter:contrast(1.04) saturate(1.05); transition:filter .25s; }
+.colab-avatar.tem-avatar:hover img { filter:contrast(1.1) saturate(1.1); }
+.colab-avatar::after { content:''; position:absolute; inset:0; border-radius:50%; box-shadow:inset 0 0 0 1px rgba(56,182,165,.25), 0 0 0 2px rgba(255,255,255,.5); pointer-events:none; }
+.colab-texto { display:flex; flex-direction:column; line-height:1.1; }
+.colab-nome { font-size:.95rem; color:#23213a; font-weight:600; }
+.colab-depto { font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:#5c7b86; margin-top:.25rem; font-weight:600; }
+.colab-depto.editavel { cursor:pointer; position:relative; }
+.colab-depto.editavel::after { content:'✎'; font-size:.65rem; margin-left:6px; opacity:.4; transition:.25s; }
+.colab-depto.editavel:hover::after { opacity:.9; }
+.dept-editor { display:flex; align-items:center; gap:.4rem; margin-top:.25rem; }
+.dept-editor select { padding:.3rem .55rem; border:1px solid #c9dde2; border-radius:.55rem; background:#f6fbfc; font-size:.65rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:#2e5964; }
+.dept-editor select:focus { outline:none; border-color:#38b6a5; background:#ffffff; box-shadow:0 0 0 2px rgba(56,182,165,.25); }
+.dept-editor .btn-cancelar { background:#fff; border:1px solid #d8e9ef; width:26px; height:26px; border-radius:50%; cursor:pointer; font-size:1rem; line-height:1; display:flex; align-items:center; justify-content:center; color:#5c7b86; transition:.25s; }
+.dept-editor .btn-cancelar:hover { background:#eef7f8; color:#2e5964; }
+.dept-editor select:disabled, .dept-editor .btn-cancelar:disabled { opacity:.5; cursor:not-allowed; }
+
+.lista-colaboradores { margin-top:.5rem; }
