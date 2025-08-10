@@ -70,7 +70,7 @@ export class MenuComponent implements OnInit {
     }
     const token = localStorage.getItem('token');
     if (!token) return;
-    fetch(`http://localhost:3000/user/me/avatar?${this.avatarTs}`, {
+    fetch(`https://tcc-main.up.railway.app/user/me/avatar?${this.avatarTs}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     }).then(async r => {
       if (!r.ok) throw new Error('no avatar');

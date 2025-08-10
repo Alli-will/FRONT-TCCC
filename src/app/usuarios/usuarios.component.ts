@@ -62,7 +62,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     this.colaboradoresAtivos.forEach(c => {
       if (!c.id) return; // sem id não busca
       // tenta primeiro local
-      const urlLocal = `http://localhost:3000/user/${c.id}/avatar?ts=${Date.now()}`;
+      const urlLocal = `https://tcc-main.up.railway.app/user/${c.id}/avatar?ts=${Date.now()}`;
       fetch(urlLocal, { headers: { 'Authorization': `Bearer ${token}` } })
         .then(async r => {
           if (!r.ok) throw new Error('no avatar');
@@ -74,7 +74,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
         })
         .catch(() => {
           // fallback remoto
-          const remote = `http://localhost:3000/user/${c.id}/avatar?ts=${Date.now()}`;
+          const remote = `https://tcc-main.up.railway.app/user/${c.id}/avatar?ts=${Date.now()}`;
           fetch(remote, { headers: { 'Authorization': `Bearer ${token}` } })
             .then(async r2 => {
               if (!r2.ok) return;
@@ -105,7 +105,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     if (!this.isAdmin) return;
     const deptId = novoDeptId ? Number(novoDeptId) : null;
     this.salvandoDept = true;
-    fetch(`http://localhost:3000/user/${c.id}/department`, {
+    fetch(`https://tcc-main.up.railway.app/user/${c.id}/department`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
