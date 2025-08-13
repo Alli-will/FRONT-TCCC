@@ -47,7 +47,6 @@ export class HistoricoComponent implements OnInit {
 
     this.diaryService.getDiaryEntries(token).subscribe({
       next: (data) => {
-        console.log('Entradas recebidas:', data);
         this.entradas = data.map((entrada: any) => {
           let reasonName = Array.isArray(entrada.reasons) && entrada.reasons.length > 0 ? entrada.reasons[0].reason : 'N/A';
           return {

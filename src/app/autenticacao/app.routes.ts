@@ -17,6 +17,7 @@ import { DiaryEntryGuard } from '../services/diary-entry.guard';
 import { DiaryExitGuard } from '../services/diary-exit.guard';
 import { DiarioResolver } from '../diario/diario.resolver';
 import { DashboardResolver } from '../dashboard/dashboard.resolver';
+import { AdminGuard } from './admin.guard';
 
 
 import { Component } from '@angular/core';
@@ -80,9 +81,19 @@ export const routes: Routes = [
     loadComponent: () => import('../pesquisas/pesquisas.component').then(m => m.PesquisasComponent)
   },
   {
+    path: 'relatorios-pesquisas',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('../pesquisas/relatorios-pesquisas.component').then(m => m.RelatoriosPesquisasComponent)
+  },
+  {
     path: 'responder-pesquisa/:id',
     canActivate: [AuthGuard],
     loadComponent: () => import('../responder-pesquisa/responder-pesquisa.component').then(m => m.ResponderPesquisaComponent)
+  },
+  {
+    path: 'relatorio-pesquisa/:id',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('../pesquisas/relatorio-pesquisa.component').then(m => m.RelatorioPesquisaComponent)
   },
   { path: "**", redirectTo: "dashboard" },
 ];

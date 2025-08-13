@@ -12,30 +12,54 @@ import { AuthService } from '../services/auth.service';
   imports: [CommonModule, FormsModule, MenuComponent],
   template: `
     <app-menu></app-menu>
-    <div class="dep-container">
-      <h2>Novo Departamento</h2>
-      <form (ngSubmit)="criar()" #f="ngForm">
-        <div class="row">
-          <label>Nome*</label>
-          <input name="name" [(ngModel)]="name" required />
+    <div class="dep-page">
+      <div class="card form-card">
+        <div class="card-header">
+          <h2>Cadastro Departamento</h2>
         </div>
-        <button type="submit" [disabled]="loading || !name">{{ loading ? 'Salvando...' : 'Criar' }}</button>
-        <button type="button" class="btn-voltar" (click)="voltar()">Voltar</button>
-      </form>
-      <div *ngIf="error" class="erro">{{ error }}</div>
-      <div *ngIf="success" class="sucesso">{{ success }}</div>
+        <form (ngSubmit)="criar()" #f="ngForm" class="dep-form">
+          <div class="field">
+            <label for="dep-nome">Nome *</label>
+            <input id="dep-nome" name="name" [(ngModel)]="name" required placeholder="Ex: Marketing" />
+          </div>
+          <div class="actions">
+            <button type="button" class="btn-sec" (click)="voltar()" [disabled]="loading">Voltar</button>
+            <button type="submit" [disabled]="loading || !name">
+              <span *ngIf="!loading">Criar</span>
+              <span *ngIf="loading" class="loader"></span>
+            </button>
+          </div>
+        </form>
+        <div class="mensagens">
+          <div *ngIf="error" class="alert erro">{{ error }}</div>
+          <div *ngIf="success" class="alert sucesso">{{ success }}</div>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
-    .dep-container { max-width:480px; margin:2rem auto; background:#fff; padding:1.5rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,.1);} 
-    .row{display:flex;flex-direction:column;margin-bottom:.75rem;} 
-    label{font-weight:600;margin-bottom:.25rem;} 
-    input{padding:.5rem;border:1px solid #ccc;border-radius:4px;} 
-    button{margin-right:.5rem;background:#1976d2;color:#fff;border:none;padding:.55rem 1rem;border-radius:4px;cursor:pointer;} 
-    button[disabled]{opacity:.6;cursor:default;} 
-    .btn-voltar{background:#6c6c6c;} 
-    .erro{color:#b00020;margin-top:1rem;} 
-    .sucesso{color:#1b5e20;margin-top:1rem;} 
+    .dep-page { max-width:640px; margin:2.2rem auto; padding:0 1rem; }
+    .card { background:#fff; border:1px solid #e0edf3; border-radius:.95rem; box-shadow:0 2px 8px #00000012; padding:1.55rem 1.7rem 1.8rem; display:flex; flex-direction:column; gap:1.3rem; }
+    .card-header h2 { margin:0; font-size:1.25rem; font-weight:700; background:linear-gradient(90deg,#38b6a5 0%, #4f8cff 100%); -webkit-background-clip:text; color:transparent; letter-spacing:.5px; }
+    form.dep-form { display:flex; flex-direction:column; gap:1.15rem; }
+    .field { display:flex; flex-direction:column; gap:.45rem; }
+    .field label { font-size:.65rem; text-transform:uppercase; letter-spacing:.55px; font-weight:700; color:#4a5b63; }
+    .field input { border:1px solid #d5e4ec; border-radius:.75rem; background:#f9fbfc; padding:.7rem .9rem; font-size:.9rem; outline:none; transition:border .2s, background .2s, box-shadow .2s; }
+    .field input:focus { border-color:#38b6a5; background:#fff; box-shadow:0 0 0 3px #38b6a514; }
+    .actions { display:flex; justify-content:flex-end; gap:.7rem; }
+    .actions button { min-width:130px; border:none; border-radius:.8rem; cursor:pointer; font-weight:600; font-size:.8rem; letter-spacing:.5px; padding:.75rem 1.1rem; display:flex; align-items:center; justify-content:center; gap:.5rem; transition:filter .2s, transform .15s; }
+    .actions button:not(:disabled):hover { filter:brightness(1.05); }
+    .actions button:not(:disabled):active { transform:translateY(1px); }
+    .actions button:disabled { opacity:.55; cursor:not-allowed; }
+    .actions button[type=submit] { background:linear-gradient(90deg,#38b6a5 60%, #4f8cff 100%); color:#fff; box-shadow:0 2px 8px rgba(56,182,165,.25); }
+    .actions .btn-sec { background:#fff; border:1px solid #c9dbe2; color:#2c6b74; }
+    .actions .btn-sec:hover:not(:disabled) { background:#f4f9fa; }
+    .loader { width:18px; height:18px; border:2px solid rgba(255,255,255,.45); border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg);} }
+    .mensagens { display:flex; flex-direction:column; gap:.6rem; }
+    .alert { width:max-content; padding:.55rem .75rem; border-radius:.65rem; font-size:.7rem; font-weight:600; letter-spacing:.3px; }
+    .alert.erro { background:#ffe9e9; color:#d93030; border:1px solid #ffc5c5; }
+    .alert.sucesso { background:#e5fff7; color:#178667; border:1px solid #b9f1e1; }
   `]
 })
 export class DepartamentoNovoComponent {
@@ -49,7 +73,7 @@ export class DepartamentoNovoComponent {
   criar() {
     if (!this.name) return;
     this.loading = true; this.error = null; this.success = null;
-    this.http.post('https://tcc-main.up.railway.app/departments', { name: this.name }).subscribe({
+    this.http.post('http://https://tcc-main.up.railway.app/departments', { name: this.name }).subscribe({
       next: () => { this.success = 'Departamento criado'; this.name=''; },
       error: (err) => { this.error = err?.error?.message || 'Erro ao criar'; },
       complete: () => { this.loading = false; }

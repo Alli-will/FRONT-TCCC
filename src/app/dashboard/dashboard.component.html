@@ -6,8 +6,9 @@
       <!-- NPS Geral -->
   <div class="diary-card score-card" style="margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start; width:100%;">
         <div class="score-title" style="text-align: left; width: 100%;">
-          <strong>NPS Geral (últimos 30 dias)</strong>
-          <div class="score-sub">Escala -100 a 100</div>
+          <strong>NPS da Última Pesquisa de Pulso</strong>
+          <div class="score-sub" *ngIf="pulsoAtual">{{ pulsoAtual.titulo }} • {{ formatDate(pulsoAtual.createdAt) }} • 1ª pergunta</div>
+          <div class="score-sub" *ngIf="!pulsoAtual">Nenhuma pesquisa de pulso encontrada</div>
         </div>
         <div class="score-circle-svg" style="position: relative; display: flex; justify-content: center; align-items: center; width: 100%;">
           <svg width="170" height="170">
@@ -44,7 +45,7 @@
             >
               {{ npsReal }}
             </text>
-            <text x="85" y="92" text-anchor="middle" font-size="0.75em" fill="#666">NPS</text>
+            <text x="85" y="92" text-anchor="middle" font-size="0.75em" fill="#666"></text>
             <text
               x="85"
               y="120"
@@ -139,17 +140,7 @@
         </ng-template>
       </div>
     </div>
-    <div class="alertas-section" *ngIf="colaboradoresEmRisco.length" style="background: #fff8f6; border: 1px solid #f44336; box-shadow: 0 1px 6px #f4433612; padding: 1.1rem 1.2rem 1rem 1.2rem; margin-bottom: 1.5rem; margin-top: 1.2rem;">
-      <h3 style="color: #f44336; font-size: 1.2em; font-weight: bold; letter-spacing: 0.2px; margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.4em;">
-        <span style="font-size: 1.2em;">&#9888;&#65039;</span> Alertas de Risco
-      </h3>
-      <ul style="list-style: none; padding: 0; margin: 0;">
-        <li *ngFor="let c of colaboradoresEmRisco" style="margin-bottom: 0.5em; font-size: 1em; background: #fff; border-radius: 0.4em; box-shadow: 0 1px 2px #f4433612; padding: 0.5em 0.9em; border-left: 4px solid #f44336; display: flex; align-items: center; gap: 0.4em;">
-          <span class="alerta-nome" style="font-size: 1em;">{{ c.nome }}</span> -
-          <span class="alerta-depto">{{ c.departamento }}</span>
-        </li>
-      </ul>
-    </div>
+  <!-- Seção de alertas de risco removida a pedido -->
     <div class="departamentos-section">
       <h3>NPS por Departamento</h3>
       <table>
@@ -194,30 +185,5 @@
     </div>
     -->
   </div>
-  <div class="dashboard-ia-panel" *ngIf="showIA">
-    <div class="ia-header">
-      <span>Assistente de IA</span>
-      <button (click)="showIA = false">×</button>
-    </div>
-    <div class="ia-chat-container">
-      <div class="ia-chat-messages" #chatContainer>
-        <div *ngFor="let msg of mensagensChat" [ngClass]="{'ia-msg': true, 'ia-msg-ia': msg.tipo === 'ia', 'ia-msg-user': msg.tipo === 'user'}">
-          <div [ngClass]="{'ia-avatar': true, 'ia-avatar-user': msg.tipo === 'user'}">
-            <span *ngIf="msg.tipo === 'ia'">🤖</span>
-            <span *ngIf="msg.tipo === 'user'">👤</span>
-          </div>
-          <div [ngClass]="{'ia-msg-bubble': msg.tipo === 'ia', 'ia-msg-bubble-user': msg.tipo === 'user'}">
-            {{ msg.texto }}
-          </div>
-        </div>
-      </div>
-      <form class="ia-chat-input-row" (ngSubmit)="enviarMensagem()">
-        <input class="ia-chat-input" type="text" [(ngModel)]="mensagemUsuario" name="mensagemUsuario" placeholder="Digite sua mensagem..." autocomplete="off" />
-        <button class="ia-chat-send-btn" type="submit" [disabled]="!mensagemUsuario.trim()">Enviar</button>
-      </form>
-    </div>
-  </div>
-  <button class="ia-toggle" *ngIf="!showIA" (click)="showIA = true">
-    Abrir IA
-  </button>
+  <!-- Bloco de IA removido -->
 </div>

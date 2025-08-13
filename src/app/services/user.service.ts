@@ -6,14 +6,14 @@ import { Observable, catchError, switchMap, throwError } from "rxjs";
   providedIn: "root",
 })
 export class UserService {
-  private apiUrl = "https://tcc-main.up.railway.app/user/register-access";
-  private apiAllUsersUrl = "https://tcc-main.up.railway.app/user";
-  private localCreateCollaboratorUrl = "https://tcc-main.up.railway.app/user/create-collaborator";
-  private localDepartmentsUrl = "https://tcc-main.up.railway.app/departments";
-  private localUserByEmailUrl = "https://tcc-main.up.railway.app/user/by-email";
-  private localMeUrl = "https://tcc-main.up.railway.app/user/me";
-  private remoteMeUrl = "https://tcc-main.up.railway.app/user/me";
-  private remoteUserByEmailUrl = "https://tcc-main.up.railway.app/user/by-email";
+  private apiUrl = "http://https://tcc-main.up.railway.app/user/register-access";
+  private apiAllUsersUrl = "http://https://tcc-main.up.railway.app/user";
+  private localCreateCollaboratorUrl = "http://https://tcc-main.up.railway.app/user/create-collaborator";
+  private localDepartmentsUrl = "http://https://tcc-main.up.railway.app/departments";
+  private localUserByEmailUrl = "http://https://tcc-main.up.railway.app/user/by-email";
+  private localMeUrl = "http://https://tcc-main.up.railway.app/user/me";
+  private remoteMeUrl = "http://https://tcc-main.up.railway.app/user/me";
+  private remoteUserByEmailUrl = "http://https://tcc-main.up.railway.app/user/by-email";
 
   constructor(private http: HttpClient) {}
 

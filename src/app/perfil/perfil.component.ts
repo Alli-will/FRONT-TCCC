@@ -109,7 +109,7 @@ export class PerfilComponent implements OnInit {
     this.enviandoAvatar = true; this.uploadErro = null;
     const fd = new FormData();
     fd.append('file', this.uploadFile);
-    fetch('https://tcc-main.up.railway.app/user/me/avatar', {
+    fetch('http://https://tcc-main.up.railway.app/user/me/avatar', {
       method: 'PUT',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` },
       body: fd
@@ -140,7 +140,7 @@ export class PerfilComponent implements OnInit {
     if (!force && this.avatarSrc) return;
     const token = localStorage.getItem('token');
     if (!token) return;
-    fetch('https://tcc-main.up.railway.app/user/me/avatar?' + this.timestamp, {
+    fetch('http://https://tcc-main.up.railway.app/user/me/avatar?' + this.timestamp, {
       headers: { 'Authorization': `Bearer ${token}` }
     }).then(async r => {
       if (!r.ok) throw new Error('Sem avatar');

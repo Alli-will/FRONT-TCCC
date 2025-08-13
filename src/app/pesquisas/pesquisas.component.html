@@ -12,6 +12,9 @@
     <div class="card full">
       <h3 class="card-title">Pesquisas Disponíveis</h3>
       <div *ngIf="erro" class="alert erro">{{ erro }}</div>
+      <div *ngIf="isAdmin" style="margin-bottom:1rem;">
+        <a routerLink="/relatorios-pesquisas" class="responder-link" style="background:#276b7a;">Ver Relatórios</a>
+      </div>
       <ul class="lista" *ngIf="pesquisas.length">
         <li *ngFor="let pesquisa of pesquisas">
           <div class="item">
@@ -19,8 +22,9 @@
               <span class="titulo">{{ pesquisa.titulo }}</span>
               <span class="tag" [class.pulso]="pesquisa.tipo==='pulso'" [class.clima]="pesquisa.tipo==='clima'">{{ pesquisa.tipo }}</span>
             </div>
-            <div class="meta">
+            <div class="meta" style="display:flex; gap:.5rem;">
               <a class="responder-link" [routerLink]="['/responder-pesquisa', pesquisa.id]">Responder</a>
+              <!-- Botão de relatório removido da listagem pública -->
             </div>
           </div>
         </li>

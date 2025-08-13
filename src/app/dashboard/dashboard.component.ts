@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MenuComponent } from "../menu/menu.component";
 import { CadastroPesquisaComponent } from '../cadastro-pesquisa/cadastro-pesquisa.component';
@@ -15,10 +15,7 @@ import { AuthService } from '../services/auth.service';
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.css"],
 })
-export class DashboardComponent implements OnInit, AfterViewInit {
-  @ViewChild('chatContainer') chatContainerRef!: ElementRef<HTMLDivElement>;
-  mensagensChat: { tipo: 'ia' | 'user', texto: string }[] = [];
-  mensagemUsuario: string = '';
+export class DashboardComponent implements OnInit {
   colaboradores: any[] = [];
   departamentos: any[] = [];
   colaboradoresEmRisco: any[] = [];
@@ -35,8 +32,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   // Gauge interno (0-100) derivado do NPS real (-100 a 100)
   essGeral: number = 0;
   npsReal: number = 0;
-  showIA: boolean = false;
-  iaMensagem: string = "Olá! Sou sua assistente de IA para análise de bem-estar dos colaboradores. Posso ajudar você a identificar riscos psicossociais, analisar tendências emocionais e sugerir ações para melhorar o clima da equipe.";
+  pulsoAtual: any = null;
+  // IA removida
   busca: string = "";
   resultadosBusca: any[] = [];
   emotionPercentages: any[] = [];
@@ -70,45 +67,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
 
-  constructor(private dashboardService: DashboardService, private route: ActivatedRoute, private authService: AuthService) {
-    this.iaMensagem = "Olá! Sou sua assistente de IA para análise de bem-estar dos colaboradores. Posso ajudar você a identificar riscos psicossociais, analisar tendências emocionais e sugerir ações para melhorar o clima da equipe.";
-    this.mensagensChat = [
-      { tipo: 'ia', texto: this.iaMensagem }
-    ];
-  }
+  constructor(private dashboardService: DashboardService, private route: ActivatedRoute, private authService: AuthService) {}
 
-
-  enviarMensagem() {
-    const texto = this.mensagemUsuario.trim();
-    if (!texto) return;
-    this.mensagensChat.push({ tipo: 'user', texto });
-    this.mensagemUsuario = '';
-    setTimeout(() => {
-      this.mensagensChat.push({ tipo: 'ia', texto: 'No momento não estou Disponivel mas em breve estarei!' });
-      setTimeout(() => this.scrollChatToBottom(), 10);
-    }, 500);
-    setTimeout(() => {
-      this.scrollChatToBottom();
-    }, 10);
-  }
-
-  ngAfterViewInit() {
-    this.scrollChatToBottom();
-  }
-
-  private scrollChatToBottom() {
-    try {
-      if (this.chatContainerRef && this.chatContainerRef.nativeElement) {
-        this.chatContainerRef.nativeElement.scrollTop = this.chatContainerRef.nativeElement.scrollHeight;
-      }
-    } catch (err) {}
-  }
+  // Métodos de chat de IA removidos
 
   ngOnInit() {
   this.isAdmin = this.authService.isAdmin();
     const preload = this.route.snapshot.data['preload'];
     if (preload) {
-      const data = preload.metrics;
+  const data = preload.metrics;
   this.metricas = data.metricas || {};
   // Guarda NPS real (-100..100)
   this.npsReal = this.metricas.nps || 0;
@@ -118,6 +85,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   this.colaboradores = (data.colaboradores || []).filter((c: any) => c.npsDriverScore != null);
   this.departamentos = data.departamentos || [];
   this.colaboradoresEmRisco = (data.colaboradoresEmRisco || []);
+  this.pulsoAtual = data.pulsoAtual || null;
     }
     this.fetchEmotionPercentages();
     // Remover chamadas duplicadas de carregamento
@@ -132,6 +100,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   this.colaboradores = (data.colaboradores || []).filter((c: any) => c.npsDriverScore != null);
   this.departamentos = data.departamentos || [];
   this.colaboradoresEmRisco = (data.colaboradoresEmRisco || []);
+  this.pulsoAtual = data.pulsoAtual || null;
         // Removido cálculo local de ESS geral para não sobrescrever o valor do backend
       },
       error: (err) => {
@@ -142,6 +111,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.colaboradoresEmRisco = [];
   this.npsReal = 0;
   this.essGeral = 0;
+  this.pulsoAtual = null;
       }
     });
   }
@@ -226,5 +196,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     if (this.npsReal >= 50) return '#38b6a5'; // verde normal
     if (this.npsReal >= 0) return '#fbc02d';  // amarelo
     return '#ff7043';                         // laranja/vermelho
+  }
+
+  formatDate(d: any) {
+    if (!d) return '';
+    const dt = new Date(d);
+    return isNaN(dt.getTime()) ? '' : dt.toLocaleDateString('pt-BR');
   }
 }

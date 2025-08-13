@@ -39,9 +39,10 @@ form { display:flex; flex-direction:column; gap:1.1rem; }
 .qb-header .restore:disabled { opacity:.4; cursor:not-allowed; }
 .qs-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.55rem; }
 .qs-list li { background:#fff; border:1px solid #dfe9ee; padding:0.55rem 0.65rem; border-radius:0.65rem; display:grid; grid-template-columns:auto 1fr auto; gap:0.6rem; align-items:flex-start; }
-.qs-list .idx { font-weight:700; font-size:0.7rem; color:#2b3e43; }
-.qs-list .txt { font-size:0.7rem; line-height:1.1rem; color:#2d3a41; }
-.qs-list .rem { background:#fff; border:1px solid #ffc5c5; color:#cc2d2d; font-size:0.55rem; padding:0.35rem 0.55rem; border-radius:0.55rem; cursor:pointer; font-weight:600; }
+.qs-list .idx { font-weight:700; font-size:0.8rem; color:#2b3e43; }
+/* Aumentado para tamanho próximo ao título (0.8rem) */
+.qs-list .txt { font-size:0.85rem; line-height:1.25rem; color:#2d3a41; }
+.qs-list .rem { background:#fff; border:1px solid #ffc5c5; color:#cc2d2d; font-size:0.65rem; padding:0.4rem 0.65rem; border-radius:0.55rem; cursor:pointer; font-weight:600; }
 .qs-list .rem:hover { background:#ffe9e9; }
 .loading-mini { font-size:0.65rem; color:#6e858d; margin-top:1rem; }
 

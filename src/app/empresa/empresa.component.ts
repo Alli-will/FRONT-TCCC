@@ -54,7 +54,7 @@ export class EmpresaComponent implements OnInit {
   }
 
   private loadCompany(id: number) {
-    this.http.get(`https://tcc-main.up.railway.app/companies/${id}`).subscribe({
+    this.http.get(`http://https://tcc-main.up.railway.app/companies/${id}`).subscribe({
       next: (data) => { this.companyData = data; this.hasCompany = true; },
       error: () => { /* silencioso */ },
       complete: () => { this.companyLoaded = true; }
@@ -63,7 +63,7 @@ export class EmpresaComponent implements OnInit {
 
   private fetchAllCompanies() {
     this.loadingCompanies = true;
-    this.http.get<any[]>(`https://tcc-main.up.railway.app/companies`).subscribe({
+    this.http.get<any[]>(`http://https://tcc-main.up.railway.app/companies`).subscribe({
       next: data => { this.allCompanies = data || []; },
       error: () => {},
       complete: () => { this.loadingCompanies = false; this.companyLoaded = true; }
@@ -73,7 +73,7 @@ export class EmpresaComponent implements OnInit {
   enviar() {
     this.error = null; this.success = null;
     this.loading = true;
-    this.http.post('https://tcc-main.up.railway.app/companies', this.form).subscribe({
+    this.http.post('http://https://tcc-main.up.railway.app/companies', this.form).subscribe({
       next: (resp: any) => {
         this.success = 'Empresa cadastrada com sucesso!';
         if (this.isSupport) {

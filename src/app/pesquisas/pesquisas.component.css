@@ -1,5 +1,6 @@
 .pesquisas-page {
-  max-width: 900px;
+  /* Aumentado para dar mais espaço ao formulário de perguntas */
+  max-width: 1100px;
   margin: 0 auto;
   padding: 2.5rem 2rem;
 }
@@ -129,8 +130,16 @@
   margin-bottom: 1rem;
 }
 .form-card {
-  max-width: 520px;
+  /* Removido limite estreito para permitir ocupar quase toda a largura */
+  max-width: 100%;
 }
+
+/* Ajustes específicos para ampliar área das perguntas */
+app-cadastro-pesquisa .cadastro-pesquisa form { width:100%; }
+app-cadastro-pesquisa .questions-box { padding:1.1rem 1.2rem 1.2rem; }
+app-cadastro-pesquisa .qs-list li { grid-template-columns: 40px 1fr auto; }
+/* Harmonizado com aumento de fonte nas perguntas */
+app-cadastro-pesquisa .qs-list .txt { font-size:0.85rem; line-height:1.25rem; }
 
 /* Ajustes form interno reutilizado */
 app-cadastro-pesquisa .cadastro-pesquisa {

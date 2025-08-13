@@ -278,7 +278,6 @@ export class DiarioComponent implements OnInit {
       { id: 8, nome: 'Outro' },
     ];
 
-    console.log('Array reasons inicializado:', this.reasons);
 
     this.carregarEntradas();
     this.carregarInsights();

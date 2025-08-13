@@ -96,42 +96,6 @@
               do bem-estar de todos.
             </div>
           </div>
-          <div class="diary-card score-card">
-            <div class="score-title">
-              <strong>Score emocional</strong>
-              <div class="score-sub">Últimos 30 dias</div>
-            </div>
-            <div class="score-circle-svg">
-              <svg width="170" height="170">
-                <circle
-                  cx="85"
-                  cy="85"
-                  r="76"
-                  stroke="#eaf6ff"
-                  stroke-width="16"
-                  fill="none"
-                />
-                <circle
-                  cx="85"
-                  cy="85"
-                  r="76"
-                  [attr.stroke]="getScoreColor()"
-                  stroke-width="16"
-                  fill="none"
-                  [attr.stroke-dasharray]="477.52"
-                  [attr.stroke-dashoffset]="477.52 - (scorePercent / 100) * 477.52"
-                  stroke-linecap="round"
-                  style="transition: stroke-dashoffset 0.6s;"
-                  transform="rotate(-90 85 85)"
-                />
-              </svg>
-              <div class="score-center">
-                <span class="score-value">{{ scorePercent }}%</span>
-                <span class="score-label" [style.color]="getScoreColor()">{{ getScoreLabel() }}</span>
-              </div>
-            </div>
-            <div class="score-desc" [style.background]="getScoreDescBg()" [style.color]="getScoreDescColor()">{{ getScoreDesc() }}</div>
-          </div>
         </div>
         <div class="diary-card chart-card">
           <div class="chart-title">
