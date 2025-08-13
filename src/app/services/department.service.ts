@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class DepartmentService {
-  private apiUrl = 'http://https://tcc-main.up.railway.app/departments';
+  private apiUrl = 'https://tcc-main.up.railway.app/departments';
   constructor(private http: HttpClient) {}
   getAll(): Observable<any[]> { return this.http.get<any[]>(this.apiUrl); }
 }

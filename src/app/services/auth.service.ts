@@ -7,7 +7,8 @@ import { tap } from "rxjs/operators";
   providedIn: "root",
 })
 export class AuthService {
-  private apiUrl = "http://https://tcc-main.up.railway.app/auth";
+  // Base da API (produção). Avalie mover para um arquivo de environment.
+  private apiUrl = "https://tcc-main.up.railway.app/auth";
   private currentUserSubject: BehaviorSubject<string | null>;
   public currentUser: Observable<string | null>;
 

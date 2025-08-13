@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
-  private apiUrl = 'http://https://tcc-main.up.railway.app/searches';
+  // Base da API (produção). Avalie mover para um arquivo de environment.
+  private apiUrl = 'https://tcc-main.up.railway.app/searches';
 
   constructor(private http: HttpClient) {}
 
