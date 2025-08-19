@@ -13,11 +13,9 @@
   <ul *ngIf="!loading && colaboradoresAtivos.length > 0" class="lista-colaboradores">
     <li *ngFor="let c of colaboradoresAtivos" class="colab-item">
       <div class="colab-avatar" [class.tem-avatar]="c.avatarUrl">
-        <ng-container *ngIf="c.avatarUrl; else icone">
-          <img [src]="c.avatarUrl" alt="Avatar de {{ c.nomeCompleto }}" loading="lazy" decoding="async" />
-        </ng-container>
-        <ng-template #icone>
-          <span class="material-icons">person</span>
+        <img *ngIf="c.avatarUrl; else defaultUserAvatar" [src]="c.avatarUrl" alt="Avatar de {{ c.nomeCompleto }}" loading="lazy" decoding="async" />
+        <ng-template #defaultUserAvatar>
+          <img src="assets/default-avatar.svg" alt="Avatar padrão" />
         </ng-template>
       </div>
       <div class="colab-texto">
@@ -26,12 +24,16 @@
           {{ c.departamento }}
         </span>
         <div *ngIf="editandoId === c.id" class="dept-editor">
-          <select #selDept [disabled]="salvandoDept" [value]="c.departmentId || ''" (change)="salvarDepartamento(c, selDept.value)">
+          <select #selDept [disabled]="salvandoDept" [value]="tempEditDeptId ?? ''" (change)="tempEditDeptId = selDept.value ? +selDept.value : null">
             <option value="">Sem departamento</option>
             <option *ngFor="let d of departamentos" [value]="d.id">{{ d.name || d.nome || d.title || d.label || d.departmentName || d.description || d }}</option>
           </select>
           <button type="button" class="btn-cancelar" (click)="cancelarEdicao()" [disabled]="salvandoDept">×</button>
+          <button type="button" class="btn-confirmar" (click)="confirmarDepartamento(c)" [disabled]="salvandoDept">✓</button>
         </div>
+      </div>
+      <div class="colab-actions" *ngIf="isAdmin && editandoId !== c.id">
+        <button type="button" class="btn-alterar-depto" (click)="iniciarEdicao(c)">Alterar departamento</button>
       </div>
     </li>
   </ul>

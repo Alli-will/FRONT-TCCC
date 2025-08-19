@@ -80,5 +80,5 @@ export class DepartamentoNovoComponent {
     });
   }
 
-  voltar() { this.router.navigate(['/empresa']); }
+  voltar() { this.router.navigate(['/departamentos']); }
 }

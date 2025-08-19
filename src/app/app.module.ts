@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { AuthTokenInterceptor } from './services/auth-token.interceptor';
 
 import { CadastroPesquisaComponent } from './cadastro-pesquisa/cadastro-pesquisa.component';
 import { SearchService } from './services/search.service';
@@ -17,6 +18,9 @@ import { AppRoutingModule } from './app-routing.module';
     HttpClientModule,
     AppRoutingModule
   ],
-  providers: [SearchService]
+  providers: [
+    SearchService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthTokenInterceptor, multi: true }
+  ]
 })
 export class AppModule {}

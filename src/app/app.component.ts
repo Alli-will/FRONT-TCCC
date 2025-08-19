@@ -3,6 +3,9 @@ import { RouterOutlet, Router, NavigationStart, NavigationEnd, NavigationCancel,
 import { FormsModule } from '@angular/forms';
 import { LoadingIndicatorComponent } from './loading-indicator.component';
 import { CommonModule } from '@angular/common';
+import { LoadingService } from './services/loading.service';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { map, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -13,20 +16,39 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent implements OnInit {
   title = 'app-teste';
-  isLoading = false;
+  isLoading$ = combineLatest([
+    // router nav active stream
+    new BehaviorSubject<boolean>(false),
+    this.loading.loading$
+  ]).pipe(
+    map(([nav, blocks]) => nav || blocks),
+    distinctUntilChanged(),
+    shareReplay(1)
+  );
+  private navActive$ = new BehaviorSubject<boolean>(false);
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private loading: LoadingService) {
+    // Rebuild isLoading$ with the actual navActive$ instance
+    this.isLoading$ = combineLatest([
+      this.navActive$,
+      this.loading.loading$
+    ]).pipe(
+      map(([nav, blocks]) => nav || blocks),
+      distinctUntilChanged(),
+      shareReplay(1)
+    );
+  }
 
   ngOnInit() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
-        this.isLoading = true;
+  Promise.resolve().then(() => this.navActive$.next(true));
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
-        setTimeout(() => this.isLoading = false, 400); 
+  Promise.resolve().then(() => this.navActive$.next(false));
       }
     });
   }

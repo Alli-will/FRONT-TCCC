@@ -18,6 +18,7 @@ import { AuthService } from '../services/auth.service';
 export class DashboardComponent implements OnInit {
   colaboradores: any[] = [];
   departamentos: any[] = [];
+  deptBars: Array<{ nome: string; respondentes: number; promotores: number; detratores: number; neutros: number; promotoresPct: number; detratoresPct: number; neutrosPct: number; nps: number | null; insuficiente: boolean }>= [];
   colaboradoresEmRisco: any[] = [];
   metricas: any = {
     ativos: 0,
@@ -86,6 +87,7 @@ export class DashboardComponent implements OnInit {
   this.departamentos = data.departamentos || [];
   this.colaboradoresEmRisco = (data.colaboradoresEmRisco || []);
   this.pulsoAtual = data.pulsoAtual || null;
+  this.computeDeptBars();
     }
     this.fetchEmotionPercentages();
     // Remover chamadas duplicadas de carregamento
@@ -101,6 +103,7 @@ export class DashboardComponent implements OnInit {
   this.departamentos = data.departamentos || [];
   this.colaboradoresEmRisco = (data.colaboradoresEmRisco || []);
   this.pulsoAtual = data.pulsoAtual || null;
+  this.computeDeptBars();
         // Removido cálculo local de ESS geral para não sobrescrever o valor do backend
       },
       error: (err) => {
@@ -112,6 +115,7 @@ export class DashboardComponent implements OnInit {
   this.npsReal = 0;
   this.essGeral = 0;
   this.pulsoAtual = null;
+  this.deptBars = [];
       }
     });
   }
@@ -202,5 +206,46 @@ export class DashboardComponent implements OnInit {
     if (!d) return '';
     const dt = new Date(d);
     return isNaN(dt.getTime()) ? '' : dt.toLocaleDateString('pt-BR');
+  }
+
+  private computeDeptBars() {
+    const by: Record<string, { prom: number; det: number; neu: number; total: number; nps?: number }> = {};
+    // usar colaboradores (cada um tem departamento e categoria)
+    for (const c of this.colaboradores) {
+      const dept = c.departamento || 'Sem departamento';
+      if (!by[dept]) by[dept] = { prom: 0, det: 0, neu: 0, total: 0 };
+      by[dept].total++;
+      if (c.categoria === 'promotor') by[dept].prom++;
+      else if (c.categoria === 'detrator') by[dept].det++;
+      else by[dept].neu++;
+    }
+    // opcional: usar NPS do backend por departamento se disponível
+    const npsByDept: Record<string, number> = {};
+    for (const d of this.departamentos || []) {
+      if (typeof d?.nome === 'string' && typeof d?.nps === 'number') npsByDept[d.nome] = d.nps;
+    }
+    this.deptBars = Object.entries(by).map(([nome, v]) => {
+      const total = v.total || 0;
+      const promPct = total ? Math.round((v.prom / total) * 1000) / 10 : 0;
+      const detPct = total ? Math.round((v.det / total) * 1000) / 10 : 0;
+      const neuPct = Math.max(0, 100 - promPct - detPct); // garante soma 100
+  const insuficiente = total < 2; // considerar apenas se >= 2 respondentes
+      // calcular NPS se backend não trouxe
+      const npsCalc = total ? Math.round(((v.prom / total) - (v.det / total)) * 100) : 0;
+      const npsBack = (nome in npsByDept) ? npsByDept[nome] : npsCalc;
+      const nps: number | null = insuficiente ? null : npsBack;
+      return {
+        nome,
+        respondentes: total,
+        promotores: v.prom,
+        detratores: v.det,
+        neutros: v.neu,
+        promotoresPct: promPct,
+        detratoresPct: detPct,
+        neutrosPct: neuPct,
+        nps,
+        insuficiente
+      };
+    }).sort((a, b) => a.nome.localeCompare(b.nome));
   }
 }

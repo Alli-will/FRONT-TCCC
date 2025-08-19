@@ -143,22 +143,25 @@
   <!-- Seção de alertas de risco removida a pedido -->
     <div class="departamentos-section">
       <h3>NPS por Departamento</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Departamento</th>
-            <th>NPS</th>
-            <th>Respondentes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let d of departamentos">
-            <td>{{ d.nome }}</td>
-            <td>{{ d.nps }}</td>
-            <td>{{ d.respondentes }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="dept-bars">
+        <div class="dept-row" *ngFor="let d of deptBars">
+          <div class="dept-header">
+            <strong class="dept-nome">{{ d.nome }}</strong>
+            <span class="dept-meta" *ngIf="!d.insuficiente; else insufMsg">NPS: {{ d.nps }} • Respondentes: {{ d.respondentes }}</span>
+            <ng-template #insufMsg><span class="dept-meta warn">Respondentes: {{ d.respondentes }} • Não há respostas suficientes para análise</span></ng-template>
+          </div>
+          <div class="dept-bar" *ngIf="!d.insuficiente; else barraVazia">
+            <div class="seg detratores" *ngIf="d.detratoresPct > 0" [style.width.%]="d.detratoresPct">Detratores {{ d.detratoresPct }}%</div>
+            <div class="seg neutros" *ngIf="d.neutrosPct > 0" [style.width.%]="d.neutrosPct">Neutros {{ d.neutrosPct }}%</div>
+            <div class="seg promotores" *ngIf="d.promotoresPct > 0" [style.width.%]="d.promotoresPct">Promotores {{ d.promotoresPct }}%</div>
+          </div>
+          <ng-template #barraVazia>
+            <div class="dept-bar disabled">
+              <div class="seg" style="width:100%; color:#666; background:#eee;">Sem dados suficientes</div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
     </div>
     <!--
     <div class="colaboradores-section">

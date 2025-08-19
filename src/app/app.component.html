@@ -1,4 +1,4 @@
-<app-loading-indicator *ngIf="isLoading"></app-loading-indicator>
+<app-loading-indicator *ngIf="(isLoading$ | async)"></app-loading-indicator>
 <router-outlet></router-outlet>
 
 

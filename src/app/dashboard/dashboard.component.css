@@ -240,26 +240,19 @@
 .departamentos-section {
   margin-bottom: 2rem;
 }
-.departamentos-section table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 0.7rem;
-  overflow: hidden;
-  box-shadow: 0 1px 4px #0001;
-}
-.departamentos-section th,
-.departamentos-section td {
-  padding: 0.7rem 1rem;
-  text-align: left;
-}
-.departamentos-section th {
-  background: #f0f0f0;
-  color: #444;
-}
-.departamentos-section td {
-  color: #222;
-}
+.dept-bars { display: flex; flex-direction: column; gap: 14px; }
+.dept-row { background: #fff; border-radius: .7rem; box-shadow: 0 1px 4px #0001; padding: .8rem .9rem; }
+.dept-header { display:flex; align-items:center; justify-content: space-between; margin-bottom:.5rem; gap:.75rem; }
+.dept-nome { color:#222; font-weight:700; }
+.dept-meta { color:#666; font-size:.9rem; }
+.dept-bar { display:flex; height:34px; border-radius:.6rem; overflow:hidden; background:#eaf6ff; }
+/* allow segments to shrink to 0 without text forcing width */
+.dept-bar .seg { display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:.9rem; white-space:nowrap; min-width:0; }
+.dept-bar .detratores { background:#ef5350; }
+.dept-bar .neutros { background:#fbc02d; color:#333; }
+.dept-bar .promotores { background:#2e7d32; }
+.dept-bar.disabled { background:#f3f3f3; }
+.dept-meta.warn { color:#b26a00; }
 
 /*
 .colaboradores-section {

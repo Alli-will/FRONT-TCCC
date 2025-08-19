@@ -29,11 +29,9 @@
   <div class="sidebar-footer">
   <div *ngIf="isLoggedIn" class="sidebar-profile-block sidebar-profile-card" routerLink="/perfil" style="cursor:pointer" title="Ver perfil">
       <div class="sidebar-avatar" [class.tem-avatar]="avatarUrl">
-        <ng-container *ngIf="avatarUrl; else noAvatar">
-          <img [src]="avatarUrl" alt="Avatar" decoding="async" loading="lazy" fetchpriority="high" />
-        </ng-container>
-        <ng-template #noAvatar>
-          <span class="material-icons">person</span>
+        <img *ngIf="avatarUrl; else defaultAvatar" [src]="avatarUrl" alt="Avatar" decoding="async" loading="lazy" fetchpriority="high" />
+        <ng-template #defaultAvatar>
+          <img src="assets/default-avatar.svg" alt="Avatar padrão" />
         </ng-template>
       </div>
       <div class="sidebar-profile-info">

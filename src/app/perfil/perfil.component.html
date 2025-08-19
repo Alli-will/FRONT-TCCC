@@ -45,6 +45,10 @@
           <input id="email" name="email" [(ngModel)]="user.email" required type="email" />
         </ng-template>
       </div>
+      <div class="field-group">
+        <label>Departamento</label>
+        <div class="field-value" title="Este campo é somente leitura">{{ user.departmentName || 'Departamento não definido' }}</div>
+      </div>
       <div class="field-group" *ngIf="editMode">
         <label>Nova Senha <span class="label-opcional">(opcional)</span></label>
         <input id="password" name="password" type="password" [(ngModel)]="user.password" placeholder="Digite para alterar" />

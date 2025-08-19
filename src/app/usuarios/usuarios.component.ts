@@ -1,9 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MenuComponent } from '../menu/menu.component';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../services/user.service';
 import { RouterModule } from '@angular/router';
+import { MenuComponent } from '../menu/menu.component';
+import { UserService } from '../services/user.service';
+import { DepartmentService } from '../services/department.service';
 import { AuthService } from '../services/auth.service';
+import { LoadingService } from '../services/loading.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -14,77 +16,138 @@ import { AuthService } from '../services/auth.service';
 })
 export class UsuariosComponent implements OnInit, OnDestroy {
   colaboradoresAtivos: any[] = [];
+  departamentos: any[] = [];
+  erro = '';
   loading = true;
-  erro: string | null = null;
+  isAdmin = false;
+  editandoId: number | null = null;
+  // valor temporário do departamento enquanto edita
+  tempEditDeptId: number | null = null;
+  salvandoDept = false;
   private avatarObjectUrls: string[] = [];
 
-  isAdmin = false;
-  departamentos: any[] = [];
-  editandoId: number | null = null;
-  salvandoDept = false;
+  constructor(
+    private userService: UserService,
+    private deptService: DepartmentService,
+  private auth: AuthService,
+  private loadingSvc: LoadingService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-  constructor(private userService: UserService, private authService: AuthService) {}
-
-  ngOnInit() {
-  this.isAdmin = this.authService.isAdmin();
-  if (this.isAdmin) {
-    this.userService.getDepartmentsLocal().subscribe({
-      next: d => this.departamentos = d || [],
+  ngOnInit(): void {
+    this.isAdmin = this.auth.isAdmin();
+    // Carrega departamentos
+    this.deptService.getAll().subscribe({
+      next: (d) => this.departamentos = d || [],
       error: () => {}
     });
-  }
-  this.userService.getAllUsers().subscribe({
-      next: (users) => {
-        this.colaboradoresAtivos = (users || [])
-          .filter((u: any) => u.ativo !== false && u.role !== 'support')
-          .map((u: any) => ({
-            id: u.id || u.userId || u.ID || null,
-            first_Name: u.first_Name,
-            last_Name: u.last_Name,
-            nomeCompleto: (u.first_Name || '') + ' ' + (u.last_Name || ''),
-            departamento: u.departamento || u.department || 'Departamento não definido',
-            avatarUrl: null
-          }));
-        this.loading = false;
-        this.carregarAvatares();
+    // Carrega usuários
+    this.userService.getAllUsers().subscribe({
+      next: (users: any[]) => {
+        const mapped = (users || []).map((u: any) => {
+          const dept = this.extractDepartment(u);
+          return {
+          id: u.id,
+          nomeCompleto: `${u.first_Name || u.firstName || ''} ${u.last_Name || u.lastName || ''}`.trim() || u.nome || u.name || u.email || 'Sem nome',
+          departamento: dept.name,
+          departmentId: dept.id,
+          avatarUrl: null,
+          _etag: null,
+          _objectUrl: null
+        }});
+  this.colaboradoresAtivos = mapped;
+  this.loading = false;
+  // Carrega avatares após renderizar lista e bloqueia loader global até finalizar
+  setTimeout(() => this.carregarAvatares(true), 0);
       },
-      error: (err) => {
+      error: () => {
         this.erro = 'Erro ao carregar colaboradores.';
         this.loading = false;
       }
     });
   }
 
-  private carregarAvatares() {
+  private isValidBase64(s: string): boolean {
+    if (!s || typeof s !== 'string') return false;
+    try { return btoa(atob(s)) === s.replace(/\s/g, ''); } catch { return false; }
+  }
+
+  private carregarAvatares(blockGlobal = false) {
     const token = localStorage.getItem('token');
     if (!token) return;
-    this.colaboradoresAtivos.forEach(c => {
-      if (!c.id) return; // sem id não busca
-      // tenta primeiro local
-      const urlLocal = `https://tcc-main.up.railway.app/user/${c.id}/avatar?ts=${Date.now()}`;
-      fetch(urlLocal, { headers: { 'Authorization': `Bearer ${token}` } })
-        .then(async r => {
-          if (!r.ok) throw new Error('no avatar');
-          const blob = await r.blob();
-          if (!blob || blob.size === 0) throw new Error('empty');
-          const objUrl = URL.createObjectURL(blob);
-            c.avatarUrl = objUrl;
-            this.avatarObjectUrls.push(objUrl);
-        })
-        .catch(() => {
-          // fallback remoto
-          const remote = `https://tcc-main.up.railway.app/user/${c.id}/avatar?ts=${Date.now()}`;
-          fetch(remote, { headers: { 'Authorization': `Bearer ${token}` } })
-            .then(async r2 => {
-              if (!r2.ok) return;
-              const blob2 = await r2.blob();
-              if (!blob2 || blob2.size === 0) return;
-              const objUrl2 = URL.createObjectURL(blob2);
-              c.avatarUrl = objUrl2;
-              this.avatarObjectUrls.push(objUrl2);
-            }).catch(()=>{});
+    const apiBase = window.location.hostname.includes('localhost')
+      ? 'https://tcc-main.up.railway.app'
+      : 'https://tcc-main.up.railway.app';
+    const tasks: Promise<void>[] = [];
+    this.colaboradoresAtivos.forEach((c: any) => {
+      if (!c.id) return;
+      const ts = Date.now();
+      const task = (async () => {
+        try {
+        const metaResp = await fetch(`${apiBase}/user/${c.id}/avatar/meta?ts=${ts}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
+        if (!metaResp.ok) throw new Error('meta');
+        const meta = await metaResp.json();
+        if (!meta?.hasAvatar) return;
+
+        if (meta.etag && c._etag === meta.etag && c._objectUrl) {
+          c.avatarUrl = c._objectUrl;
+          this.cdr.detectChanges();
+          return;
+        }
+
+        const headers: any = { Authorization: `Bearer ${token}` };
+        if (c._etag) headers['If-None-Match'] = `"${c._etag}"`;
+        let resp = await fetch(`${apiBase}/user/${c.id}/avatar?ts=${ts}`, { headers });
+        if (resp.status === 304 && !c._objectUrl) {
+          resp = await fetch(`${apiBase}/user/${c.id}/avatar?ts=${Date.now()}`, { headers: { Authorization: `Bearer ${token}` } });
+        }
+        if (resp.status === 204) return;
+        if (!resp.ok) throw new Error('blob');
+        c._etag = meta.etag || null;
+        const blob = await resp.blob();
+        if (!blob || (blob as any).size === 0) return;
+        if (c._objectUrl) URL.revokeObjectURL(c._objectUrl);
+        const objUrl = URL.createObjectURL(blob);
+        c._objectUrl = objUrl;
+        c.avatarUrl = objUrl;
+        this.avatarObjectUrls.push(objUrl);
+        this.cdr.detectChanges();
+      } catch {
+        try {
+          const r = await fetch(`${apiBase}/user/${c.id}/avatar/base64?ts=${Date.now()}`, { headers: { Authorization: `Bearer ${token}` } });
+          if (r.ok) {
+            const data = await r.json();
+            if (data?.hasAvatar && typeof data.base64 === 'string' && this.isValidBase64(data.base64)) {
+              const mime = data.mimeType || 'image/png';
+              c.avatarUrl = `data:${mime};base64,${data.base64}`;
+              this.cdr.detectChanges();
+              return;
+            }
+          }
+        } catch {}
+        try {
+          const r2 = await fetch(`${apiBase}/user/${c.id}/avatar?ts=${Date.now()}`, { headers: { Authorization: `Bearer ${token}` } });
+          if (r2.ok) {
+            const blob2: Blob = await r2.blob();
+            if (!blob2 || (blob2 as any).size === 0) return;
+            if (c._objectUrl) URL.revokeObjectURL(c._objectUrl);
+            const url2 = URL.createObjectURL(blob2);
+            c._objectUrl = url2;
+            c.avatarUrl = url2;
+            this.avatarObjectUrls.push(url2);
+            this.cdr.detectChanges();
+          }
+        } catch {}
+      }
+      })();
+      tasks.push(task);
     });
+    if (blockGlobal && tasks.length) {
+      this.loadingSvc.block();
+      Promise.allSettled(tasks).finally(() => this.loadingSvc.unblock());
+    }
   }
 
   ngOnDestroy(): void {
@@ -94,17 +157,28 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   iniciarEdicao(c: any) {
     if (!this.isAdmin) return;
     this.editandoId = c.id;
+    // pré-seleciona o departamento atual
+    this.tempEditDeptId = c.departmentId ?? null;
   }
 
   cancelarEdicao() {
     this.editandoId = null;
+    this.tempEditDeptId = null;
   }
 
-  salvarDepartamento(c: any, novoDeptId: string) {
+  confirmarDepartamento(c: any) {
+    // confirma utilizando o valor temporário escolhido no seletor
+    this.salvarDepartamento(c, this.tempEditDeptId);
+  }
+
+  salvarDepartamento(c: any, novoDeptId: number | null | undefined) {
     if (!this.isAdmin) return;
-    const deptId = novoDeptId ? Number(novoDeptId) : null;
+    const deptId = (novoDeptId !== undefined && novoDeptId !== null) ? Number(novoDeptId) : null;
     this.salvandoDept = true;
-    fetch(`https://tcc-main.up.railway.app/user/${c.id}/department`, {
+    const apiBase = window.location.hostname.includes('localhost')
+      ? 'https://tcc-main.up.railway.app'
+      : 'https://tcc-main.up.railway.app';
+    fetch(`${apiBase}/user/${c.id}/department`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -114,13 +188,36 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     }).then(r => r.json())
       .then(resp => {
         if (resp?.user) {
-          c.departamento = resp.user.department || 'Departamento não definido';
-          c.departmentId = resp.user.departmentId;
+          const dept = this.extractDepartment(resp.user);
+          c.departamento = dept.name;
+          c.departmentId = dept.id;
         }
         this.editandoId = null;
+        this.tempEditDeptId = null;
       })
       .catch(()=>{})
       .finally(()=>{ this.salvandoDept = false; });
   }
 
+  // Extrai nome/id do departamento de diferentes formatos
+  private extractDepartment(u: any): { name: string; id: number | null } {
+    const raw = u?.department ?? u?.departamento ?? u?.dept ?? null;
+    let name = '';
+    let id: number | null = null;
+    if (typeof raw === 'string') {
+      name = raw;
+    } else if (raw && typeof raw === 'object') {
+      name = raw.name || raw.nome || raw.title || raw.label || raw.departmentName || raw.description || '';
+      if (raw.id != null) {
+        const n = Number(raw.id);
+        id = isNaN(n) ? null : n;
+      }
+    }
+    if (!name) name = u?.departmentName || u?.department_name || 'Departamento não definido';
+    if (id == null) {
+      const n2 = u?.departmentId ?? u?.department_id;
+      id = (n2 != null && !isNaN(Number(n2))) ? Number(n2) : null;
+    }
+    return { name: name || 'Departamento não definido', id };
+  }
 }
