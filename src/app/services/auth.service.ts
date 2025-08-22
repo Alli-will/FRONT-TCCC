@@ -2,13 +2,16 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, BehaviorSubject } from "rxjs";
 import { tap } from "rxjs/operators";
+import { resolveApiBase } from './api-base';
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
   // Base da API (produção). Avalie mover para um arquivo de environment.
-  private apiUrl = "https://tcc-main.up.railway.app/auth";
+  private primaryBase = resolveApiBase();
+  private remoteBase = 'https://tcc-main.up.railway.app';
+  private apiUrl = `${this.primaryBase}/auth`;
   private currentUserSubject: BehaviorSubject<string | null>;
   public currentUser: Observable<string | null>;
 

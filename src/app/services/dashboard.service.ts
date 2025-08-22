@@ -6,6 +6,7 @@ import { resolveApiBase } from './api-base';
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private primaryBase = resolveApiBase();
+  // Fallback remoto (produção)
   private remoteBase = 'https://tcc-main.up.railway.app';
   private apiUrl = `${this.primaryBase}/dashboard/metrics`;
 

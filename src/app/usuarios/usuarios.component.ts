@@ -77,7 +77,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     const token = localStorage.getItem('token');
     if (!token) return;
     const localBase = resolveApiBase();
-    const remoteBase = 'https://tcc-main.up.railway.app';
+  const remoteBase = 'https://tcc-main.up.railway.app';
     let apiBase = localBase;
     const tasks: Promise<void>[] = [];
     this.colaboradoresAtivos.forEach((c: any) => {
@@ -206,7 +206,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     const deptId = (novoDeptId !== undefined && novoDeptId !== null) ? Number(novoDeptId) : null;
     this.salvandoDept = true;
     const localBase = resolveApiBase();
-    const remoteBase = 'https://tcc-main.up.railway.app';
+  const remoteBase = 'https://tcc-main.up.railway.app';
     const tryUpdate = async (base: string) => fetch(`${base}/user/${c.id}/department`, {
       method: 'PUT',
       headers: {

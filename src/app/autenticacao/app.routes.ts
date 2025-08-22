@@ -29,16 +29,10 @@ class RootRedirectComponent {
     const router = inject(Router);
     const info = auth.getUserInfoFromToken();
     // Redireciona:
-    // support -> /empresa
-    // employee -> /diario (nova página inicial para colaboradores)
-    // admin (ou outros) -> /dashboard
-    if (info?.role === 'support') {
-      router.navigate(['/empresa']);
-    } else if (info?.role === 'employee') {
-      router.navigate(['/diario']);
-    } else {
-      router.navigate(['/dashboard']);
-    }
+  // support -> /empresa
+  // demais (employee, admin, etc) -> /dashboard
+  if (info?.role === 'support') router.navigate(['/empresa']);
+  else router.navigate(['/dashboard']);
   }
 }
 
