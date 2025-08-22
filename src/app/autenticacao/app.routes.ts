@@ -28,11 +28,11 @@ class RootRedirectComponent {
     const auth = inject(AuthService);
     const router = inject(Router);
     const info = auth.getUserInfoFromToken();
-    // Redireciona:
+  // Redireciona:
   // support -> /empresa
-  // demais (employee, admin, etc) -> /dashboard
+  // demais (employee, admin, etc) -> /pesquisas (nova página inicial)
   if (info?.role === 'support') router.navigate(['/empresa']);
-  else router.navigate(['/dashboard']);
+  else router.navigate(['/pesquisas']);
   }
 }
 
@@ -91,5 +91,5 @@ export const routes: Routes = [
     canActivate: [AuthGuard, AdminGuard],
     loadComponent: () => import('../pesquisas/relatorio-pesquisa.component').then(m => m.RelatorioPesquisaComponent)
   },
-  { path: "**", redirectTo: "dashboard" },
+  { path: "**", redirectTo: "pesquisas" },
 ];
