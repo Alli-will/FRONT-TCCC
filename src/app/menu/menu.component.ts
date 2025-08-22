@@ -87,8 +87,8 @@ export class MenuComponent implements OnInit {
 
     // Base da API dinâmica: localhost em dev, Railway em prod
     const apiBase = window.location.hostname.includes('localhost')
-      ? 'http://localhost:3000'
-      : 'http://localhost:3000';
+      ? 'https://tcc-main.up.railway.app'
+      : 'https://tcc-main.up.railway.app';
 
     // Primeiro, consultar meta: hasAvatar + etag
   fetch(`${apiBase}/user/me/avatar/meta?ts=${this.avatarTs}`, {
