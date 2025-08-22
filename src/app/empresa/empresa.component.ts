@@ -97,4 +97,6 @@ export class EmpresaComponent implements OnInit {
   return this.role === 'admin';
   }
 
+  navigateToCompanyUsers(c: any) { this.router.navigate(['/empresa/usuarios', c.id]); }
+
 }

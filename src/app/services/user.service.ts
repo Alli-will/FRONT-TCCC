@@ -1,19 +1,21 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, catchError, switchMap, throwError } from "rxjs";
+import { resolveApiBase } from './api-base';
 
 @Injectable({
   providedIn: "root",
 })
 export class UserService {
-  private apiUrl = "https://tcc-main.up.railway.app/user/register-access";
-  private apiAllUsersUrl = "https://tcc-main.up.railway.app/user";
-  private localCreateCollaboratorUrl = "https://tcc-main.up.railway.app/user/create-collaborator";
-  private localDepartmentsUrl = "https://tcc-main.up.railway.app/departments";
-  private localUserByEmailUrl = "https://tcc-main.up.railway.app/user/by-email";
-  private localMeUrl = "https://tcc-main.up.railway.app/user/me";
-  private remoteMeUrl = "https://tcc-main.up.railway.app/user/me";
-  private remoteUserByEmailUrl = "https://tcc-main.up.railway.app/user/by-email";
+  private base = resolveApiBase();
+  private apiUrl = `${this.base}/user/register-access`;
+  private apiAllUsersUrl = `${this.base}/user`;
+  private localCreateCollaboratorUrl = `${this.base}/user/create-collaborator`;
+  private localDepartmentsUrl = `${this.base}/departments`;
+  private localUserByEmailUrl = `${this.base}/user/by-email`;
+  private localMeUrl = `${this.base}/user/me`;
+  private remoteMeUrl = this.localMeUrl; // mesma base
+  private remoteUserByEmailUrl = this.localUserByEmailUrl;
 
   constructor(private http: HttpClient) {}
 

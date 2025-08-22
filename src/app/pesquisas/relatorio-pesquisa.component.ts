@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +10,7 @@ import { MenuComponent } from '../menu/menu.component';
   selector: 'app-relatorio-pesquisa',
   standalone: true,
   imports: [CommonModule, RouterLink, MenuComponent, FormsModule],
+  encapsulation: ViewEncapsulation.None,
   template: `
     <app-menu></app-menu>
     <div class="relatorio-page" *ngIf="loaded; else loadingTpl">
@@ -17,7 +18,7 @@ import { MenuComponent } from '../menu/menu.component';
         <h2>Relatório da Pesquisa</h2>
         <a routerLink="/pesquisas" class="voltar">Voltar</a>
       </div>
-      <div *ngIf="erro" class="erro">{{ erro }}</div>
+  <div *ngIf="erro" class="erro">{{ erro }}</div>
       <ng-container *ngIf="!erro">
         <div class="meta">
           <div class="meta-left">
@@ -42,7 +43,7 @@ import { MenuComponent } from '../menu/menu.component';
             </div>
           </div>
         </div>
-  <div *ngIf="report?.tipo==='pulso' && report?.nps !== null" class="nps-block">
+  <div *ngIf="canShowNps()" class="nps-block">
           <div class="nps-card">
             <div class="nps-value">NPS (1ª pergunta): <span [style.color]="getNpsColor(report?.nps)">{{ report?.nps }}</span></div>
             <div class="metodo-hint">usa somente a primeira pergunta. Cada usuário conta uma vez. Promotores 9-10, Neutros 7-8, Detratores 0-6. NPS = (%Promotores - %Detratores). Distribuição: notas da 1ª pergunta.</div>
@@ -61,8 +62,12 @@ import { MenuComponent } from '../menu/menu.component';
             </div>
           </div>
         </div>
-        <h4>Perguntas</h4>
-        <table class="tbl-perguntas" *ngIf="report?.perguntas?.length">
+        <div *ngIf="selectedDepartmentId && !canShowNps() && report?.tipo==='pulso'" class="nps-bloqueado">
+          NPS indisponível para este setor: não há dados suficientes para análise(mínimo 2 respondentes necessários).
+        </div>
+  <h4 *ngIf="canShowPerguntas()">Perguntas</h4>
+  <div *ngIf="!canShowPerguntas()" class="nps-bloqueado">Perguntas e médias não exibidas por ausência de dados suficientes para análise.</div>
+  <table class="tbl-perguntas" *ngIf="canShowPerguntas() && report?.perguntas?.length">
           <thead>
             <tr>
               <th style="width:40px;">#</th>
@@ -77,10 +82,14 @@ import { MenuComponent } from '../menu/menu.component';
               <td>{{ p.texto }}</td>
               <td>{{ p.media !== null ? p.media : '-' }}</td>
               <td>
-                <div class="dist-row">
-                  <div *ngFor="let item of distEntries(p.distribuicao)" class="dist-seg" [style.flex]="item.count" [title]="item.key + ': ' + item.percent + '%'">
-                    <span>{{ item.key }} ({{ item.percent }}%)</span>
-                  </div>
+                <div class="dist-bar" *ngIf="p.distribuicao" [ngStyle]="{ background: gradientBackground(p.distribuicao, report?.tipo) }" title="Distribuição das notas">
+                  <ng-container *ngFor="let seg of gradientSegments(p.distribuicao, report?.tipo)">
+                    <div class="dist-label"
+                         *ngIf="seg.percent >= 5"
+                         [ngStyle]="{left: seg.start+'%', width: seg.width+'%', color: seg.textColor}">
+                      {{ seg.percent.toFixed(0) }}%
+                    </div>
+                  </ng-container>
                 </div>
               </td>
             </tr>
@@ -133,10 +142,11 @@ import { MenuComponent } from '../menu/menu.component';
     .tbl-perguntas { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 2px 8px #0000000d; border:1px solid #e0edf3; }
     .tbl-perguntas th { text-align:left; font-size:.7rem; letter-spacing:.5px; text-transform:uppercase; padding:.65rem .7rem; background:#f5f9fa; }
     .tbl-perguntas td { padding:.55rem .7rem; font-size:.8rem; vertical-align:top; border-top:1px solid #eef3f5; }
-    .dist-row { display:flex; gap:2px; background:#f1f5f7; border-radius:.4rem; overflow:hidden; }
-    .dist-seg { background:#38b6a5; color:#fff; font-size:.55rem; display:flex; align-items:center; justify-content:center; padding:.25rem .4rem; position:relative; }
-    .dist-seg:nth-child(2n) { background:#4f8cff; }
+  /* Barra de distribuição mais "grossa" conforme solicitado */
+  .dist-bar { width:350px; height:24px; border-radius:.45rem; overflow:hidden; background:#f1f5f7; position:relative; }
+  .dist-label { position:absolute; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size:.55rem; font-weight:600; text-shadow:0 1px 2px #0007; pointer-events:none; }
     .erro { background:#ffe9e9; border:1px solid #ffc5c5; color:#d93030; padding:.7rem .9rem; border-radius:.7rem; font-size:.8rem; margin-bottom:1rem; }
+  .nps-bloqueado { background:#fff8e1; border:1px solid #ffe1a3; color:#8a6400; padding:.55rem .75rem; border-radius:.6rem; font-size:.7rem; font-weight:600; margin-bottom:1rem; }
   `]
 })
 export class RelatorioPesquisaComponent {
@@ -169,6 +179,54 @@ export class RelatorioPesquisaComponent {
   pct(count: any): string { if (!this.report?.totalRespondentes) return '0%'; const c = Number(count)||0; return ((c/ this.report.totalRespondentes)*100).toFixed(1)+'%'; }
   npsKeys() { return this.report?.npsDistribuicao ? Object.keys(this.report.npsDistribuicao) : []; }
   distEntries(dist: any) { return Object.keys(dist||{}).map(k=> ({ key:k, ...dist[k] })).sort((a,b)=> Number(a.key)-Number(b.key)); }
+  // Funções para gerar gradient e labels
+  buildStack(_: any, __?: string) { return []; }
+
+  gradientSegments(dist: any, tipo?: string) {
+    if (!dist) return [];
+    const scores = tipo === 'clima' ? [1,2,3,4,5] : [0,1,2,3,4,5,6,7,8,9,10];
+    const raw = scores.map(s => {
+      const entry = dist[String(s)] || { percent: 0 };
+      const percent = typeof entry.percent === 'number' ? entry.percent : 0;
+      return { score: s, percent, color: this.getScoreBandColor(s, tipo) };
+    }).filter(r => r.percent > 0);
+    // Merge adjacentes de mesma cor
+    const merged: { color:string; percent:number; scores:number[] }[] = [];
+    raw.forEach(r => {
+      const last = merged[merged.length-1];
+      if (last && last.color === r.color) { last.percent += r.percent; last.scores.push(r.score); } else { merged.push({ color:r.color, percent:r.percent, scores:[r.score] }); }
+    });
+    let acc = 0;
+    return merged.map(m => {
+      const start = acc;
+      acc += m.percent;
+      const end = acc > 100 ? 100 : acc;
+      const width = end - start;
+      return { start, end, width, percent: m.percent, color: m.color, textColor: m.color === '#fbc02d' ? '#2d2d2d' : '#fff' };
+    });
+  }
+
+  gradientBackground(dist: any, tipo?: string) {
+    const segments = this.gradientSegments(dist, tipo);
+    if (!segments.length) return '#f1f5f7';
+    const stops: string[] = [];
+    segments.forEach(m => {
+      stops.push(`${m.color} ${m.start.toFixed(2)}%`, `${m.color} ${m.end.toFixed(2)}%`);
+    });
+    return `linear-gradient(90deg, ${stops.join(', ')})`;
+  }
+  getScoreBandColor(score: number, tipo?: string) {
+    // Escala pulso (0-10) -> Detratores 0-6 (vermelho), Neutros 7-8 (amarelo), Promotores 9-10 (verde)
+    // Escala clima (1-5) -> 1-2 vermelho, 3 amarelo, 4-5 verde
+    if (tipo === 'clima') {
+      if (score <= 2) return '#e53935';
+      if (score === 3) return '#fbc02d';
+      return '#43a047';
+    }
+    if (score <= 6) return '#e53935';
+    if (score <= 8) return '#fbc02d';
+    return '#43a047';
+  }
   getNpsColor(n: number) { if (n>=75) return '#2e7d32'; if (n>=50) return '#38b6a5'; if (n>=0) return '#fbc02d'; return '#ff7043'; }
   formatPercent(p: any) {
     const n = Number(p);
@@ -184,4 +242,21 @@ export class RelatorioPesquisaComponent {
       return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
     } catch { return '-'; }
   }
+  canShowNps() {
+    if (this.report?.tipo !== 'pulso') return false;
+    if (this.report?.nps === null || this.report?.nps === undefined) return false;
+    if (this.selectedDepartmentId) {
+      const total = this.report?.totalRespondentes || 0;
+      if (total < 2) return false; // bloqueia se menos de 2 respondentes no setor filtrado
+    }
+    return true;
+  }
+  canShowPerguntas() {
+    if (this.selectedDepartmentId) {
+      const total = this.report?.totalRespondentes || 0;
+      if (total < 2) return false;
+    }
+    return true;
+  }
+  showSegPercent(_: any) { return false; }
 }

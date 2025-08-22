@@ -53,7 +53,7 @@
       <div *ngIf="loadingCompanies">Carregando empresas...</div>
       <div *ngIf="!loadingCompanies && allCompanies.length === 0">Nenhuma empresa cadastrada.</div>
       <div class="lista-empresas" *ngIf="!loadingCompanies && allCompanies.length > 0">
-        <div class="empresa-item" *ngFor="let c of allCompanies">
+        <div class="empresa-item" *ngFor="let c of allCompanies" (click)="navigateToCompanyUsers(c)" role="button" tabindex="0" (keydown.enter)="navigateToCompanyUsers(c)" (keydown.space)="navigateToCompanyUsers(c)">
           <h4>{{ c.name }}</h4>
           <p class="cid"><strong>CNPJ:</strong> {{ c.cnpj }}</p>
           <p><strong>Local:</strong> {{ c.municipality }} / {{ c.state }}</p>

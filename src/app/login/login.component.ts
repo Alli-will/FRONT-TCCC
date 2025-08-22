@@ -29,20 +29,13 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe(
       (response) => {
         localStorage.setItem("token", response.token);
-        // Após login, verifica se já fez diário hoje
-        this.diaryService.hasEntryToday(response.token).subscribe({
-          next: (res) => {
-            if (res.hasEntry) {
-              this.router.navigate(["/dashboard"]);
-            } else {
-              this.router.navigate(["/diario"]);
-            }
-          },
-          error: () => {
-            // fallback
-            this.router.navigate(["/login"]);
-          }
-        });
+        // Redirecionamento simples sem obrigatoriedade de diário:
+        const payload = this.authService.getUserInfoFromToken();
+        if (payload?.role === 'support') {
+          this.router.navigate(["/empresa"]);
+        } else {
+          this.router.navigate(["/dashboard"]);
+        }
       },
       (error) => {
         if (typeof window !== 'undefined') {

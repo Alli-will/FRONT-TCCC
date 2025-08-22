@@ -13,7 +13,7 @@ Este projeto é o front-end de um sistema de acompanhamento de bem-estar corpora
 1. **Pré-requisitos:**
    - Node.js 18+
    - Angular CLI (`npm install -g @angular/cli`)
-   - Backend rodando em https://tcc-main.up.railway.app (NestJS)
+   - Backend rodando em http://localhost:3000 (NestJS)
 
 2. **Instale as dependências:**
    ```bash

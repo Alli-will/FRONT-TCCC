@@ -75,21 +75,22 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   private carregarAvatares(blockGlobal = false) {
     const token = localStorage.getItem('token');
     if (!token) return;
-    const apiBase = window.location.hostname.includes('localhost')
-      ? 'https://tcc-main.up.railway.app'
-      : 'https://tcc-main.up.railway.app';
+  const { protocol, hostname, port } = window.location;
+  const apiBase = `${protocol}//${hostname}:${port && port !== '4200' ? port : '3000'}`;
     const tasks: Promise<void>[] = [];
     this.colaboradoresAtivos.forEach((c: any) => {
       if (!c.id) return;
       const ts = Date.now();
       const task = (async () => {
         try {
-        const metaResp = await fetch(`${apiBase}/user/${c.id}/avatar/meta?ts=${ts}`, {
+  const metaResp = await fetch(`${apiBase}/user/${c.id}/avatar/meta?ts=${ts}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!metaResp.ok) throw new Error('meta');
         const meta = await metaResp.json();
         if (!meta?.hasAvatar) return;
+  // Debug temporário
+  // console.debug('Avatar meta', c.id, meta);
 
         if (meta.etag && c._etag === meta.etag && c._objectUrl) {
           c.avatarUrl = c._objectUrl;
@@ -99,7 +100,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
 
         const headers: any = { Authorization: `Bearer ${token}` };
         if (c._etag) headers['If-None-Match'] = `"${c._etag}"`;
-        let resp = await fetch(`${apiBase}/user/${c.id}/avatar?ts=${ts}`, { headers });
+  let resp = await fetch(`${apiBase}/user/${c.id}/avatar?ts=${ts}`, { headers });
         if (resp.status === 304 && !c._objectUrl) {
           resp = await fetch(`${apiBase}/user/${c.id}/avatar?ts=${Date.now()}`, { headers: { Authorization: `Bearer ${token}` } });
         }
@@ -108,13 +109,30 @@ export class UsuariosComponent implements OnInit, OnDestroy {
         c._etag = meta.etag || null;
         const blob = await resp.blob();
         if (!blob || (blob as any).size === 0) return;
+        // Diagnóstico: se o tipo não bate com meta.mimeType ou parece texto, tenta debug
+        const ctype = resp.headers.get('Content-Type') || '';
+        const looksText = ctype.includes('text') || ctype.includes('json');
+        if (looksText || (blob as any).size < 50) {
+          try {
+            const dbg = await fetch(`${apiBase}/user/${c.id}/avatar/debug?ts=${Date.now()}`, { headers: { Authorization: `Bearer ${token}` } });
+            if (dbg.ok) {
+              const info = await dbg.json();
+              // eslint-disable-next-line no-console
+              console.warn('Avatar debug', c.id, info);
+            }
+          } catch {}
+        }
         if (c._objectUrl) URL.revokeObjectURL(c._objectUrl);
-        const objUrl = URL.createObjectURL(blob);
+        const enforcedBlob = (meta.mimeType && blob.type !== meta.mimeType)
+          ? new Blob([blob], { type: meta.mimeType })
+          : blob;
+        const objUrl = URL.createObjectURL(enforcedBlob);
         c._objectUrl = objUrl;
         c.avatarUrl = objUrl;
         this.avatarObjectUrls.push(objUrl);
         this.cdr.detectChanges();
-      } catch {
+      } catch (err) {
+        // console.warn('Falha avatar fluxo principal', c.id, err);
         try {
           const r = await fetch(`${apiBase}/user/${c.id}/avatar/base64?ts=${Date.now()}`, { headers: { Authorization: `Bearer ${token}` } });
           if (r.ok) {
@@ -176,8 +194,8 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     const deptId = (novoDeptId !== undefined && novoDeptId !== null) ? Number(novoDeptId) : null;
     this.salvandoDept = true;
     const apiBase = window.location.hostname.includes('localhost')
-      ? 'https://tcc-main.up.railway.app'
-      : 'https://tcc-main.up.railway.app';
+      ? 'http://localhost:3000'
+      : 'http://localhost:3000';
     fetch(`${apiBase}/user/${c.id}/department`, {
       method: 'PUT',
       headers: {

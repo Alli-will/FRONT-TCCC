@@ -1,0 +1,52 @@
+<div class="empresa-usuarios-container" *ngIf="isSupport && selectedCompany">
+  <button (click)="goBack()" type="button" class="btn-primario btn-primario--sm voltar">← Voltar</button>
+  <div class="cabecalho-empresa">
+    <h2>{{ selectedCompany.name }}</h2>
+    <div class="infos-secundarias">
+      <span>CNPJ: {{ selectedCompany.cnpj }}</span>
+      <span>{{ selectedCompany.municipality }} / {{ selectedCompany.state }}</span>
+    </div>
+  </div>
+  <div class="painel-usuarios">
+    <div class="cabecalho">
+      <h3>Usuários de {{ selectedCompany.name }}</h3>
+  <button type="button" class="btn-primario btn-primario--sm" (click)="openCreateAdmin()" *ngIf="!creatingAdmin">Criar Admin</button>
+      <button type="button" class="btn-secundario" (click)="cancelCreateAdmin()" *ngIf="creatingAdmin">Fechar</button>
+    </div>
+    <div *ngIf="creatingAdmin" class="admin-form">
+      <form (ngSubmit)="submitCreateAdmin()" #adminFormRef="ngForm">
+        <div class="row"><label>Nome*</label><input name="first_Name" [(ngModel)]="adminForm.first_Name" required /></div>
+        <div class="row"><label>Sobrenome*</label><input name="last_Name" [(ngModel)]="adminForm.last_Name" required /></div>
+        <div class="row"><label>Email*</label><input name="email" type="email" [(ngModel)]="adminForm.email" required /></div>
+        <div class="row"><label>Senha*</label><input name="password" type="password" [(ngModel)]="adminForm.password" required minlength="8" /></div>
+        <div class="acoes">
+          <button class="btn-primario btn-primario--sm" type="submit" [disabled]="adminFormRef.invalid">Salvar</button>
+          <button class="btn-secundario" type="button" (click)="cancelCreateAdmin()">Cancelar</button>
+        </div>
+        <div *ngIf="adminError" class="erro">{{ adminError }}</div>
+        <div *ngIf="adminSuccess" class="sucesso">{{ adminSuccess }}</div>
+      </form>
+    </div>
+    <div *ngIf="loadingUsers">Carregando usuários...</div>
+    <div *ngIf="usersError" class="erro">{{ usersError }}</div>
+    <table *ngIf="!loadingUsers && !usersError" class="tabela-usuarios">
+      <thead>
+        <tr><th>ID</th><th>Nome</th><th>Email</th><th>Role</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of users">
+          <td>{{ u.internal_id }}</td>
+            <td>{{ u.first_Name }} {{ u.last_Name }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.role }}</td>
+          <td>
+            <button type="button" class="btn-primario btn-primario--sm" (click)="toggleAdmin(u)">{{ u.role === 'admin' ? 'Tornar Employee' : 'Tornar Admin' }}</button>
+          </td>
+        </tr>
+        <tr *ngIf="users.length === 0"><td colspan="5">Nenhum usuário.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  </div>
+<div *ngIf="isSupport && !selectedCompany" class="erro">Carregando empresa...</div>
+<div *ngIf="!isSupport" class="erro">Acesso restrito ao suporte.</div>

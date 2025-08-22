@@ -4,14 +4,9 @@ import { DiarioComponent } from '../diario/diario.component';
 
 @Injectable({ providedIn: 'root' })
 export class DiaryExitGuard implements CanDeactivate<DiarioComponent> {
-  canDeactivate(component: DiarioComponent): boolean {
-    // Só permite sair se o diário foi respondido hoje
-    if (!(component as any).diarioRespondidoHoje) {
-      if (typeof window !== 'undefined') {
-        alert('Você precisa responder o diário de hoje antes de sair!');
-      }
-      return false;
-    }
+  // Guard agora sempre permite sair: requisito de obrigatoriedade removido.
+  // Mantido para evitar erros de rota enquanto o front ainda referencia o guard.
+  canDeactivate(_component: DiarioComponent): boolean {
     return true;
   }
 }

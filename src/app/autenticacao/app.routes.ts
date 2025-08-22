@@ -51,6 +51,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard, DiaryEntryGuard],
   },
   { path: 'empresa', canActivate: [AuthGuard], loadComponent: () => import('../empresa/empresa.component').then(m => m.EmpresaComponent) },
+  { path: 'empresa/usuarios/:id', canActivate: [AuthGuard], loadComponent: () => import('../empresa/empresa-usuarios.component').then(m => m.EmpresaUsuariosComponent) },
   { path: 'departamentos', canActivate: [AuthGuard], loadComponent: () => import('../departamentos/departamentos.component').then(m => m.DepartamentosComponent) },
   { path: 'departamentos/novo', canActivate: [AuthGuard], loadComponent: () => import('../departamentos/departamento-novo.component').then(m => m.DepartamentoNovoComponent) },
   { path: "login", component: LoginComponent },

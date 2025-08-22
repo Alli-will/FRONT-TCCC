@@ -18,8 +18,9 @@
     <span class="sidebar-title">CalmaMente</span>
   </div>
   <ul>
-  <li *ngIf="!isSupport"><a routerLink="/diario"><span class="sidebar-menu-icon material-icons">menu_book</span> Diário</a></li>
-  <li *ngIf="!isSupport"><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">layers</span> Conteúdos</a></li>
+  <!-- Itens Diário e Conteúdos ocultados conforme solicitação -->
+  <!-- <li *ngIf="!isSupport"><a routerLink="/diario"><span class="sidebar-menu-icon material-icons">menu_book</span> Diário</a></li> -->
+  <!-- <li *ngIf="!isSupport"><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">layers</span> Conteúdos</a></li> -->
   <li *ngIf="isSupport || isAdmin || isEmployee"><a routerLink="/empresa"><span class="sidebar-menu-icon material-icons">business</span> Empresa</a></li>
     <li *ngIf="isAdmin"><a routerLink="/dashboard"><span class="sidebar-menu-icon material-icons">bar_chart</span> Dashboard</a></li>
   <li *ngIf="!isSupport"><a routerLink="/usuarios"><span class="sidebar-menu-icon material-icons">group</span> Usuários</a></li>
