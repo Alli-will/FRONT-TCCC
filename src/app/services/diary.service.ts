@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class DiaryService {
-  private apiUrl = 'https://tcc-main.up.railway.appdiary';
-  private apiAllUrl = 'https://tcc-main.up.railway.appdiary/all';
+  private apiUrl = 'https://tcc-main.up.railway.app/diary';
+  private apiAllUrl = 'https://tcc-main.up.railway.app/diary/all';
 
   constructor(private http: HttpClient) {}
 
@@ -27,7 +27,7 @@ export class DiaryService {
 
   hasEntryToday(token: string): Observable<any> {
     const headers = this.getAuthHeaders(token);
-  return this.http.get('https://tcc-main.up.railway.appdiary/has-entry-today', { headers });
+  return this.http.get('https://tcc-main.up.railway.app/diary/has-entry-today', { headers });
   }
 
   getDiaryInsights(token: string) {
@@ -42,7 +42,7 @@ export class DiaryService {
 
   getUserEss(token: string): Observable<any> {
     const headers = this.getAuthHeaders(token);
-  return this.http.get('https://tcc-main.up.railway.appdashboard/ess', { headers });
+  return this.http.get('https://tcc-main.up.railway.app/dashboard/ess', { headers });
   }
 
   private getAuthHeaders(token: string): HttpHeaders {

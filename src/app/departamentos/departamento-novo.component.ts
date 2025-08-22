@@ -73,7 +73,7 @@ export class DepartamentoNovoComponent {
   criar() {
     if (!this.name) return;
     this.loading = true; this.error = null; this.success = null;
-    this.http.post('https://tcc-main.up.railway.appdepartments', { name: this.name }).subscribe({
+    this.http.post('https://tcc-main.up.railway.app/departments', { name: this.name }).subscribe({
       next: () => { this.success = 'Departamento criado'; this.name=''; },
       error: (err) => { this.error = err?.error?.message || 'Erro ao criar'; },
       complete: () => { this.loading = false; }
