@@ -152,7 +152,7 @@ export class PerfilComponent implements OnInit {
     fd.append('file', this.uploadFile);
     const apiBase = window.location.hostname.includes('localhost')
       ? 'http://localhost:3000'
-      : 'http://localhost:3000';
+      : 'https://tcc-main.up.railway.app';
     fetch(`${apiBase}/user/me/avatar`, {
       method: 'PUT',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` },
@@ -185,7 +185,7 @@ export class PerfilComponent implements OnInit {
     if (!token) return;
     const apiBase = window.location.hostname.includes('localhost')
       ? 'http://localhost:3000'
-      : 'http://localhost:3000';
+      : 'https://tcc-main.up.railway.app';
   this.loading.block();
   fetch(`${apiBase}/user/me/avatar/meta?ts=${this.timestamp}`, { headers: { 'Authorization': `Bearer ${token}` } })
       .then(r => { if (!r.ok) throw new Error('meta-fail'); return r.json(); })
