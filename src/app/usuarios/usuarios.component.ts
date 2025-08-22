@@ -6,6 +6,7 @@ import { UserService } from '../services/user.service';
 import { DepartmentService } from '../services/department.service';
 import { AuthService } from '../services/auth.service';
 import { LoadingService } from '../services/loading.service';
+import { resolveApiBase } from '../services/api-base';
 
 @Component({
   selector: 'app-usuarios',
@@ -75,18 +76,24 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   private carregarAvatares(blockGlobal = false) {
     const token = localStorage.getItem('token');
     if (!token) return;
-  const { protocol, hostname, port } = window.location;
-  const apiBase = `${protocol}//${hostname}:${port && port !== '4200' ? port : '3000'}`;
+    const localBase = resolveApiBase();
+    const remoteBase = 'https://tcc-main.up.railway.app';
+    let apiBase = localBase;
     const tasks: Promise<void>[] = [];
     this.colaboradoresAtivos.forEach((c: any) => {
       if (!c.id) return;
       const ts = Date.now();
       const task = (async () => {
         try {
-  const metaResp = await fetch(`${apiBase}/user/${c.id}/avatar/meta?ts=${ts}`, {
+          let metaResp = await fetch(`${apiBase}/user/${c.id}/avatar/meta?ts=${ts}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        if (!metaResp.ok) throw new Error('meta');
+        if (!metaResp.ok) {
+          // tenta remoto
+          metaResp = await fetch(`${remoteBase}/user/${c.id}/avatar/meta?ts=${ts}`, { headers: { Authorization: `Bearer ${token}` } });
+          if (!metaResp.ok) throw new Error('meta');
+          apiBase = remoteBase;
+        }
         const meta = await metaResp.json();
         if (!meta?.hasAvatar) return;
   // Debug temporário
@@ -100,7 +107,12 @@ export class UsuariosComponent implements OnInit, OnDestroy {
 
         const headers: any = { Authorization: `Bearer ${token}` };
         if (c._etag) headers['If-None-Match'] = `"${c._etag}"`;
-  let resp = await fetch(`${apiBase}/user/${c.id}/avatar?ts=${ts}`, { headers });
+        let resp = await fetch(`${apiBase}/user/${c.id}/avatar?ts=${ts}`, { headers });
+        if (!resp.ok) {
+          // fallback remoto
+          resp = await fetch(`${remoteBase}/user/${c.id}/avatar?ts=${ts}`, { headers });
+          if (resp.ok) apiBase = remoteBase;
+        }
         if (resp.status === 304 && !c._objectUrl) {
           resp = await fetch(`${apiBase}/user/${c.id}/avatar?ts=${Date.now()}`, { headers: { Authorization: `Bearer ${token}` } });
         }
@@ -193,17 +205,18 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     if (!this.isAdmin) return;
     const deptId = (novoDeptId !== undefined && novoDeptId !== null) ? Number(novoDeptId) : null;
     this.salvandoDept = true;
-    const apiBase = window.location.hostname.includes('localhost')
-      ? 'http://localhost:3000'
-      : 'http://localhost:3000';
-    fetch(`${apiBase}/user/${c.id}/department`, {
+    const localBase = resolveApiBase();
+    const remoteBase = 'https://tcc-main.up.railway.app';
+    const tryUpdate = async (base: string) => fetch(`${base}/user/${c.id}/department`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
       body: JSON.stringify({ departmentId: deptId })
-    }).then(r => r.json())
+    });
+    tryUpdate(localBase)
+      .then(r => r.ok ? r.json() : tryUpdate(remoteBase).then(r2 => r2.ok ? r2.json() : Promise.reject()))
       .then(resp => {
         if (resp?.user) {
           const dept = this.extractDepartment(resp.user);
