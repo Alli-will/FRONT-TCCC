@@ -194,8 +194,8 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     const deptId = (novoDeptId !== undefined && novoDeptId !== null) ? Number(novoDeptId) : null;
     this.salvandoDept = true;
     const apiBase = window.location.hostname.includes('localhost')
-      ? 'https://tcc-main.up.railway.app'
-      : 'https://tcc-main.up.railway.app';
+      ? 'http://localhost:3000'
+      : 'http://localhost:3000';
     fetch(`${apiBase}/user/${c.id}/department`, {
       method: 'PUT',
       headers: {

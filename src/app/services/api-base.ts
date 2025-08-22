@@ -12,6 +12,6 @@ export function resolveApiBase(): string {
     return `${protocol}//${hostname}:${port}`;
   } catch {
     // Fallback server-side (SSR) ou erro de acesso a window
-    return 'https://tcc-main.up.railway.app';
+    return 'http://localhost:3000';
   }
 }

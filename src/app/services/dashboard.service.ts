@@ -6,7 +6,7 @@ import { resolveApiBase } from './api-base';
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private primaryBase = resolveApiBase();
-  private remoteBase = 'https://tcc-main.up.railway.app';
+  private remoteBase = 'http://localhost:3000';
   private apiUrl = `${this.primaryBase}/dashboard/metrics`;
 
   constructor(private http: HttpClient) {}
