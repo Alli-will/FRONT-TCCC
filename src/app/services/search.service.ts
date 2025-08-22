@@ -6,7 +6,7 @@ import { resolveApiBase } from './api-base';
 @Injectable({ providedIn: 'root' })
 export class SearchService {
   private primaryBase = resolveApiBase();
-  private remoteBase = 'http://localhost:3000';
+  private remoteBase = 'https://tcc-main.up.railway.app';
   private apiUrl = `${this.primaryBase}/searches`;
 
   constructor(private http: HttpClient) {}

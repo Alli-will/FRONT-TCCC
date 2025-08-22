@@ -9,7 +9,7 @@ export class AuthTokenInterceptor implements HttpInterceptor {
       const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
       const token = isBrowser ? localStorage.getItem('token') : null;
       // Só adiciona para chamadas ao backend local
-      if (token && req.url.startsWith('http://localhost:3000')) {
+      if (token && req.url.startsWith('https://tcc-main.up.railway.app')) {
         const authReq = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
         return next.handle(authReq);
       }
