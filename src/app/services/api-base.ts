@@ -7,6 +7,11 @@ export function resolveApiBase(): string {
     const { protocol, hostname, port } = window.location;
     // Ambientes de dev Angular (4200) e SSR (4000) apontam para backend 3000
     if (port === '4200' || port === '4000') return `${protocol}//${hostname}:3000`;
+    // Se estamos em um domínio de front (ex: Vercel) e backend é separado, força Railway
+    const frontHosts = ['vercel.app', 'netlify.app'];
+    if (frontHosts.some(h => hostname.endsWith(h))) {
+      return 'https://tcc-main.up.railway.app';
+    }
     // Se não há porta (produção) usa o host direto
     if (!port) return `${protocol}//${hostname}`;
     return `${protocol}//${hostname}:${port}`;

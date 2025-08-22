@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable, BehaviorSubject } from "rxjs";
+import { Observable, BehaviorSubject, catchError, throwError, of } from "rxjs";
 import { tap } from "rxjs/operators";
 import { resolveApiBase } from './api-base';
 
@@ -23,16 +23,21 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<any> {
-    return this.http
-      .post<{ token: string }>(`${this.apiUrl}/login`, { email, password })
-      .pipe(
-        tap((response) => {
-          if (typeof window !== "undefined") {
-            localStorage.setItem("token", response.token);
-            this.currentUserSubject.next(response.token);
-          }
-        })
-      );
+    const payload = { email, password };
+    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, payload).pipe(
+      catchError(err => {
+        if ([0, 404, 405].includes(err?.status)) {
+          return this.http.post<{ token: string }>(`${this.remoteBase}/auth/login`, payload);
+        }
+        return throwError(() => err);
+      }),
+      tap(response => {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("token", response.token);
+          this.currentUserSubject.next(response.token);
+        }
+      })
+    );
   }
 
   logout() {
