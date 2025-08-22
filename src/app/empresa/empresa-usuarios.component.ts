@@ -38,7 +38,7 @@ export class EmpresaUsuariosComponent implements OnInit {
   }
 
   loadCompany(id: number) {
-    this.http.get(`http://localhost:3000/companies/${id}`).subscribe({
+    this.http.get(`https://tcc-main.up.railway.app/companies/${id}`).subscribe({
       next: (c:any) => { this.selectedCompany = c; this.loadUsers(); },
       error: () => { this.router.navigate(['/empresa']); }
     });
@@ -47,7 +47,7 @@ export class EmpresaUsuariosComponent implements OnInit {
   loadUsers() {
   if (!this.selectedCompany) return;
     this.loadingUsers = true;
-    this.http.get<any[]>(`http://localhost:3000/user?companyId=${this.selectedCompany.id}`).subscribe({
+    this.http.get<any[]>(`https://tcc-main.up.railway.app/user?companyId=${this.selectedCompany.id}`).subscribe({
       next: data => { this.users = data || []; },
       error: err => { this.usersError = err?.error?.message || 'Erro ao carregar usuários'; },
       complete: () => { this.loadingUsers = false; }
@@ -56,7 +56,7 @@ export class EmpresaUsuariosComponent implements OnInit {
 
   toggleAdmin(u: any) {
     const targetRole = u.role === 'admin' ? 'employee' : 'admin';
-    this.http.put(`http://localhost:3000/user/${u.id}/role`, { role: targetRole }).subscribe({
+    this.http.put(`https://tcc-main.up.railway.app/user/${u.id}/role`, { role: targetRole }).subscribe({
       next: (resp: any) => { u.role = resp?.user?.role || targetRole; },
       error: err => alert(err?.error?.message || 'Erro ao alterar role')
     });
@@ -70,7 +70,7 @@ export class EmpresaUsuariosComponent implements OnInit {
     if (!this.selectedCompany) return;
     this.adminError=null; this.adminSuccess=null;
     const payload = { ...this.adminForm, companyId: this.selectedCompany.id };
-    this.http.post('http://localhost:3000/user/register-access', payload).subscribe({
+    this.http.post('https://tcc-main.up.railway.app/user/register-access', payload).subscribe({
       next: (resp:any) => { this.adminSuccess = 'Administrador criado'; this.loadUsers(); },
       error: err => { this.adminError = err?.error?.details || err?.error?.message || 'Erro'; }
     });

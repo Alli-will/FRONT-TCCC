@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class DepartmentService {
-  private apiUrl = 'http://localhost:3000/departments';
+  private apiUrl = 'https://tcc-main.up.railway.app/departments';
   constructor(private http: HttpClient) {}
   getAll(): Observable<any[]> { return this.http.get<any[]>(this.apiUrl); }
   update(id: number, body: { name: string }): Observable<any> { return this.http.put<any>(`${this.apiUrl}/${id}`, body); }
