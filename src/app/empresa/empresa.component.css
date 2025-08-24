@@ -39,3 +39,9 @@ button[disabled] { opacity: .6; cursor: default; }
 .tabela-usuarios td { padding:.48rem .4rem; border-bottom:1px solid #eef2f3; }
 .tabela-usuarios tbody tr:hover { background:#f3faf9; }
 .tabela-usuarios td button { font-size:.62rem; padding:.35rem .55rem; }
+
+/* Banner de erro topo estilo "alerta navegador" */
+.top-error-banner { position:fixed; top:0; left:0; right:0; z-index:1000; background:#d32f2f; color:#fff; padding:.75rem 1rem; font-size:.9rem; font-weight:500; display:flex; align-items:center; gap:.75rem; box-shadow:0 2px 6px rgba(0,0,0,.25); }
+.top-error-banner .msg { flex:1; }
+.top-error-banner button { background:rgba(255,255,255,.18); border:0; color:#fff; padding:.35rem .7rem; border-radius:4px; font-size:.75rem; cursor:pointer; }
+.top-error-banner button:hover { background:rgba(255,255,255,.3); }

@@ -91,3 +91,9 @@ button[type="submit"]:hover,
   color: #4A4E69;
   text-decoration: none;
 }
+
+/* Banner de erro topo login */
+.login-error-banner { position:fixed; top:0; left:0; right:0; z-index:1000; background:#c62828; color:#fff; padding:.75rem 1rem; display:flex; align-items:center; gap:.75rem; font-weight:500; box-shadow:0 2px 6px rgba(0,0,0,.25); }
+.login-error-banner .msg { flex:1; }
+.login-error-banner button { background:rgba(255,255,255,.18); border:0; color:#fff; padding:.35rem .7rem; border-radius:4px; font-size:.75rem; cursor:pointer; }
+.login-error-banner button:hover { background:rgba(255,255,255,.3); }

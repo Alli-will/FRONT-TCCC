@@ -12,17 +12,18 @@ import { MenuComponent } from '../menu/menu.component';
     <app-menu></app-menu>
     <div class="relatorios-page">
       <div class="header">
-        <h2>Relatórios de Pesquisas</h2>
-        <a routerLink="/pesquisas" class="voltar">Voltar</a>
+        <h2>Resultados por pesquisa</h2>
       </div>
       <div *ngIf="erro" class="erro">{{ erro }}</div>
-      <div class="lista-wrapper" *ngIf="!erro">
+      <div *ngIf="loading && !erro" class="loading">Carregando relatórios...</div>
+      <div class="lista-wrapper" *ngIf="!erro && !loading">
         <table class="tbl" *ngIf="pesquisas.length; else vazioTpl">
           <thead>
             <tr>
               <th style="width:40px;" class="center">#</th>
               <th>Título</th>
               <th style="width:110px;" class="center">Tipo</th>
+              <th style="width:110px;" class="center">Respondentes</th>
               <th style="width:120px;" class="center">Data</th>
               <th style="width:130px;" class="center">Ações</th>
             </tr>
@@ -32,6 +33,7 @@ import { MenuComponent } from '../menu/menu.component';
               <td class="center">{{ (page-1)*pageSize + i + 1 }}</td>
               <td class="titulo-cell">{{ p.titulo }}</td>
               <td class="center"><span class="pill" [class.pulso]="p.tipo==='pulso'" [class.clima]="p.tipo==='clima'">{{ p.tipo }}</span></td>
+              <td class="center resp-cell">{{ p.respondentes ?? '-' }}</td>
               <td class="center data-cell">{{ formatDate(p.createdAt) }}</td>
               <td class="center">
                 <a class="acao" [routerLink]="['/relatorio-pesquisa', p.id]">Ver Relatório</a>
@@ -51,10 +53,11 @@ import { MenuComponent } from '../menu/menu.component';
     </div>
   `,
   styles: [`
-    .relatorios-page { max-width:1100px; margin:0 auto; padding:2rem 1.5rem; }
+  .relatorios-page { max-width:1100px; margin:0 auto; padding:2rem 1.5rem; }
+  .loading { padding:1rem; font-size:.8rem; color:#2d5b66; }
     .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
     h2 { margin:0; font-size:1.55rem; font-weight:700; }
-    .voltar { text-decoration:none; background:#fff; border:1px solid #d5e4ec; padding:.55rem .95rem; border-radius:.65rem; font-weight:600; color:#276b7a; }
+  .voltar { text-decoration:none; }
     .erro { background:#ffe9e9; border:1px solid #ffc5c5; color:#d93030; padding:.75rem .95rem; border-radius:.7rem; font-size:.8rem; margin-bottom:1rem; }
     .tbl { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e0edf3; box-shadow:0 2px 6px #0000000d; }
   .tbl th { text-align:left; padding:.6rem .75rem; font-size:.68rem; letter-spacing:.5px; text-transform:uppercase; background:#f5f9fa; }
@@ -78,15 +81,18 @@ export class RelatoriosPesquisasComponent {
   page = 1;
   totalPages = 1;
   pageSize = 20;
+  loading = true;
   constructor(private searchService: SearchService) {}
   ngOnInit() { this.carregar(); }
   carregar() {
-  this.searchService.getAllSearches(this.page, this.pageSize, true).subscribe({
+    this.loading = true;
+    this.searchService.getAllSearches(this.page, this.pageSize, true).subscribe({
       next: (res: any) => {
         if (res?.items) { this.pesquisas = res.items; this.totalPages = res.meta?.totalPages || 1; }
         else this.pesquisas = res;
+        this.loading = false;
       },
-      error: () => this.erro = 'Erro ao carregar pesquisas.'
+      error: () => { this.erro = 'Erro ao carregar pesquisas.'; this.loading = false; }
     });
   }
   mudarPagina(delta: number) {

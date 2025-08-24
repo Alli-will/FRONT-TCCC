@@ -11,11 +11,15 @@ import { DepartmentService } from '../services/department.service';
   imports: [CommonModule, FormsModule, RouterModule, MenuComponent],
   template: `
     <app-menu></app-menu>
+    <div *ngIf="bannerMsg" class="dep-top-banner" [class.error]="bannerTipo==='error'" [class.success]="bannerTipo==='success'" role="alert" aria-live="assertive">
+      <div class="msg">{{ bannerMsg }}</div>
+      <button type="button" (click)="dismissBanner()" aria-label="Fechar">×</button>
+    </div>
     <div class="dep-page">
       <div class="card list-card">
         <div class="header-row">
           <h2>Departamentos</h2>
-          <a class="btn-novo" routerLink="/departamentos/novo">+ Novo</a>
+          <a class="btn-primario btn-novo" routerLink="/departamentos/novo">+ Novo</a>
         </div>
         <div class="busca-row">
           <input #buscaEl class="busca" type="text" placeholder="Buscar departamento..." [value]="termo" (input)="onBuscar(buscaEl.value)" />
@@ -46,18 +50,24 @@ import { DepartmentService } from '../services/department.service';
           <button class="btn outline" (click)="nextPage()" [disabled]="page===totalPages">Próxima</button>
         </div>
         <div class="mensagens">
-          <div *ngIf="erro" class="alert erro">{{ erro }}</div>
-          <div *ngIf="sucesso" class="alert sucesso">{{ sucesso }}</div>
+          <!-- Esconde erro duplicado se banner ativo ou se é a mensagem de vínculo de usuários -->
+          <div *ngIf="!bannerMsg && erro && erro !== 'Não é possível excluir: há usuários vinculados a este departamento.'" class="alert erro">{{ erro }}</div>
+          <div *ngIf="!bannerMsg && sucesso" class="alert sucesso">{{ sucesso }}</div>
         </div>
       </div>
     </div>
   `,
   styles: [`
+  .dep-top-banner { position:fixed; top:0; left:0; right:0; z-index:1000; display:flex; align-items:center; gap:.75rem; padding:.7rem 1rem; font-weight:600; font-size:.85rem; box-shadow:0 2px 6px rgba(0,0,0,.25); }
+  .dep-top-banner.error { background:#c62828; color:#fff; }
+  .dep-top-banner.success { background:#178667; color:#fff; }
+  .dep-top-banner button { background:rgba(255,255,255,.18); border:0; color:inherit; padding:.25rem .55rem; border-radius:4px; cursor:pointer; }
+  .dep-top-banner button:hover { background:rgba(255,255,255,.3); }
     .dep-page { max-width:820px; margin:2.2rem auto; padding:0 1rem; }
     .card { background:#fff; border:1px solid #e0edf3; border-radius:.95rem; box-shadow:0 2px 8px #00000012; padding:1.2rem 1.4rem 1.3rem; }
     .header-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.8rem; }
     h2 { margin:0; font-size:1.25rem; font-weight:700; background:linear-gradient(90deg,#38b6a5 0%, #4f8cff 100%); -webkit-background-clip:text; color:transparent; letter-spacing:.5px; }
-    .btn-novo { background:linear-gradient(90deg,#38b6a5 60%, #4f8cff 100%); color:#fff; text-decoration:none; padding:.55rem .9rem; border-radius:.6rem; font-weight:700; }
+  .btn-novo { text-decoration:none; display:inline-flex; align-items:center; justify-content:center; padding:.65rem 1.1rem; font-size:.75rem; }
   .busca-row { margin: .2rem 0 0.6rem; }
   .busca { width:100%; border:1px solid #d5e4ec; border-radius:.6rem; padding:.5rem .7rem; }
     .lista { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:.55rem; }
@@ -95,6 +105,9 @@ export class DepartamentosComponent implements OnInit {
   pageSize = 8;
   total = 0;
   totalPages = 1;
+  bannerMsg: string | null = null;
+  bannerTipo: 'error' | 'success' | null = null;
+  private bannerTimer: any = null;
 
   constructor(private dept: DepartmentService) {}
 
@@ -127,9 +140,19 @@ export class DepartamentosComponent implements OnInit {
     if (!confirm(`Excluir departamento "${d.name || d.nome}"?`)) return;
     this.deletandoId = d.id; this.erro = null; this.sucesso = null;
     this.dept.remove(d.id).subscribe({
-      next: () => { this.todos = this.todos.filter(x => x.id !== d.id); this.applyView(); this.sucesso = 'Departamento excluído'; },
-      error: (e: any) => { this.erro = e?.error?.message || 'Erro ao excluir'; },
-      complete: () => { this.deletandoId = null; }
+      next: () => {
+        this.todos = this.todos.filter(x => x.id !== d.id);
+        this.applyView();
+        this.sucesso = 'Departamento excluído';
+        this.showBanner('Departamento excluído','success');
+        this.deletandoId = null;
+      },
+      error: (e: any) => {
+        const msg = e?.error?.message || 'Erro ao excluir';
+        this.erro = msg;
+        this.showBanner(msg,'error');
+        this.deletandoId = null;
+      }
     });
   }
 
@@ -153,4 +176,11 @@ export class DepartamentosComponent implements OnInit {
     const start = (this.page - 1) * this.pageSize;
     this.departamentos = filtered.slice(start, start + this.pageSize);
   }
+
+  private showBanner(msg: string, tipo: 'error' | 'success') {
+    this.bannerMsg = msg; this.bannerTipo = tipo;
+    if (this.bannerTimer) clearTimeout(this.bannerTimer);
+    this.bannerTimer = setTimeout(()=> { this.bannerMsg = null; this.bannerTipo = null; this.bannerTimer = null; }, 3000);
+  }
+  dismissBanner() { this.bannerMsg = null; this.bannerTipo = null; if (this.bannerTimer) { clearTimeout(this.bannerTimer); this.bannerTimer = null; } }
 }

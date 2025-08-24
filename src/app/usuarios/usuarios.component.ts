@@ -5,7 +5,6 @@ import { MenuComponent } from '../menu/menu.component';
 import { UserService } from '../services/user.service';
 import { DepartmentService } from '../services/department.service';
 import { AuthService } from '../services/auth.service';
-import { LoadingService } from '../services/loading.service';
 import { resolveApiBase } from '../services/api-base';
 
 @Component({
@@ -31,7 +30,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private deptService: DepartmentService,
   private auth: AuthService,
-  private loadingSvc: LoadingService,
+  // LoadingService removido do fluxo de avatares para evitar flicker
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -58,8 +57,8 @@ export class UsuariosComponent implements OnInit, OnDestroy {
         }});
   this.colaboradoresAtivos = mapped;
   this.loading = false;
-  // Carrega avatares após renderizar lista e bloqueia loader global até finalizar
-  setTimeout(() => this.carregarAvatares(true), 0);
+  // Carrega avatares em background sem reativar tela de loading para evitar flicker
+  setTimeout(() => this.carregarAvatares(false), 0);
       },
       error: () => {
         this.erro = 'Erro ao carregar colaboradores.';
@@ -174,10 +173,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
       })();
       tasks.push(task);
     });
-    if (blockGlobal && tasks.length) {
-      this.loadingSvc.block();
-      Promise.allSettled(tasks).finally(() => this.loadingSvc.unblock());
-    }
+  // bloco global removido para não exibir loader tardio
   }
 
   ngOnDestroy(): void {

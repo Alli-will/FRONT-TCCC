@@ -16,6 +16,16 @@
   margin: 0;
   color: #222;
 }
+/* Gradient text utility (mesmo degradê usado nos demais títulos) */
+.gradient-text {
+  background: linear-gradient(90deg,#38b6a5 0%, #4f8cff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent; /* garante em navegadores WebKit */
+  color: transparent;
+  line-height: 1.28;
+  display: inline-block; /* melhora renderização do clip */
+}
 .tabs {
   display: flex;
   gap: 0.7rem;
@@ -248,4 +258,23 @@ app-cadastro-pesquisa h2 {
 }
 .responder-link:hover {
   filter: brightness(1.05);
+}
+
+/* Garantir que o gradiente prevaleça sobre .card-title (que define color) */
+.card-title.gradient-text {
+  background: linear-gradient(90deg,#38b6a5 0%, #4f8cff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+  display: inline-block;
+}
+/* For span usage inside card-title */
+.card-title > .gradient-text {
+  background: linear-gradient(90deg,#38b6a5 0%, #4f8cff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+  display:inline-block;
 }

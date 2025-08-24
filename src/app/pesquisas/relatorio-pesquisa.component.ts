@@ -16,7 +16,7 @@ import { MenuComponent } from '../menu/menu.component';
     <div class="relatorio-page" *ngIf="loaded; else loadingTpl">
       <div class="header">
         <h2>Relatório da Pesquisa</h2>
-        <a routerLink="/pesquisas" class="voltar">Voltar</a>
+  <a routerLink="/relatorios-pesquisas" class="voltar btn-primario">Voltar</a>
       </div>
   <div *ngIf="erro" class="erro">{{ erro }}</div>
       <ng-container *ngIf="!erro">
@@ -45,19 +45,26 @@ import { MenuComponent } from '../menu/menu.component';
         </div>
   <div *ngIf="canShowNps()" class="nps-block">
           <div class="nps-card">
-            <div class="nps-value">NPS (1ª pergunta): <span [style.color]="getNpsColor(report?.nps)">{{ report?.nps }}</span></div>
-            <div class="metodo-hint">usa somente a primeira pergunta. Cada usuário conta uma vez. Promotores 9-10, Neutros 7-8, Detratores 0-6. NPS = (%Promotores - %Detratores). Distribuição: notas da 1ª pergunta.</div>
+            <div class="nps-value">eNPS (1ª pergunta): <span [style.color]="getNpsColor(report?.nps)">{{ report?.nps }}</span></div>
+            <div class="metodo-hint">Considera apenas a primeira resposta de cada usuário. Classificação: Promotores (9–10), Neutros (7–8), Detratores (0–6). O eNPS é calculado por: %Promotores – %Detratores. A distribuição mostra as notas da 1ª pergunta.</div>
             <div class="nps-bars">
-              <!-- Ordem invertida: primeiro Detratores, depois Neutros, depois Promotores -->
+              <!-- Ordem: Detratores, Neutros, Promotores (cores alinhadas com distribuição) -->
               <div class="bar detratores" [style.width]="pct(report?.detratores)" title="Detratores">Detratores {{ pct(report?.detratores) }}</div>
-              <div class="bar neutros" [style.width]="pct(report?.neutros)" title="Neutros" [ngStyle]="{background:'#fbc02d',color:'#3d3d3d', textShadow:'none', border: pct(report?.neutros)==='0%' ? '1px dashed #fbc02d' : 'none'}">Neutros {{ pct(report?.neutros) }}</div>
+              <div class="bar neutros" [style.width]="pct(report?.neutros)" title="Neutros">Neutros {{ pct(report?.neutros) }}</div>
               <div class="bar promotores" [style.width]="pct(report?.promotores)" title="Promotores">Promotores {{ pct(report?.promotores) }}</div>
             </div>
-            <div class="dist-nps">
-              <div *ngFor="let k of npsKeys()" class="nps-col">
-                <span class="nps-label">{{ k }}</span>
-                <span class="nps-count" [class.zero]="report?.npsDistribuicao[k]?.count===0">{{ report?.npsDistribuicao[k]?.count }}</span>
-                <span class="nps-percent" [class.zero]="report?.npsDistribuicao[k]?.percent===0">{{ formatPercent(report?.npsDistribuicao[k]?.percent) }}</span>
+            <div class="dist-nps enhanced">
+              <div *ngFor="let k of npsKeys()" class="nps-col" [ngClass]="scoreClasse(k)" [title]="scoreTooltip(k)">
+                <div class="score-line">{{ k }}</div>
+                <div class="meta-line">
+                  <span class="cnt" [class.zero]="report?.npsDistribuicao[k]?.count===0">{{ report?.npsDistribuicao[k]?.count }}x</span>
+                  <span class="sep">•</span>
+                  <span class="perc" [class.zero]="report?.npsDistribuicao[k]?.percent===0">{{ formatPercent(report?.npsDistribuicao[k]?.percent) }}</span>
+                </div>
+                <div class="mini-bar-wrap">
+                  <div class="mini-bar-bg"></div>
+                  <div class="mini-bar-fill" [style.width]="(report?.npsDistribuicao[k]?.percent||0) + '%'" [style.background]="getScoreBandColor(+k, 'pulso')"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -107,7 +114,7 @@ import { MenuComponent } from '../menu/menu.component';
     .relatorio-page { max-width:1100px; margin:0 auto; padding:2rem 1.5rem; }
     .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; }
     h2 { margin:0; font-size:1.6rem; font-weight:700; }
-    .voltar { text-decoration:none; background:#fff; border:1px solid #d5e4ec; padding:.5rem .9rem; border-radius:.6rem; font-weight:600; color:#276b7a; }
+  .voltar { text-decoration:none; }
   .meta { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; margin-bottom:1.2rem; background:linear-gradient(90deg,#f7fafb,#f0f6f8); padding:1rem 1.1rem; border:1px solid #e1ebef; border-radius:.9rem; }
   .meta-left { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; }
   .meta-right { display:flex; align-items:center; }
@@ -128,23 +135,36 @@ import { MenuComponent } from '../menu/menu.component';
     .nps-card { background:#fff; border:1px solid #e0edf3; padding:1rem 1.2rem 1.2rem; border-radius:.9rem; box-shadow:0 2px 6px #0000000d; margin-bottom:1.4rem; }
   .nps-value { font-size:1.1rem; font-weight:600; margin-bottom:.4rem; }
   .metodo-hint { font-size:.6rem; color:#546974; margin-bottom:.7rem; line-height:1.1rem; }
-    .nps-bars { display:flex; height:28px; border-radius:.5rem; overflow:hidden; background:#f1f5f7; font-size:.65rem; font-weight:600; color:#fff; text-shadow:0 1px 2px #0005; }
-    .nps-bars .bar { display:flex; align-items:center; justify-content:center; white-space:nowrap; }
-    .bar.promotores { background:#2e7d32; }
-    .bar.neutros { background:#fbc02d; color:#3d3d3d; text-shadow:none; }
-    .bar.detratores { background:#ff7043; }
-    .dist-nps { display:grid; grid-template-columns:repeat(11,1fr); gap:.4rem; margin-top:1rem; font-size:.55rem; }
-  .nps-col { background:#f9fbfc; border:1px solid #e0edf3; padding:.35rem .3rem .45rem; border-radius:.4rem; text-align:center; }
-  .nps-col span { display:block; line-height:1.05; }
-  .nps-label { font-weight:600; }
-  .nps-count, .nps-percent { font-size:.55rem; }
-  .nps-count.zero, .nps-percent.zero { color:#9aa7b1; }
+  .nps-bars { display:flex; height:28px; border-radius:.5rem; overflow:hidden; background:#f1f5f7; font-size:.65rem; font-weight:600; color:#fff; text-shadow:0 1px 2px #0005; }
+  .nps-bars .bar { display:flex; align-items:center; justify-content:center; white-space:nowrap; transition:width .3s ease; }
+  .bar.detratores { background:#e53935; }
+  .bar.neutros { background:#fbc02d; color:#2d2d2d; text-shadow:none; }
+  .bar.promotores { background:#43a047; }
+    .dist-nps { display:grid; grid-template-columns:repeat(11,1fr); gap:.45rem; margin-top:1rem; }
+    .dist-nps.enhanced .nps-col { position:relative; background:#fff; border:1px solid #dfe9ee; padding:.35rem .3rem .5rem; border-radius:.55rem; text-align:center; box-shadow:0 1px 2px #00000008; transition:.15s box-shadow, .15s transform; }
+    .dist-nps.enhanced .nps-col:hover { box-shadow:0 3px 8px -2px #00000018; transform:translateY(-2px); }
+    .dist-nps.enhanced .score-line { font-size:.7rem; font-weight:700; line-height:1; margin-bottom:.15rem; }
+    .dist-nps.enhanced .meta-line { display:flex; justify-content:center; gap:.25rem; font-size:.52rem; font-weight:600; color:#475a63; margin-bottom:.25rem; }
+    .dist-nps.enhanced .meta-line .zero { color:#a8b5bb; }
+    .dist-nps.enhanced .mini-bar-wrap { position:relative; height:5px; border-radius:3px; overflow:hidden; background:transparent; }
+    .dist-nps.enhanced .mini-bar-bg { position:absolute; inset:0; background:#eef4f6; }
+    .dist-nps.enhanced .mini-bar-fill { position:absolute; left:0; top:0; bottom:0; background:#43a047; border-radius:3px; }
+    /* Category accents */
+    .dist-nps.enhanced .nps-col.detrator { border-color:#f6d3d2; }
+    .dist-nps.enhanced .nps-col.detrator .score-line { color:#e53935; }
+    .dist-nps.enhanced .nps-col.neutro { border-color:#f7e2a6; }
+    .dist-nps.enhanced .nps-col.neutro .score-line { color:#f9a825; }
+    .dist-nps.enhanced .nps-col.promotor { border-color:#c3e8c8; }
+    .dist-nps.enhanced .nps-col.promotor .score-line { color:#2e7d32; }
+    .dist-nps.enhanced .nps-col.detrator .mini-bar-fill { background:#e53935; }
+    .dist-nps.enhanced .nps-col.neutro .mini-bar-fill { background:#fbc02d; }
+    .dist-nps.enhanced .nps-col.promotor .mini-bar-fill { background:#43a047; }
     .tbl-perguntas { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 2px 8px #0000000d; border:1px solid #e0edf3; }
     .tbl-perguntas th { text-align:left; font-size:.7rem; letter-spacing:.5px; text-transform:uppercase; padding:.65rem .7rem; background:#f5f9fa; }
     .tbl-perguntas td { padding:.55rem .7rem; font-size:.8rem; vertical-align:top; border-top:1px solid #eef3f5; }
   /* Barra de distribuição mais "grossa" conforme solicitado */
   .dist-bar { width:350px; height:24px; border-radius:.45rem; overflow:hidden; background:#f1f5f7; position:relative; }
-  .dist-label { position:absolute; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size:.55rem; font-weight:600; text-shadow:0 1px 2px #0007; pointer-events:none; }
+  .dist-label { position:absolute; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size:.55rem; font-weight:600; pointer-events:none; }
     .erro { background:#ffe9e9; border:1px solid #ffc5c5; color:#d93030; padding:.7rem .9rem; border-radius:.7rem; font-size:.8rem; margin-bottom:1rem; }
   .nps-bloqueado { background:#fff8e1; border:1px solid #ffe1a3; color:#8a6400; padding:.55rem .75rem; border-radius:.6rem; font-size:.7rem; font-weight:600; margin-bottom:1rem; }
   `]
@@ -259,4 +279,19 @@ export class RelatorioPesquisaComponent {
     return true;
   }
   showSegPercent(_: any) { return false; }
+  scoreClasse(k: string) {
+    const v = Number(k);
+    if (isNaN(v)) return '';
+    if (v <= 6) return 'detrator';
+    if (v <= 8) return 'neutro';
+    return 'promotor';
+  }
+  scoreTooltip(k: string) {
+    const v = Number(k);
+    if (isNaN(v)) return '';
+    let cat = v <= 6 ? 'Detrator' : (v <= 8 ? 'Neutro' : 'Promotor');
+    const count = this.report?.npsDistribuicao?.[k]?.count || 0;
+    const percent = this.report?.npsDistribuicao?.[k]?.percent || 0;
+    return `Nota ${k} • ${count} respostas • ${this.formatPercent(percent) } • ${cat}`;
+  }
 }

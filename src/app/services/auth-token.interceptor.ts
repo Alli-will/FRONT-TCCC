@@ -9,7 +9,7 @@ export class AuthTokenInterceptor implements HttpInterceptor {
       const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
       const token = isBrowser ? localStorage.getItem('token') : null;
       const shouldAttach = token && ([
-        'http://localhost:3000',
+        'https://tcc-main.up.railway.app',
         'https://tcc-main.up.railway.app'
       ].some(base => req.url.startsWith(base)) || /^\//.test(req.url));
       if (shouldAttach) {

@@ -1,3 +1,7 @@
+<div *ngIf="mensagem" class="login-error-banner" role="alert" aria-live="assertive">
+  <div class="msg">{{ mensagem }}</div>
+  <button type="button" (click)="dismissError()" aria-label="Fechar">Fechar</button>
+</div>
 <div class="login-container">
   <div class="login-card">
     <img src="assets/logo_login.png" alt="Logo da empresa" style="max-width: 120px; margin-bottom: 18px; display: block; margin-left: auto; margin-right: auto;" />

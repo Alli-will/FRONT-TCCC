@@ -18,6 +18,7 @@ export class LoginComponent {
   email: string = "";
   password: string = "";
   mensagem: string | null = null;
+  private errorTimer: any = null;
 
   constructor(
     private authService: AuthService,
@@ -33,15 +34,23 @@ export class LoginComponent {
         const payload = this.authService.getUserInfoFromToken();
         if (payload?.role === 'support') {
           this.router.navigate(["/empresa"]);
-        } else {
+        } else if (payload?.role === 'admin') {
           this.router.navigate(["/dashboard"]);
+        } else { // employee e demais
+          this.router.navigate(["/pesquisas"]);
         }
       },
       (error) => {
-        if (typeof window !== 'undefined') {
-          alert("Credenciais inválidas.");
-        }
+        const msg = error?.error?.message || 'Falha ao autenticar';
+        this.setError(msg);
       }
     );
+  }
+
+  dismissError() { this.mensagem = null; }
+  private setError(msg: string) {
+    this.mensagem = msg;
+    if (this.errorTimer) clearTimeout(this.errorTimer);
+    this.errorTimer = setTimeout(()=> { this.mensagem = null; this.errorTimer = null; }, 2500);
   }
 }

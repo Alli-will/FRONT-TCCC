@@ -13,9 +13,7 @@ import { MenuComponent } from '../menu/menu.component';
     <app-menu></app-menu>
     <div class="cadastro-colaborador-container">
       <div class="top-bar">
-        <button type="button" class="btn-voltar" (click)="voltar()" aria-label="Voltar para lista">
-          ← Voltar
-        </button>
+  <button type="button" class="btn-primario btn-voltar" (click)="voltar()" aria-label="Voltar para lista">← Voltar</button>
         <h2>Novo Colaborador</h2>
       </div>
       <form (ngSubmit)="submit()" #f="ngForm" novalidate>
@@ -62,8 +60,9 @@ import { MenuComponent } from '../menu/menu.component';
     .cadastro-colaborador-container { max-width: 640px; margin: 24px auto; background: #ffffff; padding: 32px 30px 28px; border-radius: 20px; box-shadow: 0 8px 28px -6px rgba(0,0,0,.08); position:relative; }
     h2 { margin:0; font-size:1.55rem; color:#2f2f2f; font-weight:700; }
     .top-bar { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; }
-    .top-bar .btn-voltar { background:transparent; border:none; color:#2d998b; font-weight:600; cursor:pointer; font-size:.9rem; padding:.4rem .6rem; border-radius:8px; transition:background .25s; }
-    .top-bar .btn-voltar:hover { background:#e5f7f5; }
+  /* Botão voltar reutiliza .btn-primario para manter identidade visual */
+  .top-bar .btn-voltar { padding:.6rem 1.2rem; font-size:.85rem; box-shadow:0 4px 14px rgba(56,182,165,0.35); }
+  .top-bar .btn-voltar:active { transform:translateY(0); }
     form { display:flex; flex-direction:column; gap:1rem; }
     .linha-form { display:flex; flex-direction:column; position:relative; }
     label { font-weight:600; color:#37474f; margin-bottom:4px; font-size:.9rem; letter-spacing:.3px; }

@@ -23,8 +23,8 @@ import { AuthService } from '../services/auth.service';
             <input id="dep-nome" name="name" [(ngModel)]="name" required placeholder="Ex: Marketing" />
           </div>
           <div class="actions">
-            <button type="button" class="btn-sec" (click)="voltar()" [disabled]="loading">Voltar</button>
-            <button type="submit" [disabled]="loading || !name">
+            <button type="button" class="btn-primario btn-sec" (click)="voltar()" [disabled]="loading">Voltar</button>
+            <button type="submit" class="btn-primario" [disabled]="loading || !name">
               <span *ngIf="!loading">Criar</span>
               <span *ngIf="loading" class="loader"></span>
             </button>
@@ -51,9 +51,9 @@ import { AuthService } from '../services/auth.service';
     .actions button:not(:disabled):hover { filter:brightness(1.05); }
     .actions button:not(:disabled):active { transform:translateY(1px); }
     .actions button:disabled { opacity:.55; cursor:not-allowed; }
-    .actions button[type=submit] { background:linear-gradient(90deg,#38b6a5 60%, #4f8cff 100%); color:#fff; box-shadow:0 2px 8px rgba(56,182,165,.25); }
-    .actions .btn-sec { background:#fff; border:1px solid #c9dbe2; color:#2c6b74; }
-    .actions .btn-sec:hover:not(:disabled) { background:#f4f9fa; }
+  .actions .btn-sec { background:linear-gradient(135deg,#38b6a5,#2d998b); color:#fff; box-shadow:0 4px 12px rgba(56,182,165,.3); }
+  .actions .btn-sec:hover:not(:disabled) { filter:brightness(1.05); }
+  .actions .btn-primario { min-width:130px; }
     .loader { width:18px; height:18px; border:2px solid rgba(255,255,255,.45); border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg);} }
     .mensagens { display:flex; flex-direction:column; gap:.6rem; }

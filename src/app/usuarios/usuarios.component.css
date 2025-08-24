@@ -6,10 +6,6 @@
   margin: 2rem auto;
   max-width: 920px; /* ampliar card */
 }
-h2 {
-  color: #38b6a5;
-  margin-bottom: 1.5rem;
-}
 
 .header-row {
   display: flex;
