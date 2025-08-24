@@ -7,19 +7,17 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/jpeg" href="assets/favicon.png">
-  <!-- Hotjar Tracking Code (substitua HOTJAR_ID pelo seu ID numérico) -->
-  <script>
+ <!-- Hotjar Tracking Code for https://front-tccc.vercel.app/ -->
+<script>
     (function(h,o,t,j,a,r){
-      // Não inicializa em ambiente local
-      if(['localhost','127.0.0.1'].includes(location.hostname)) return;
-      h.hj = h.hj || function(){ (h.hj.q = h.hj.q || []).push(arguments); };
-      h._hjSettings={hjid:6501778,hjsv:6}; // <-- TROCAR HOTJAR_ID
-      a = o.getElementsByTagName('head')[0];
-      r = o.createElement('script'); r.async=1;
-      r.src = 'https://static.hotjar.com/c/hotjar-'+ h._hjSettings.hjid +'.js?sv=' + h._hjSettings.hjsv;
-      a.appendChild(r);
-    })(window,document);
-  </script>
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:6501778,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
 </head>
 <body>
   <app-root></app-root>
