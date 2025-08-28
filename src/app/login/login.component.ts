@@ -41,7 +41,23 @@ export class LoginComponent {
         }
       },
       (error) => {
-        const msg = error?.error?.message || 'Falha ao autenticar';
+        let msg: string;
+        const backendMsg = (error?.error?.message || '').toLowerCase();
+        if (error?.status === 0 || (error?.message && /network|fetch|connection/i.test(error.message))) {
+          msg = 'Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente em instantes.';
+        } else if (error?.status === 401) {
+          if (backendMsg.includes('usuário não cadastrado') || backendMsg.includes('usuario não cadastrado') || backendMsg.includes('usuario nao cadastrado')) {
+            msg = 'E-mail não encontrado. Verifique se digitou corretamente ou Contate um Administrador.';
+          } else if (backendMsg.includes('senha incorreta')) {
+            msg = 'Senha incorreta.';
+          } else {
+            msg = 'Credenciais inválidas.';
+          }
+        } else if (error?.status === 403) {
+          msg = 'Acesso não autorizado.';
+        } else {
+          msg = (error?.error?.message) || 'Falha ao autenticar.';
+        }
         this.setError(msg);
       }
     );

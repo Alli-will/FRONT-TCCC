@@ -78,4 +78,12 @@ export class AuthService {
     const info = this.getUserInfoFromToken();
     return info?.role === 'support';
   }
+
+  requestPasswordReset(email: string) {
+    return this.http.post<any>(`${this.apiUrl}/request-reset`, { email });
+  }
+
+  resetPassword(token: string, password: string) {
+    return this.http.post<any>(`${this.apiUrl}/reset-password`, { token, password });
+  }
 }

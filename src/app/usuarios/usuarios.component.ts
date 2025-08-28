@@ -30,7 +30,6 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private deptService: DepartmentService,
   private auth: AuthService,
-  // LoadingService removido do fluxo de avatares para evitar flicker
     private cdr: ChangeDetectorRef
   ) {}
 

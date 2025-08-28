@@ -49,6 +49,8 @@ export const routes: Routes = [
   { path: 'departamentos', canActivate: [AuthGuard], loadComponent: () => import('../departamentos/departamentos.component').then(m => m.DepartamentosComponent) },
   { path: 'departamentos/novo', canActivate: [AuthGuard], loadComponent: () => import('../departamentos/departamento-novo.component').then(m => m.DepartamentoNovoComponent) },
   { path: "login", component: LoginComponent },
+  { path: 'recuperar-senha', loadComponent: () => import('../login/recuperar-senha.component').then(m => m.RecuperarSenhaComponent) },
+  { path: 'nova-senha/:token', loadComponent: () => import('../login/definir-nova-senha.component').then(m => m.DefinirNovaSenhaComponent) },
   { path: "cadastro", component: CadastroComponent },
   {
     path: "historico",
