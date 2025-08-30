@@ -25,23 +25,26 @@ import { MenuComponent } from '../menu/menu.component';
             <h3>{{ report?.titulo }}</h3>
             <div class="data" *ngIf="report?.createdAt">Data: {{ formatDate(report.createdAt) }}</div>
             <div class="pill" [class.pulso]="report?.tipo==='pulso'" [class.clima]="report?.tipo==='clima'">{{ report?.tipo }}</div>
-            <div class="resumo">Respondentes: <strong>{{ report?.totalRespondentes }}</strong></div>
-          </div>
-          <div class="meta-right" *ngIf="departments.length">
-            <div class="setor-filter">
-              <label class="lbl">Setor</label>
-              <div class="select-wrapper">
-                <select [(ngModel)]="selectedDepartmentId" (change)="reload()">
-                  <option [ngValue]="undefined">Todos os Setores</option>
-                  <option *ngFor="let d of departments" [ngValue]="d.id">{{ d.name }}</option>
-                </select>
-                <span class="icon">▾</span>
+              <div class="meta-row">
+                <div class="resumo">Respondentes: <strong>{{ report?.totalRespondentes }}</strong></div>
+                <ng-container *ngIf="departments.length">
+                  <div class="setor-filter">
+                    <label class="lbl">Setor</label>
+                    <div class="select-wrapper">
+                      <select [(ngModel)]="selectedDepartmentId" (change)="reload()">
+                        <option [ngValue]="undefined">Todos os Setores</option>
+                        <option *ngFor="let d of departments" [ngValue]="d.id">{{ d.name }}</option>
+                      </select>
+                      <span class="icon">▾</span>
+                    </div>
+                    <div *ngIf="selectedDepartmentId" class="chip" (click)="clearDept()">
+                      {{ currentDepartmentName() }} <span class="x">×</span>
+                    </div>
+                  </div>
+                </ng-container>
               </div>
-              <div *ngIf="selectedDepartmentId" class="chip" (click)="clearDept()">
-                {{ currentDepartmentName() }} <span class="x">×</span>
-              </div>
-            </div>
           </div>
+          <!-- meta-right removido para evitar duplicidade do seletor de setor -->
         </div>
   <div *ngIf="canShowNps()" class="nps-block">
           <div class="nps-card">
@@ -74,34 +77,54 @@ import { MenuComponent } from '../menu/menu.component';
         </div>
   <h4 *ngIf="canShowPerguntas()">Perguntas</h4>
   <div *ngIf="!canShowPerguntas()" class="nps-bloqueado">Perguntas e médias não exibidas por ausência de dados suficientes para análise.</div>
-  <table class="tbl-perguntas" *ngIf="canShowPerguntas() && report?.perguntas?.length">
-          <thead>
-            <tr>
-              <th style="width:40px;">#</th>
-              <th>Pergunta</th>
-              <th style="width:90px;">Média</th>
-              <th>Distribuição</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let p of report.perguntas">
-              <td>{{ p.index + 1 }}</td>
-              <td>{{ p.texto }}</td>
-              <td>{{ p.media !== null ? p.media : '-' }}</td>
-              <td>
-                <div class="dist-bar" *ngIf="p.distribuicao" [ngStyle]="{ background: gradientBackground(p.distribuicao, report?.tipo) }" title="Distribuição das notas">
-                  <ng-container *ngFor="let seg of gradientSegments(p.distribuicao, report?.tipo)">
-                    <div class="dist-label"
-                         *ngIf="seg.percent >= 5"
-                         [ngStyle]="{left: seg.start+'%', width: seg.width+'%', color: seg.textColor}">
-                      {{ seg.percent.toFixed(0) }}%
-                    </div>
-                  </ng-container>
+  <ng-container *ngIf="canShowPerguntas() && report?.perguntas?.length">
+    <table class="tbl-perguntas desktop-table">
+      <thead>
+        <tr>
+          <th style="width:40px;">#</th>
+          <th>Pergunta</th>
+          <th style="width:90px;">Média</th>
+          <th>Distribuição</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of report.perguntas">
+          <td>{{ p.index + 1 }}</td>
+          <td>{{ p.texto }}</td>
+          <td>{{ p.media !== null ? p.media : '-' }}</td>
+          <td>
+            <div class="dist-bar" *ngIf="p.distribuicao" [ngStyle]="{ background: gradientBackground(p.distribuicao, report?.tipo) }" title="Distribuição das notas">
+              <ng-container *ngFor="let seg of gradientSegments(p.distribuicao, report?.tipo)">
+                <div class="dist-label"
+                     *ngIf="seg.percent >= 5"
+                     [ngStyle]="{left: seg.start+'%', width: seg.width+'%', color: seg.textColor}">
+                  {{ seg.percent.toFixed(0) }}%
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </ng-container>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="mobile-perguntas">
+      <div class="mobile-pergunta-card" *ngFor="let p of report.perguntas">
+        <div class="mobile-pergunta-header">
+          <span class="mobile-pergunta-num">{{ p.index + 1 }}</span>
+          <span class="mobile-pergunta-media">Média: <strong>{{ p.media !== null ? p.media : '-' }}</strong></span>
+        </div>
+        <div class="mobile-pergunta-texto">{{ p.texto }}</div>
+        <div class="dist-bar mobile-bar" *ngIf="p.distribuicao" [ngStyle]="{ background: gradientBackground(p.distribuicao, report?.tipo) }" title="Distribuição das notas">
+          <ng-container *ngFor="let seg of gradientSegments(p.distribuicao, report?.tipo)">
+            <div class="dist-label"
+                 *ngIf="seg.percent >= 5"
+                 [ngStyle]="{left: seg.start+'%', width: seg.width+'%', color: seg.textColor}">
+              {{ seg.percent.toFixed(0) }}%
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </ng-container>
         <div *ngIf="!report?.perguntas?.length">Sem perguntas.</div>
       </ng-container>
     </div>
@@ -111,35 +134,52 @@ import { MenuComponent } from '../menu/menu.component';
     </ng-template>
   `,
   styles: [`
-    .relatorio-page { max-width:1100px; margin:0 auto; padding:2rem 1.5rem; }
+  .relatorio-page { max-width:1800px; margin:0 auto; padding:2rem 1.5rem; margin-top:3.5rem; }
+
+    @media (min-width: 1330px) {
+      .relatorio-page {
+        padding-left: 290px !important;
+        padding-right: 2rem;
+        padding-top: 2.5rem;
+        padding-bottom: 2.5rem;
+        box-sizing: border-box;
+      }
+    }
+    @media (max-width: 700px) {
+      .relatorio-page {
+        padding: 1.1rem 0.3rem 1.5rem 0.3rem;
+        margin-top: 4.2rem;
+      }
+    }
     .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; }
     h2 { margin:0; font-size:1.6rem; font-weight:700; }
-  .voltar { text-decoration:none; }
-  .meta { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; margin-bottom:1.2rem; background:linear-gradient(90deg,#f7fafb,#f0f6f8); padding:1rem 1.1rem; border:1px solid #e1ebef; border-radius:.9rem; }
-  .meta-left { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; }
-  .meta-right { display:flex; align-items:center; }
+    .voltar { text-decoration:none; }
+    .meta { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; margin-bottom:1.2rem; background:linear-gradient(90deg,#f7fafb,#f0f6f8); padding:1rem 1.1rem; border:1px solid #e1ebef; border-radius:.9rem; }
+  .meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem; }
+    .meta-left { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; }
+    .meta-right { display:flex; align-items:center; }
     .meta h3 { margin:0; font-size:1.2rem; font-weight:600; }
     .pill { text-transform:uppercase; letter-spacing:.5px; font-size:.65rem; font-weight:700; padding:.35rem .55rem; border-radius:.6rem; background:#e2eef2; color:#2d3a41; }
     .pill.pulso { background:#e1faf5; color:#1c7e72; }
     .pill.clima { background:#e7f0ff; color:#2b5fa8; }
-  .resumo { font-size:.75rem; color:#2d3a41; background:#fff; padding:.4rem .6rem; border:1px solid #dbe7ec; border-radius:.6rem; }
-  .setor-filter { display:flex; align-items:center; gap:.6rem; }
-  .setor-filter .lbl { font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:#4a5b63; }
-  .select-wrapper { position:relative; }
-  .select-wrapper select { appearance:none; -webkit-appearance:none; font-size:.7rem; padding:.45rem 1.7rem .45rem .65rem; border:1px solid #cfdfe5; background:#fff; border-radius:.55rem; outline:none; font-weight:500; color:#264d58; box-shadow:0 1px 2px #0000000b inset; transition:.15s border; }
-  .select-wrapper select:focus { border-color:#38b6a5; }
-  .select-wrapper .icon { position:absolute; right:.55rem; top:50%; transform:translateY(-50%); font-size:.65rem; pointer-events:none; color:#52727d; }
-  .chip { background:#e1faf5; border:1px solid #b4efe3; color:#136d62; font-size:.6rem; padding:.35rem .55rem; border-radius:2rem; display:flex; align-items:center; gap:.35rem; cursor:pointer; user-select:none; }
-  .chip:hover { background:#d3f4ed; }
-  .chip .x { font-weight:600; line-height:1; }
+    .resumo { font-size:.75rem; color:#2d3a41; background:#fff; padding:.4rem .6rem; border:1px solid #dbe7ec; border-radius:.6rem; }
+    .setor-filter { display:flex; align-items:center; gap:.6rem; }
+    .setor-filter .lbl { font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:#4a5b63; }
+    .select-wrapper { position:relative; }
+    .select-wrapper select { appearance:none; -webkit-appearance:none; font-size:.7rem; padding:.45rem 1.7rem .45rem .65rem; border:1px solid #cfdfe5; background:#fff; border-radius:.55rem; outline:none; font-weight:500; color:#264d58; box-shadow:0 1px 2px #0000000b inset; transition:.15s border; }
+    .select-wrapper select:focus { border-color:#38b6a5; }
+    .select-wrapper .icon { position:absolute; right:.55rem; top:50%; transform:translateY(-50%); font-size:.65rem; pointer-events:none; color:#52727d; }
+    .chip { background:#e1faf5; border:1px solid #b4efe3; color:#136d62; font-size:.6rem; padding:.35rem .55rem; border-radius:2rem; display:flex; align-items:center; gap:.35rem; cursor:pointer; user-select:none; }
+    .chip:hover { background:#d3f4ed; }
+    .chip .x { font-weight:600; line-height:1; }
     .nps-card { background:#fff; border:1px solid #e0edf3; padding:1rem 1.2rem 1.2rem; border-radius:.9rem; box-shadow:0 2px 6px #0000000d; margin-bottom:1.4rem; }
-  .nps-value { font-size:1.1rem; font-weight:600; margin-bottom:.4rem; }
-  .metodo-hint { font-size:.6rem; color:#546974; margin-bottom:.7rem; line-height:1.1rem; }
-  .nps-bars { display:flex; height:28px; border-radius:.5rem; overflow:hidden; background:#f1f5f7; font-size:.65rem; font-weight:600; color:#fff; text-shadow:0 1px 2px #0005; }
-  .nps-bars .bar { display:flex; align-items:center; justify-content:center; white-space:nowrap; transition:width .3s ease; }
-  .bar.detratores { background:#e53935; }
-  .bar.neutros { background:#fbc02d; color:#2d2d2d; text-shadow:none; }
-  .bar.promotores { background:#43a047; }
+    .nps-value { font-size:1.1rem; font-weight:600; margin-bottom:.4rem; }
+    .metodo-hint { font-size:.6rem; color:#546974; margin-bottom:.7rem; line-height:1.1rem; }
+    .nps-bars { display:flex; height:28px; border-radius:.5rem; overflow:hidden; background:#f1f5f7; font-size:.65rem; font-weight:600; color:#fff; text-shadow:0 1px 2px #0005; }
+    .nps-bars .bar { display:flex; align-items:center; justify-content:center; white-space:nowrap; transition:width .3s ease; }
+    .bar.detratores { background:#e53935; }
+    .bar.neutros { background:#fbc02d; color:#2d2d2d; text-shadow:none; }
+    .bar.promotores { background:#43a047; }
     .dist-nps { display:grid; grid-template-columns:repeat(11,1fr); gap:.45rem; margin-top:1rem; }
     .dist-nps.enhanced .nps-col { position:relative; background:#fff; border:1px solid #dfe9ee; padding:.35rem .3rem .5rem; border-radius:.55rem; text-align:center; box-shadow:0 1px 2px #00000008; transition:.15s box-shadow, .15s transform; }
     .dist-nps.enhanced .nps-col:hover { box-shadow:0 3px 8px -2px #00000018; transform:translateY(-2px); }
@@ -159,14 +199,31 @@ import { MenuComponent } from '../menu/menu.component';
     .dist-nps.enhanced .nps-col.detrator .mini-bar-fill { background:#e53935; }
     .dist-nps.enhanced .nps-col.neutro .mini-bar-fill { background:#fbc02d; }
     .dist-nps.enhanced .nps-col.promotor .mini-bar-fill { background:#43a047; }
-    .tbl-perguntas { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 2px 8px #0000000d; border:1px solid #e0edf3; }
-    .tbl-perguntas th { text-align:left; font-size:.7rem; letter-spacing:.5px; text-transform:uppercase; padding:.65rem .7rem; background:#f5f9fa; }
-    .tbl-perguntas td { padding:.55rem .7rem; font-size:.8rem; vertical-align:top; border-top:1px solid #eef3f5; }
+  .tbl-perguntas { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 2px 8px #0000000d; border:1px solid #e0edf3; overflow-x:auto; }
+  .tbl-perguntas th { text-align:left; font-size:.7rem; letter-spacing:.5px; text-transform:uppercase; padding:.65rem .7rem; background:#f5f9fa; }
+  .tbl-perguntas td { padding:.55rem .7rem; font-size:.8rem; vertical-align:top; border-top:1px solid #eef3f5; }
+  .mobile-bar, .mobile-perguntas { display: none; }
+  .mobile-perguntas { margin-top: 1.2rem; }
+  .mobile-pergunta-card { background: #fff; border: 1px solid #e0edf3; border-radius: .8rem; box-shadow: 0 2px 8px #0001; margin-bottom: 1.1rem; padding: 1rem 1.1rem; }
+  .mobile-pergunta-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.95em; }
+  .mobile-pergunta-num { font-weight: 700; color: #38b6a5; font-size: 1.1em; }
+  .mobile-pergunta-media { font-size: 0.98em; color: #2d3a41; }
+  .mobile-pergunta-texto { margin-bottom: 0.6rem; font-size: 1em; color: #222; }
   /* Barra de distribuição mais "grossa" conforme solicitado */
-  .dist-bar { width:350px; height:24px; border-radius:.45rem; overflow:hidden; background:#f1f5f7; position:relative; }
-  .dist-label { position:absolute; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size:.55rem; font-weight:600; pointer-events:none; }
+  .dist-bar { width:420px; max-width:100%; min-width:180px; height:24px; border-radius:.45rem; overflow:hidden; background:#f1f5f7; position:relative; transition:width .2s; }
+    .dist-label { position:absolute; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size:.55rem; font-weight:600; pointer-events:none; }
     .erro { background:#ffe9e9; border:1px solid #ffc5c5; color:#d93030; padding:.7rem .9rem; border-radius:.7rem; font-size:.8rem; margin-bottom:1rem; }
-  .nps-bloqueado { background:#fff8e1; border:1px solid #ffe1a3; color:#8a6400; padding:.55rem .75rem; border-radius:.6rem; font-size:.7rem; font-weight:600; margin-bottom:1rem; }
+    .nps-bloqueado { background:#fff8e1; border:1px solid #ffe1a3; color:#8a6400; padding:.55rem .75rem; border-radius:.6rem; font-size:.7rem; font-weight:600; margin-bottom:1rem; }
+
+  @media (max-width: 700px) {
+      .relatorio-page { padding: 1.1rem 0.3rem 1.5rem 0.3rem; margin-top: 4.2rem; }
+      .header { flex-direction: column; align-items: flex-start; gap: 0.7rem; }
+      .meta { flex-direction: column; align-items: flex-start; gap: 0.7rem; padding: 0.8rem 0.5rem; }
+    .meta-row { flex-direction: row; justify-content: flex-start; align-items: center; gap: 0.7rem; width: 100%; }
+  .tbl-perguntas, .tbl-perguntas thead, .tbl-perguntas tbody, .tbl-perguntas tr, .tbl-perguntas th, .tbl-perguntas td { display: none !important; }
+  .mobile-perguntas { display: block; }
+  .mobile-bar { display: block; margin-top: 0.4rem; }
+    }
   `]
 })
 export class RelatorioPesquisaComponent {
@@ -263,20 +320,16 @@ export class RelatorioPesquisaComponent {
     } catch { return '-'; }
   }
   canShowNps() {
-    if (this.report?.tipo !== 'pulso') return false;
-    if (this.report?.nps === null || this.report?.nps === undefined) return false;
-    if (this.selectedDepartmentId) {
-      const total = this.report?.totalRespondentes || 0;
-      if (total < 2) return false; // bloqueia se menos de 2 respondentes no setor filtrado
-    }
-    return true;
+  if (this.report?.tipo !== 'pulso') return false;
+  if (this.report?.nps === null || this.report?.nps === undefined) return false;
+  const total = this.report?.totalRespondentes || 0;
+  if (total < 2) return false; // bloqueia se menos de 2 respondentes, geral ou setor
+  return true;
   }
   canShowPerguntas() {
-    if (this.selectedDepartmentId) {
-      const total = this.report?.totalRespondentes || 0;
-      if (total < 2) return false;
-    }
-    return true;
+  const total = this.report?.totalRespondentes || 0;
+  if (total < 2) return false;
+  return true;
   }
   showSegPercent(_: any) { return false; }
   scoreClasse(k: string) {

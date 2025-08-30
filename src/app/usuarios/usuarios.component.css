@@ -1,10 +1,260 @@
+/* === Paginação === */
+.paginacao-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0 0.5rem 0;
+  flex-wrap: wrap;
+}
+.paginacao-container button {
+  background: #f6fbfc;
+  border: 1px solid #c9dde2;
+  color: #38b6a5;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  padding: 0.38em 1.1em;
+  margin: 0 0.1em;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+  outline: none;
+}
+.paginacao-container button.ativa,
+.paginacao-container button:focus {
+  background: #38b6a5;
+  color: #fff;
+  border-color: #38b6a5;
+}
+.paginacao-container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+@media (max-width: 600px) {
+  .paginacao-container button {
+    font-size: 0.92rem;
+    padding: 0.32em 0.7em;
+  }
+}
+/* .colab-nome estilos principais */
+/* .colab-avatar unificado */
+.colab-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #eaf6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.1rem;
+  color: #38b6a5;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,.06), 0 0 0 1px rgba(56,182,165,.18);
+  position: relative;
+}
+.colab-avatar img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+.colab-avatar.tem-avatar img {
+  filter: contrast(1.04) saturate(1.05);
+  transition: filter .25s;
+}
+.colab-avatar.tem-avatar:hover img {
+  filter: contrast(1.1) saturate(1.1);
+}
+.colab-avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(56,182,165,.25), 0 0 0 2px rgba(255,255,255,.5);
+  pointer-events: none;
+}
+.colab-depto {
+  text-transform: uppercase !important;
+  letter-spacing: .05em !important;
+  color: #5c7b86 !important;
+  margin-top: .25rem !important;
+  font-weight: 600 !important;
+  font-size: .7rem !important;
+}
+.colab-depto.editavel {
+  cursor: pointer;
+  position: relative;
+}
+@media (max-width: 900px) {
+  .colab-nome {
+    font-size: 0.9rem;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .colab-depto {
+    font-size: 0.65rem !important;
+  }
+  .colab-actions {
+    margin-left: 0;
+    width: 100%;
+    margin-top: 0.3rem;
+  }
+}
+@media (max-width: 600px) {
+  .usuarios-container {
+    padding: 0.5rem 0.1rem 0.5rem 0.1rem;
+    border-radius: 0.5rem;
+  }
+  .header-row h2 {
+    font-size: 1rem;
+  }
+  .colab-avatar {
+    width: 64px !important;
+    height: 64px !important;
+    font-size: 2.2rem !important;
+  }
+  .colab-nome {
+    font-size: 0.85rem;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .colab-depto {
+    font-size: 0.6rem !important;
+  }
+}
+/* Removida chave extra do final do arquivo */
+.dept-editor .btn-cancelar,
+.dept-editor .btn-confirmar {
+  background: #fff !important;
+  border: 1px solid #d8e9ef !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  font-size: 1rem !important;
+  line-height: 1 !important;
+  color: #5c7b86 !important;
+  transition: .25s !important;
+  flex-shrink: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: 0.2rem !important;
+}
+.dept-editor .btn-confirmar {
+  background: #38b6a5 !important;
+  border: 1px solid #2ea08f !important;
+  color: #fff !important;
+}
+.dept-editor .btn-cancelar:hover {
+  background: #eef7f8 !important;
+  color: #2e5964 !important;
+}
+.dept-editor .btn-confirmar:disabled {
+  opacity: .6 !important;
+  cursor: not-allowed !important;
+}
+.dept-editor .btn-confirmar:hover:not(:disabled) {
+  filter: brightness(0.95) !important;
+}
+.dept-editor select {
+  max-width: 220px !important;
+  min-width: 160px !important;
+  width: auto !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-clip: padding-box !important;
+  box-shadow: none !important;
+  padding: .3rem .55rem !important;
+  border: 1px solid #c9dde2 !important;
+  border-radius: .55rem !important;
+  background: #f6fbfc !important;
+  font-size: .65rem !important;
+  font-weight: 600 !important;
+  letter-spacing: .05em !important;
+  text-transform: uppercase !important;
+  color: #2e5964 !important;
+}
+.dept-editor select:focus {
+  outline: none !important;
+  border-color: #38b6a5 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 2px rgba(56,182,165,.25) !important;
+}
+.dept-editor select:disabled,
+.dept-editor .btn-cancelar:disabled {
+  opacity: .5 !important;
+  cursor: not-allowed !important;
+}
+
+@media (max-width: 900px) {
+  .header-row {
+    margin-top: 1rem !important; /* Ajuste para evitar espaçamento excessivo, mas garantir espaço para o menu */
+  }
+  .header-row h2 {
+    margin-top: 0 !important;
+  }
+}
+@media (max-width: 900px) {
+  .colab-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 3.2rem;
+  }
+  .colab-nome {
+    font-size: 1.7rem;
+    max-width: 320px;
+  }
+}
+@media (max-width: 900px) {
+  /* Avatar à esquerda do nome no mobile */
+  .colab-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .colab-avatar {
+    margin-bottom: 0;
+    margin-right: 0.2rem;
+  }
+  .colab-texto {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .colab-item {
+    gap: 0.5rem;
+  }
+}
 .usuarios-container {
   background: #fff;
   border-radius: 1rem;
   box-shadow: 0 2px 8px #0001;
-  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  padding: 2.2rem 2.5rem 2rem 2.5rem;
   margin: 2rem auto;
-  max-width: 920px; /* ampliar card */
+  max-width: 760px;
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .usuarios-container {
+    max-width: 98vw;
+    padding: 1.2rem 0.7rem 1rem 0.7rem;
+  }
 }
 
 .header-row {
@@ -19,55 +269,276 @@
 }
 .lista-colaboradores li {
   position: relative;
-  padding-left: 1.2rem;
-}
-.lista-colaboradores li::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 50%;
-  width: 8px; height: 8px;
-  background: #38b6a5;
-  border-radius: 50%;
-  transform: translateY(-50%);
+  padding-left: 0;
 }
 ul {
   list-style: none;
   padding: 0;
 }
-li {
-  padding: 0.7rem 0;
-  border-bottom: 1px solid #f0f0f0;
-  color: #333;
-  font-size: 1.1rem;
-}
+
+
 li:last-child {
   border-bottom: none;
 }
 
 /* --- Avatares dos colaboradores --- */
-.colab-item { display:flex; align-items:center; gap:.9rem; padding:.75rem 0; position:relative; }
-.colab-item > .colab-texto { flex: 1; }
-.colab-actions { margin-left: auto; }
-.btn-alterar-depto { background:#38b6a5; color:#fff; border:none; border-radius:.6rem; padding:.45rem .8rem; font-size:.78rem; font-weight:700; box-shadow:0 1px 4px #38b6a522; cursor:pointer; transition:.2s; }
+.colab-item {
+  display: flex;
+  align-items: flex-start !important;
+  flex-direction: row !important;
+  gap: .9rem;
+  padding: .75rem 0;
+  position: relative;
+}
+
+.colab-actions {
+  margin-left: 0;
+  margin-top: 0.3rem;
+  width: auto;
+  align-self: flex-start;
+}
+.btn-alterar-depto {
+  background: #38b6a5;
+  color: #fff;
+  border: none;
+  border-radius: .6rem;
+  padding: .45rem .8rem;
+  font-size: .78rem;
+  font-weight: 700;
+  box-shadow: 0 1px 4px #38b6a522;
+  cursor: pointer;
+  transition: .2s;
+  width: auto;
+  min-width: 140px;
+  margin: 0;
+  display: block;
+}
 .btn-alterar-depto:hover { filter:brightness(0.97); box-shadow:0 2px 8px #38b6a533; }
 .btn-alterar-depto:active { transform: translateY(1px); }
-.colab-avatar { width:36px; height:36px; border-radius:50%; background:#eaf6ff; display:flex; align-items:center; justify-content:center; font-size:1.6rem; color:#38b6a5; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.06), 0 0 0 1px rgba(56,182,165,.18); position:relative; }
-.colab-avatar img { width:100%; height:100%; object-fit:cover; display:block; border-radius:50%; }
+.colab-avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #eaf6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.1rem;
+  color: #38b6a5;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,.06), 0 0 0 1px rgba(56,182,165,.18);
+  position: relative;
+}
+.colab-avatar img { width:100%; object-fit:cover; display:block; border-radius:50%; }
 .colab-avatar.tem-avatar img { filter:contrast(1.04) saturate(1.05); transition:filter .25s; }
 .colab-avatar.tem-avatar:hover img { filter:contrast(1.1) saturate(1.1); }
 .colab-avatar::after { content:''; position:absolute; inset:0; border-radius:50%; box-shadow:inset 0 0 0 1px rgba(56,182,165,.25), 0 0 0 2px rgba(255,255,255,.5); pointer-events:none; }
-.colab-texto { display:flex; flex-direction:column; line-height:1.1; }
-.colab-nome { font-size:.95rem; color:#23213a; font-weight:600; }
-.colab-depto { font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:#5c7b86; margin-top:.25rem; font-weight:600; }
-.colab-depto.editavel { cursor:pointer; position:relative; }
-.dept-editor { display:flex; align-items:center; gap:.4rem; margin-top:.25rem; }
-.dept-editor select { padding:.3rem .55rem; border:1px solid #c9dde2; border-radius:.55rem; background:#f6fbfc; font-size:.65rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:#2e5964; }
+.colab-texto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  min-width: 0;
+}
+.colab-nome {
+  font-size: 1.18rem;
+  color: #23213a;
+  font-weight: 600;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  max-width: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+@media (max-width: 900px) {
+@media (max-width: 600px) {
+  .colab-nome {
+    font-size: 0.85rem;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+.colab-nome {
+  font-size: 1.18rem;
+  color: #23213a;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.colab-depto {
+  text-transform: uppercase !important;
+  letter-spacing: .05em !important;
+  color: #5c7b86 !important;
+  margin-top: .25rem !important;
+  font-weight: 600 !important;
+  font-size: .7rem !important;
+}
+.colab-depto.editavel {
+  cursor: pointer;
+  position: relative;
+}
+.dept-editor {
+  gap: 1.2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: .4rem;
+  margin-top: .25rem;
+}
+.dept-editor select {
+/* Força o estilo do select em todas as situações, inclusive com encapsulamento Angular */
+.dept-editor select,
+.dept-editor select[ng-reflect-name],
+.dept-editor select[_ngcontent-c],
+.dept-editor select[_ngcontent-ng-c],
+.dept-editor select[_ngcontent-ng-c^=""] {
+  padding: .3rem .55rem !important;
+  border: 1px solid #c9dde2 !important;
+  border-radius: .55rem !important;
+  background: #f6fbfc !important;
+  font-size: .65rem !important;
+  font-weight: 600 !important;
+  letter-spacing: .05em !important;
+  text-transform: uppercase !important;
+  color: #2e5964 !important;
+}
+  padding: .3rem .55rem !important;
+  border: 1px solid #c9dde2 !important;
+  border-radius: .55rem !important;
+  background: #f6fbfc !important;
+  font-size: .65rem !important;
+  font-weight: 600 !important;
+  letter-spacing: .05em !important;
+  text-transform: uppercase !important;
+  color: #2e5964 !important;
+}
 .dept-editor select:focus { outline:none; border-color:#38b6a5; background:#ffffff; box-shadow:0 0 0 2px rgba(56,182,165,.25); }
-.dept-editor .btn-cancelar { background:#fff; border:1px solid #d8e9ef; width:26px; height:26px; border-radius:50%; cursor:pointer; font-size:1rem; line-height:1; display:flex; align-items:center; justify-content:center; color:#5c7b86; transition:.25s; }
-.dept-editor .btn-cancelar:hover { background:#eef7f8; color:#2e5964; }
-.dept-editor .btn-confirmar { background:#38b6a5; border:1px solid #2ea08f; width:26px; height:26px; border-radius:50%; cursor:pointer; font-size:1rem; line-height:1; display:flex; align-items:center; justify-content:center; color:#fff; transition:.25s; }
-.dept-editor .btn-confirmar:disabled { opacity:.6; cursor:not-allowed; }
-.dept-editor .btn-confirmar:hover:not(:disabled) { filter: brightness(0.95); }
-.dept-editor select:disabled, .dept-editor .btn-cancelar:disabled { opacity:.5; cursor:not-allowed; }
+.dept-editor .btn-cancelar {
+  background: #fff !important;
+  border: 1px solid #d8e9ef !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  font-size: 1rem !important;
+  line-height: 1 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #5c7b86 !important;
+  transition: .25s !important;
+}
+.dept-editor .btn-cancelar:hover {
+  background: #eef7f8 !important;
+  color: #2e5964 !important;
+}
+.dept-editor .btn-confirmar {
+  background: #38b6a5 !important;
+  border: 1px solid #2ea08f !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  font-size: 1rem !important;
+  line-height: 1 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #fff !important;
+  transition: .25s !important;
+}
+.dept-editor .btn-confirmar:disabled {
+  opacity: .6 !important;
+  cursor: not-allowed !important;
+}
+.dept-editor .btn-confirmar:hover:not(:disabled) {
+  filter: brightness(0.95) !important;
+}
+.dept-editor select:disabled,
+.dept-editor .btn-cancelar:disabled {
+  opacity: .5 !important;
+  cursor: not-allowed !important;
+}
 
 .lista-colaboradores { margin-top:.5rem; }
+
+/* Responsividade igual dashboard */
+@media (max-width: 1100px) {
+  .usuarios-container {
+    max-width: 98vw;
+    margin: 1.2rem auto;
+    padding: 1.2rem 0.7rem 1rem 0.7rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .usuarios-container {
+    max-width: 100vw;
+    margin: 0;
+    padding: 1rem 0.2rem 0.7rem 0.2rem;
+    border-radius: 0.7rem;
+  }
+  .header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+    margin-bottom: 0.7rem;
+    text-align: center;
+  }
+  .header-row h2 {
+    font-size: 1.1rem;
+  }
+  .btn-primario {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 0.7rem 0;
+  }
+  .colab-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.7rem 0.2rem;
+  }
+  .colab-avatar {
+    width: 80px !important;
+    height: 80px !important;
+    font-size: 3.2rem !important;
+  }
+  .colab-nome {
+    font-size: 0.9rem;
+  }
+  .colab-depto {
+    font-size: 0.65rem;
+  }
+  .colab-actions {
+    margin-left: 0;
+    width: 100%;
+    margin-top: 0.3rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .usuarios-container {
+    padding: 0.5rem 0.1rem 0.5rem 0.1rem;
+    border-radius: 0.5rem;
+  }
+  .header-row h2 {
+    font-size: 1rem;
+  }
+  .colab-avatar {
+    width: 64px !important;
+    height: 64px !important;
+    font-size: 2.2rem !important;
+  }
+  .colab-nome {
+    font-size: 0.85rem;
+  }
+  .colab-depto {
+    font-size: 0.6rem;
+  }
+}
+}

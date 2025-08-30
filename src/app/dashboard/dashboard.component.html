@@ -10,8 +10,8 @@
           <div class="score-sub" *ngIf="pulsoAtual">{{ pulsoAtual.titulo }} • {{ formatDate(pulsoAtual.createdAt) }} • 1ª pergunta</div>
           <div class="score-sub" *ngIf="!pulsoAtual">Nenhuma pesquisa de pulso encontrada</div>
         </div>
-        <div class="score-circle-svg" style="position: relative; display: flex; justify-content: center; align-items: center; width: 100%;">
-          <svg width="170" height="170">
+  <div class="score-circle-svg">
+          <svg viewBox="0 0 170 170" style="width:100%;height:auto;max-width:220px;">
             <circle
               cx="85"
               cy="85"
@@ -20,49 +20,60 @@
               stroke-width="16"
               fill="none"
             />
-            <circle
-              cx="85"
-              cy="85"
-              r="76"
-              [attr.stroke]="getScoreColor()"
-              stroke-width="16"
-              fill="none"
-              [attr.stroke-dasharray]="477.52"
-              [attr.stroke-dashoffset]="477.52 - (essGeral) * 4.7752"
-              stroke-linecap="round"
-              style="transition: stroke-dashoffset 0.6s;"
-              transform="rotate(-90 85 85)"
-            />
+            <ng-container *ngIf="metricas.respondentes > 0">
+              <circle
+                cx="85"
+                cy="85"
+                r="76"
+                [attr.stroke]="getScoreColor()"
+                stroke-width="16"
+                fill="none"
+                [attr.stroke-dasharray]="477.52"
+                [attr.stroke-dashoffset]="477.52 - (essGeral) * 4.7752"
+                stroke-linecap="round"
+                style="transition: stroke-dashoffset 0.6s;"
+                transform="rotate(-90 85 85)"
+              />
+            </ng-container>
             <text
               x="85"
               y="70"
               text-anchor="middle"
-              font-size="2.4em"
+              [attr.font-size]="metricas.respondentes > 0 ? '2.2em' : '1.1em'"
               fill="#222"
               font-weight="bold"
               alignment-baseline="middle"
               dominant-baseline="middle"
             >
-              {{ npsReal }}
+              <ng-container *ngIf="metricas.respondentes > 0; else eNPSIndisponivel">{{ npsReal }}</ng-container>
             </text>
+            <ng-template #eNPSIndisponivel>
+              <tspan x="85" dy="0">eNPS</tspan>
+              <tspan x="85" dy="1.2em">indisponível</tspan>
+            </ng-template>
             <text x="85" y="92" text-anchor="middle" font-size="0.75em" fill="#666"></text>
-            <text
-              x="85"
-              y="120"
-              text-anchor="middle"
-              font-size="1.05em"
-              [attr.fill]="getScoreColor()"
-              font-weight="600"
-            >
-              {{ getScoreLabel() }}
-            </text>
+            <ng-container *ngIf="metricas.respondentes > 0">
+              <text
+                x="85"
+                y="120"
+                text-anchor="middle"
+                font-size="1.05em"
+                [attr.fill]="getScoreColor()"
+                font-weight="600"
+              >
+                {{ getScoreLabel() }}
+              </text>
+            </ng-container>
             <!-- Ajuste: descer um pouco o texto do status -->
             
           </svg>
         </div>
-        <div class="score-desc-wrapper" style="width:100%; display:flex; flex-direction:column; gap:18px; margin-top:28px;">
+  <div class="score-desc-wrapper" style="width:100%; display:flex; flex-direction:column; gap:18px; margin-top:28px;">
           <div class="score-desc" [style.background]="getScoreDescBg()" [style.color]="getScoreDescColor()" style="text-align:center;">
-            {{ getScoreDesc() }}
+            <ng-container *ngIf="metricas.respondentes > 0; else descIndisponivel">{{ getScoreDesc() }}</ng-container>
+            <ng-template #descIndisponivel>
+              eNPS indisponível, não há dados suficientes para análise.
+            </ng-template>
           </div>
           <div class="metricas-row-below">
             <div class="metrica-card" style="min-width:0;">
@@ -111,6 +122,9 @@
               <div class="seg" style="width:100%; color:#666; background:#eee;">Sem dados suficientes</div>
             </div>
           </ng-template>
+        </div>
+        <div *ngIf="todosDepartamentosInsuficientes()" class="dept-global-warning" style="margin-top:1.2rem; color:#b85c00; background:#fff8e1; border-radius:0.6em; padding:0.7em 1.1em; text-align:center; font-size:1em;">
+          Nenhum departamento possui respostas suficientes para análise do eNPS.
         </div>
       </div>
     </div>

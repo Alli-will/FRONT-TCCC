@@ -26,6 +26,31 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   salvandoDept = false;
   private avatarObjectUrls: string[] = [];
 
+  // Paginação
+  paginaAtual = 1;
+  itensPorPagina = 10;
+
+  get totalPaginas(): number {
+    return Math.ceil(this.colaboradoresAtivos.length / this.itensPorPagina) || 1;
+  }
+
+  get colaboradoresPaginados(): any[] {
+    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+    return this.colaboradoresAtivos.slice(inicio, inicio + this.itensPorPagina);
+  }
+
+  paginaAnterior() {
+    if (this.paginaAtual > 1) this.paginaAtual--;
+  }
+
+  proximaPagina() {
+    if (this.paginaAtual < this.totalPaginas) this.paginaAtual++;
+  }
+
+  irParaPagina(p: number) {
+    if (p >= 1 && p <= this.totalPaginas) this.paginaAtual = p;
+  }
+
   constructor(
     private userService: UserService,
     private deptService: DepartmentService,

@@ -11,7 +11,7 @@
   <div *ngIf="loading">Carregando colaboradores...</div>
   <div *ngIf="!loading && colaboradoresAtivos.length === 0">Nenhum colaborador ativo encontrado.</div>
   <ul *ngIf="!loading && colaboradoresAtivos.length > 0" class="lista-colaboradores">
-    <li *ngFor="let c of colaboradoresAtivos" class="colab-item">
+    <li *ngFor="let c of colaboradoresPaginados" class="colab-item">
       <div class="colab-avatar" [class.tem-avatar]="c.avatarUrl">
         <img *ngIf="c.avatarUrl; else defaultUserAvatar" [src]="c.avatarUrl" alt="Avatar de {{ c.nomeCompleto }}" loading="lazy" decoding="async" />
         <ng-template #defaultUserAvatar>
@@ -31,10 +31,18 @@
           <button type="button" class="btn-cancelar" (click)="cancelarEdicao()" [disabled]="salvandoDept">×</button>
           <button type="button" class="btn-confirmar" (click)="confirmarDepartamento(c)" [disabled]="salvandoDept">✓</button>
         </div>
-      </div>
-      <div class="colab-actions" *ngIf="isAdmin && editandoId !== c.id">
-        <button type="button" class="btn-alterar-depto" (click)="iniciarEdicao(c)">Alterar departamento</button>
+        <div class="colab-actions" *ngIf="isAdmin && editandoId !== c.id">
+          <button type="button" class="btn-alterar-depto" (click)="iniciarEdicao(c)">Alterar departamento</button>
+        </div>
       </div>
     </li>
   </ul>
+  <!-- Paginação -->
+  <div *ngIf="!loading && totalPaginas > 1" class="paginacao-container">
+    <button (click)="paginaAnterior()" [disabled]="paginaAtual === 1">Anterior</button>
+    <ng-container *ngFor="let p of [].constructor(totalPaginas); let i = index">
+      <button (click)="irParaPagina(i+1)" [class.ativa]="paginaAtual === (i+1)">{{ i+1 }}</button>
+    </ng-container>
+    <button (click)="proximaPagina()" [disabled]="paginaAtual === totalPaginas">Próxima</button>
+  </div>
 </div>

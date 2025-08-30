@@ -1,3 +1,4 @@
+// ...existing code...
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MenuComponent } from "../menu/menu.component";
@@ -17,6 +18,9 @@ import { AuthService } from '../services/auth.service';
 })
 export class DashboardComponent implements OnInit {
   colaboradores: any[] = [];
+  todosDepartamentosInsuficientes(): boolean {
+    return this.deptBars.length > 0 && this.deptBars.every((d: any) => d.insuficiente);
+  }
   departamentos: any[] = [];
   deptBars: Array<{ nome: string; respondentes: number; promotores: number; detratores: number; neutros: number; promotoresPct: number; detratoresPct: number; neutrosPct: number; nps: number | null; insuficiente: boolean }>= [];
   colaboradoresEmRisco: any[] = [];
@@ -189,17 +193,19 @@ export class DashboardComponent implements OnInit {
   }
 
   getScoreDescBg(): string {
-    if (this.npsReal >= 75) return '#e0f2f1'; // verde claro para excelente
-    if (this.npsReal >= 50) return '#e6f9f3'; // verde água para muito bom
-    if (this.npsReal >= 0) return '#fff8e1';  // amarelo claro para neutro
-    return '#fff3e6';                         // laranja claro para crítico
+  if (this.metricas.respondentes === 0) return '#f5f5f5'; // cinza claro para indisponível
+  if (this.npsReal >= 75) return '#e0f2f1'; // verde claro para excelente
+  if (this.npsReal >= 50) return '#e6f9f3'; // verde água para muito bom
+  if (this.npsReal >= 0) return '#fff8e1';  // amarelo claro para neutro
+  return '#fff3e6';                         // laranja claro para crítico
   }
 
   getScoreDescColor(): string {
-    if (this.npsReal >= 75) return '#2e7d32'; // verde forte
-    if (this.npsReal >= 50) return '#38b6a5'; // verde normal
-    if (this.npsReal >= 0) return '#fbc02d';  // amarelo
-    return '#ff7043';                         // laranja/vermelho
+  if (this.metricas.respondentes === 0) return '#888'; // cinza para indisponível
+  if (this.npsReal >= 75) return '#2e7d32'; // verde forte
+  if (this.npsReal >= 50) return '#38b6a5'; // verde normal
+  if (this.npsReal >= 0) return '#fbc02d';  // amarelo
+  return '#ff7043';                         // laranja/vermelho
   }
 
   formatDate(d: any) {

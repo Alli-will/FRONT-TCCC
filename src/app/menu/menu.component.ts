@@ -16,7 +16,8 @@ import { resolveApiBase } from "../services/api-base";
 export class MenuComponent implements OnInit {
   isLoggedIn = false;
   dropdownOpen: boolean = false;
-  sidebarOpen: boolean = window.innerWidth > 900; // Sidebar sempre expandido em telas grandes
+  sidebarOpen: boolean = window.innerWidth > 1330; // Sidebar sempre expandido em telas grandes
+  isMobileScreen: boolean = window.innerWidth <= 1330;
   userName: string | null = null;
   userEmail: string | null = null;
   isAdmin = false;
@@ -42,7 +43,8 @@ export class MenuComponent implements OnInit {
 
   ngOnInit() {
     window.addEventListener('resize', () => {
-      this.sidebarOpen = window.innerWidth > 900;
+      this.sidebarOpen = window.innerWidth > 1330;
+      this.isMobileScreen = window.innerWidth <= 1330;
     });
     // ouvir evento de atualização do avatar
     window.addEventListener('avatar-updated', (e: any) => {
@@ -216,7 +218,4 @@ export class MenuComponent implements OnInit {
     this.sidebarOpen = !this.sidebarOpen;
   }
 
-  get isMobileScreen(): boolean {
-    return window.innerWidth <= 900;
-  }
 }

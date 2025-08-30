@@ -100,7 +100,7 @@ nav ul li a {
   left: 0;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1330px) {
   .sidebar {
     position: absolute;
     top: 0;
