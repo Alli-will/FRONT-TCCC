@@ -11,7 +11,7 @@ import { LoadingService } from '../services/loading.service';
 @Component({
   selector: 'app-empresa',
   standalone: true,
-  imports: [CommonModule, FormsModule, MenuComponent, RouterLink],
+  imports: [CommonModule, FormsModule, MenuComponent,],
   templateUrl: './empresa.component.html',
   styleUrls: ['./empresa.component.css']
 })

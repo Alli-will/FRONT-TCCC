@@ -1,0 +1,39 @@
+<app-menu>
+  <div *ngIf="mensagem" class="top-banner" [class.erro]="bannerTipo==='erro'" [class.sucesso]="bannerTipo==='sucesso'" role="alert" aria-live="assertive">
+    <div class="msg">{{ mensagem }}</div>
+    <button type="button" (click)="dismissBanner()" aria-label="Fechar">Fechar</button>
+  </div>
+  <div class="page">
+    <div class="card">
+      <h2>Nova Pergunta</h2>
+      <form class="form">
+        <label>
+          Texto da pergunta
+          <input type="text" [(ngModel)]="texto" name="texto" />
+        </label>
+        <label>
+          Descrição de busca
+          <input type="text" [(ngModel)]="descricaoBusca" name="descricaoBusca" />
+        </label>
+        <label>
+          Modalidade
+          <select [(ngModel)]="modalidade" name="modalidade">
+            <option value="pulso">Pulso</option>
+            <option value="clima">Clima</option>
+          </select>
+        </label>
+        <label>
+          Tipo de resposta
+          <select [(ngModel)]="tipoResposta" name="tipoResposta">
+            <option value="quantitativa">Quantitativa</option>
+            <option value="qualitativa">Qualitativa</option>
+          </select>
+        </label>
+        <div class="actions">
+          <a class="btn-ghost" routerLink="/perguntas">Voltar</a>
+          <button type="button" class="btn-primario" (click)="salvar()">Cadastrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</app-menu>

@@ -4,36 +4,37 @@
       <h3>Nova Pesquisa</h3>
       <span class="badge" [class.pulso]="tipo==='pulso'" [class.clima]="tipo==='clima'">{{ tipo }}</span>
     </div>
+          <label for="tipo">Tipo</label>
+      <div class="tipo-switch">
+        <button type="button" [class.ativo]="tipo==='pulso'" (click)="tipo='pulso'; onChangeTipo();">Pulso</button>
+        <button type="button" [class.ativo]="tipo==='clima'" (click)="tipo='clima'; onChangeTipo();">Clima</button>
+      </div>
     <div class="field">
       <label for="titulo">Título</label>
       <input id="titulo" [(ngModel)]="titulo" name="titulo" maxlength="80" placeholder="Ex: Termômetro semanal" required>
       <small class="hint">Máx. 80 caracteres</small>
     </div>
     <div class="field">
-      <label for="tipo">Tipo</label>
-      <div class="tipo-switch">
-        <button type="button" [class.ativo]="tipo==='pulso'" (click)="tipo='pulso'; onChangeTipo();">Pulso</button>
-        <button type="button" [class.ativo]="tipo==='clima'" (click)="tipo='clima'; onChangeTipo();">Clima</button>
-      </div>
-    </div>
-    <div class="actions">
-      <button type="submit" [disabled]="!titulo.trim() || carregando">
-        <span *ngIf="!carregando">Cadastrar</span>
-        <span *ngIf="carregando" class="loader"></span>
-      </button>
     </div>
     <div *ngIf="sucesso" class="sucesso">Salvo!</div>
     <div *ngIf="erro" class="erro">{{ erro }}</div>
     <div class="questions-box" *ngIf="!carregandoPerguntas">
       <div class="qb-header">
         <h4>Perguntas Padrão</h4>
-        <button type="button" class="restore" (click)="restaurarPadrao()" [disabled]="perguntasSelecionadas.length===perguntasPadrao.length">Restaurar</button>
+        <div class="inline-actions">
+          <button type="button" class="restore" (click)="restaurarPadrao()" [disabled]="perguntasSelecionadas.length===perguntasPadrao.length">Restaurar</button>
+          <button type="button" class="restore import" (click)="openImportModal()">Importar perguntas</button>
+        </div>
       </div>
       <ul class="qs-list" *ngIf="perguntasSelecionadas.length; else noneTpl">
         <li *ngFor="let p of perguntasSelecionadas; let i = index">
           <span class="idx">{{ i+1 }}.</span>
           <span class="txt">{{ p.texto }}</span>
-          <button type="button" class="rem" (click)="removerPergunta(i)">Remover</button>
+          <div class="meta">
+            <span class="tag" [class.qualitativa]="p.tipoResposta==='qualitativa'" [class.quantitativa]="p.tipoResposta==='quantitativa'">{{ p.tipoResposta || 'quantitativa' }}</span>
+            <span *ngIf="tipo==='pulso' && i===0" class="tag">NPS</span>
+            <button *ngIf="!(tipo==='pulso' && i===0)" type="button" class="rem" (click)="removerPergunta(i)">Remover</button>
+          </div>
         </li>
       </ul>
       <ng-template #noneTpl>
@@ -43,12 +44,56 @@
         <label>Nova pergunta personalizada</label>
         <input type="text" [(ngModel)]="novaPerguntaTexto" name="novaPerguntaTexto" placeholder="Digite o enunciado" maxlength="200">
         <div class="inline">
+          <div class="switch">
+            <label><input type="radio" [(ngModel)]="novaPerguntaTipoResposta" name="novaPerguntaTipoResposta" value="quantitativa"> Quantitativa</label>
+            <label><input type="radio" [(ngModel)]="novaPerguntaTipoResposta" name="novaPerguntaTipoResposta" value="qualitativa"> Qualitativa</label>
+          </div>
+          <div class="switch">
+            <label><input type="checkbox" [(ngModel)]="salvarNoBanco" name="salvarNoBanco"> Salvar no banco de perguntas</label>
+          </div>
           <button type="button" (click)="addPerguntaCustom()" [disabled]="!novaPerguntaTexto.trim()">Adicionar</button>
         </div>
-        <small class="hint" *ngIf="tipo==='pulso'">Escala 0–10 aplicada automaticamente (todas as perguntas são obrigatórias).</small>
-        <small class="hint" *ngIf="tipo==='clima'">Escala 1–5 (Likert) aplicada automaticamente (todas as perguntas são obrigatórias).</small>
+        <small class="hint" *ngIf="tipo==='pulso' && novaPerguntaTipoResposta==='quantitativa'">Escala 0–10 aplicada automaticamente.</small>
+        <small class="hint" *ngIf="tipo==='clima' && novaPerguntaTipoResposta==='quantitativa'">Escala 1–5 (Likert) aplicada automaticamente.</small>
+        <small class="hint" *ngIf="novaPerguntaTipoResposta==='qualitativa'">Resposta aberta (texto) – sem escala numérica.</small>
       </div>
+
+      
+        <div class="actions">
+          <button type="submit" [disabled]="!titulo.trim() || carregando">
+          <span *ngIf="!carregando">Cadastrar</span>
+          <span *ngIf="carregando" class="loader"></span>
+      </button>
+    </div>
     </div>
     <div *ngIf="carregandoPerguntas" class="loading-mini">Carregando perguntas...</div>
   </form>
+  
+  <!-- Modal Importar Perguntas -->
+  <div class="modal-overlay" *ngIf="showImportModal" (click)="closeImportModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="md-header">
+        <h5>Importar Perguntas ({{ tipo }})</h5>
+      </div>
+      <div class="filters">
+        <label class="switch"><input type="radio" [(ngModel)]="filtroTipoBanco" name="fltTipo" value="todas" (change)="carregarBanco()"><span>Todas</span></label>
+        <label class="switch"><input type="radio" [(ngModel)]="filtroTipoBanco" name="fltTipo" value="quantitativa" (change)="carregarBanco()"><span>Quantitativas</span></label>
+        <label class="switch"><input type="radio" [(ngModel)]="filtroTipoBanco" name="fltTipo" value="qualitativa" (change)="carregarBanco()"><span>Qualitativas</span></label>
+      </div>
+      <div class="mini-list" *ngIf="!carregandoBanco">
+        <div class="row" *ngFor="let q of bancoPerguntas">
+          <div class="t">
+            <div class="txt">{{ q.texto }}</div>
+            <div class="sub">{{ q.modalidade }} • <span class="tag" [class.quantitativa]="q.tipoResposta==='quantitativa'" [class.qualitativa]="q.tipoResposta==='qualitativa'">{{ q.tipoResposta }}</span></div>
+          </div>
+          <button type="button" class="imp" (click)="importarDaBase(q)">Importar</button>
+        </div>
+        <div *ngIf="!bancoPerguntas.length" class="placeholder">Nenhuma pergunta encontrada.</div>
+      </div>
+      <div *ngIf="carregandoBanco" class="loading-mini">Carregando...</div>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" (click)="closeImportModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
 </div>

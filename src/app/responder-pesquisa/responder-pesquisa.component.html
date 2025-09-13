@@ -4,14 +4,19 @@
     <div class="tipo-tag" [class.pulso]="pesquisa.tipo==='pulso'" [class.clima]="pesquisa.tipo==='clima'">{{ pesquisa.tipo }}</div>
 
     <div class="perguntas" *ngIf="pesquisa.perguntas?.length; else semPerguntas">
-  <div class="pergunta-card" *ngFor="let p of pesquisa.perguntas; let i = index" [class.incompleta]="isIncompleta(i)">
+      <div class="pergunta-card" *ngFor="let p of pesquisa.perguntas; let i = index" [class.incompleta]="isIncompleta(i)">
         <div class="texto">{{ i+1 }}. {{ p.texto }}</div>
-  <div class="opcoes escala" *ngIf="p.opcoes?.length">
-    <button type="button" *ngFor="let v of p.opcoes"
-      (click)="selecionar(i, v)"
-      [class.sel]="respostas[i]===v"
-      [class.likert]="pesquisa?.tipo==='clima'">{{ labelOpcao(v) }}</button>
-  </div>
+        <!-- Quantitativa: renderiza botões de escala -->
+        <div class="opcoes escala" *ngIf="p.opcoes?.length">
+          <button type="button" *ngFor="let v of p.opcoes"
+            (click)="selecionar(i, v)"
+            [class.sel]="respostas[i]===v"
+            [class.likert]="pesquisa?.tipo==='clima'">{{ labelOpcao(v) }}</button>
+        </div>
+        <!-- Qualitativa (aberta): textarea -->
+        <div class="aberta" *ngIf="!p.opcoes || !p.opcoes.length">
+          <textarea [(ngModel)]="respostas[i]" [ngModelOptions]="{standalone: true}" rows="3" placeholder="Digite sua resposta..."></textarea>
+        </div>
       </div>
     </div>
 

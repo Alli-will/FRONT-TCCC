@@ -25,7 +25,7 @@ import { MenuComponent } from '../menu/menu.component';
               <th style="width:110px;" class="center">Tipo</th>
               <th style="width:110px;" class="center">Respondentes</th>
               <th style="width:120px;" class="center">Data</th>
-              <th style="width:130px;" class="center">Ações</th>
+              <th style="width:160px;" class="center">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -36,13 +36,19 @@ import { MenuComponent } from '../menu/menu.component';
               <td class="center resp-cell">{{ p.respondentes ?? '-' }}</td>
               <td class="center data-cell">{{ formatDate(p.createdAt) }}</td>
               <td class="center">
-                <a class="acao" [routerLink]="['/relatorio-pesquisa', p.id]">Ver Relatório</a>
+                <a class="btn-primario" [routerLink]="['/relatorio-pesquisa', p.id]">Ver Relatório</a>
               </td>
             </tr>
           </tbody>
         </table>
         <ng-template #vazioTpl>
-          <div class="vazio">Nenhuma pesquisa encontrada.</div>
+          <div class="vazio">
+            <svg class="vazio-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M7 9h10M7 13h7M7 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>Nenhuma pesquisa encontrada.</span>
+          </div>
         </ng-template>
         <div class="paginacao" *ngIf="totalPages>1">
           <button (click)="mudarPagina(-1)" [disabled]="page===1">«</button>
@@ -68,6 +74,10 @@ import { MenuComponent } from '../menu/menu.component';
     .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
     h2 { margin:0; font-size:1.55rem; font-weight:700; }
   .voltar { text-decoration:none; }
+  /* Keep action button text on one line on larger screens */
+  @media (min-width: 701px) {
+    .tbl td .btn-primario { white-space: nowrap; }
+  }
 @media (max-width: 700px) {
   .relatorios-page .header h2 {
     margin-top: 2.5rem !important;
@@ -119,11 +129,8 @@ import { MenuComponent } from '../menu/menu.component';
   .tbl td:nth-child(4):before { content: 'Respondentes: '; font-weight:600; color:#38b6a5; margin-right:0.5em; }
   .tbl td:nth-child(5):before { content: 'Data: '; font-weight:600; color:#38b6a5; margin-right:0.5em; }
   .tbl td:nth-child(6):before { content: ''; }
-  .acao {
-    font-size: 0.9rem;
-    padding: 0.3rem 0.5rem;
-    margin-left: auto;
-  }
+  /* spacing hint for primary button on narrow cards */
+  .btn-primario { margin-left: auto; }
 }
 @media (max-width: 700px) {
   .relatorios-page {
@@ -149,10 +156,7 @@ import { MenuComponent } from '../menu/menu.component';
   .tbl th, .tbl td.center {
     text-align: center;
   }
-  .acao {
-    font-size: 0.9rem;
-    padding: 0.3rem 0.5rem;
-  }
+  .btn-primario { font-size: 0.9rem; padding: 0.55rem 0.9rem; }
 }
     .erro { background:#ffe9e9; border:1px solid #ffc5c5; color:#d93030; padding:.75rem .95rem; border-radius:.7rem; font-size:.8rem; margin-bottom:1rem; }
     .tbl { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e0edf3; box-shadow:0 2px 6px #0000000d; }
@@ -164,11 +168,12 @@ import { MenuComponent } from '../menu/menu.component';
     .pill { text-transform:uppercase; font-size:.6rem; letter-spacing:.5px; font-weight:700; padding:.3rem .55rem; border-radius:.6rem; background:#e2eef2; color:#2d3a41; }
     .pill.pulso { background:#e1faf5; color:#1c7e72; }
     .pill.clima { background:#e7f0ff; color:#2b5fa8; }
-    .acao { text-decoration:none; background:#4f8cff; color:#fff; padding:.4rem .65rem; border-radius:.5rem; font-size:.7rem; font-weight:600; display:inline-block; }
+  /* local .acao removed in favor of global .btn-primario */
     .paginacao { margin-top:1rem; display:flex; align-items:center; gap:.8rem; font-size:.75rem; }
     .paginacao button { background:#fff; border:1px solid #c9dbe2; padding:.35rem .65rem; border-radius:.4rem; cursor:pointer; }
     .paginacao button:disabled { opacity:.5; cursor:default; }
-    .vazio { padding:1.2rem; text-align:center; font-size:.8rem; color:#546974; }
+  .vazio { padding:1.2rem; font-size:.85rem; color:#546974; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5rem; }
+  .vazio-icon { width:34px; height:34px; color:#9db1ba; }
   `]
 })
 export class RelatoriosPesquisasComponent {

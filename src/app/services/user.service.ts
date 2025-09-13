@@ -16,6 +16,7 @@ export class UserService {
   private localMeUrl = `${this.base}/user/me`;
   private remoteMeUrl = this.localMeUrl; // mesma base
   private remoteUserByEmailUrl = this.localUserByEmailUrl;
+  private userUrl = `${this.base}/user`;
 
   constructor(private http: HttpClient) {}
 
@@ -79,5 +80,18 @@ export class UserService {
 
   getAllUsers(): Observable<any[]> {
     return this.http.get<any[]>(this.apiAllUsersUrl);
+  }
+
+  getUsersByStatus(status: 'ativos' | 'inativos' | 'todos'): Observable<any[]> {
+    const s = status || 'ativos';
+    return this.http.get<any[]>(`${this.apiAllUsersUrl}?status=${encodeURIComponent(s)}`);
+  }
+
+  setActive(id: number, ativo: boolean): Observable<any> {
+    return this.http.patch<any>(`${this.userUrl}/${id}/active`, { ativo });
+  }
+
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.userUrl}/${id}`);
   }
 }

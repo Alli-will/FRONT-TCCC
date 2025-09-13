@@ -11,7 +11,7 @@
 .painel-usuarios h3 { margin:0; font-size:1rem; letter-spacing:.5px; color:#1d4742; }
 .tabela-usuarios { width:100%; border-collapse:collapse; font-size:.8rem; }
 .tabela-usuarios th { text-align:left; padding:.6rem .55rem; background:#2d776b; color:#fff; font-weight:600; font-size:.7rem; letter-spacing:.5px; }
-.tabela-usuarios td { padding:.5rem .45rem; border-bottom:1px solid #eef2f3; }
+.tabela-usuarios td { padding:.5rem .45rem; border-bottom:1px solid #eef2f3; word-break:break-word; }
 .tabela-usuarios tbody tr:hover { background:#f3faf9; }
 /* Removido override local de .btn-primario para usar o estilo global com gradiente */
 /* Caso precise de versão menor futuramente, criar classe .btn-primario--sm específica */
@@ -27,3 +27,25 @@
 .sucesso { color:#0a7a25; font-size:.7rem; margin-top:.4rem; }
 /* Voltar usa .btn-secundario global; apenas ajuste de margem */
 .voltar { margin-bottom:1rem; display:inline-flex; }
+
+/* Wrapper para scroll horizontal no mobile */
+.tabela-wrapper { width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.tabela-wrapper table { min-width:600px; }
+.lista-usuarios-mobile { display: none; }
+
+/* Ajustes mobile */
+@media (max-width: 480px) {
+	.empresa-usuarios-container { padding: 1rem; margin: 1rem .5rem; }
+	.painel-usuarios { padding: .75rem; }
+	.painel-usuarios .cabecalho { flex-wrap: wrap; gap: .5rem; }
+	.btn-primario--sm { min-width: 120px; height: 2rem; font-size: .75rem; }
+	.tabela-usuarios th, .tabela-usuarios td { padding: .5rem .4rem; font-size: .75rem; }
+	/* Esconde tabela no mobile e mostra lista empilhada */
+	.tabela-desktop { display: none; }
+	.lista-usuarios-mobile { display: grid; gap: .75rem; }
+	.usuario-card { background: #fff; border: 1px solid #e6ecee; border-radius: 10px; padding: .75rem; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+	.usuario-card .linha { display: flex; justify-content: space-between; gap: .75rem; padding: .2rem 0; }
+	.usuario-card .label { font-size: .7rem; font-weight: 600; color: #2a4a47; }
+	.usuario-card .valor { font-size: .78rem; color: #1f2b2a; text-align: right; word-break: break-word; }
+	.usuario-card .acoes { margin-top: .5rem; display: flex; justify-content: flex-end; }
+}

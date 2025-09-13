@@ -1,0 +1,40 @@
+<app-menu>
+  <div class="page">
+    <div class="card">
+      <h2>Editar Pergunta</h2>
+      <div *ngIf="loading" class="status">Carregando...</div>
+      <form class="form" *ngIf="!loading">
+        <label>
+          Descrição de busca
+          <input type="text" [(ngModel)]="descricaoBusca" name="descricaoBusca" />
+        </label>
+        <label>
+          Texto da pergunta
+          <input type="text" [(ngModel)]="texto" name="texto" />
+        </label>
+        <div class="row">
+          <label>
+            Modalidade
+            <select [(ngModel)]="modalidade" name="modalidade">
+              <option value="pulso">Pulso</option>
+              <option value="clima">Clima</option>
+            </select>
+          </label>
+          <label>
+            Tipo de resposta
+            <select [(ngModel)]="tipoResposta" name="tipoResposta">
+              <option value="quantitativa">Quantitativa</option>
+              <option value="qualitativa">Qualitativa</option>
+            </select>
+          </label>
+        </div>
+        <div class="actions">
+          <a class="btn-ghost" routerLink="/perguntas">Voltar</a>
+          <button type="button" class="btn-primario" (click)="salvar()" [disabled]="saving">
+            {{ saving ? 'Salvando...' : 'Salvar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</app-menu>

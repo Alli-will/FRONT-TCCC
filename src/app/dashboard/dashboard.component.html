@@ -1,10 +1,12 @@
 <app-menu></app-menu>
 <div class="dashboard-container">
   <div class="dashboard-main">
-    <h2 class="gradient-title">Dashboard de Engajamento (eNPS)</h2>
-    <div class="dashboard-header-row stretch-ess" style="align-items: flex-start; gap: 32px;">
-      <!-- NPS Geral -->
-  <div class="diary-card score-card" style="margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start; width:100%;">
+    <div class="content-grid">
+      <div class="panel-card">
+        <h2 class="gradient-title" style="margin:0 0 12px;">Dashboard de Engajamento (eNPS)</h2>
+        <div class="dashboard-header-row stretch-ess" style="align-items: flex-start; gap: 32px;">
+          <!-- NPS Geral -->
+          <div class="diary-card score-card" style="margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start; width:100%;">
         <div class="score-title" style="text-align: left; width: 100%;">
           <h2 class="gradient-title" style="margin:0; font-size:1.35rem;">eNPS da Última Pesquisa de Pulso</h2>
           <div class="score-sub" *ngIf="pulsoAtual">{{ pulsoAtual.titulo }} • {{ formatDate(pulsoAtual.createdAt) }} • 1ª pergunta</div>
@@ -93,6 +95,7 @@
               <span class="metrica-valor" style="font-size:1.6rem;">{{ metricas.promotoresPercent }}%</span>
             </div>
           </div>
+          </div>
         </div>
       </div>
     </div>
@@ -103,31 +106,29 @@
     </div>
     -->
   <!-- Seção de alertas de risco removida a pedido -->
-    <div class="departamentos-section">
-  <h2 class="gradient-title" style="margin:0 0 12px; font-size:1.35rem;">eNPS por Departamento</h2>
+  <div class="departamentos-section">
+    <div class="panel-card">
+      <h2 class="gradient-title" style="margin:0 0 12px; font-size:1.35rem;">eNPS por Departamento</h2>
       <div class="dept-bars">
-        <div class="dept-row" *ngFor="let d of deptBars">
-          <div class="dept-header">
-            <strong class="dept-nome">{{ d.nome }}</strong>
-            <span class="dept-meta" *ngIf="!d.insuficiente; else insufMsg">NPS: {{ d.nps }} • Respondentes: {{ d.respondentes }}</span>
-            <ng-template #insufMsg><span class="dept-meta warn">Respondentes: {{ d.respondentes }} • Não há respostas suficientes para análise</span></ng-template>
-          </div>
-          <div class="dept-bar" *ngIf="!d.insuficiente; else barraVazia">
-            <div class="seg detratores" *ngIf="d.detratoresPct > 0" [style.width.%]="d.detratoresPct">Detratores {{ d.detratoresPct }}%</div>
-            <div class="seg neutros" *ngIf="d.neutrosPct > 0" [style.width.%]="d.neutrosPct">Neutros {{ d.neutrosPct }}%</div>
-            <div class="seg promotores" *ngIf="d.promotoresPct > 0" [style.width.%]="d.promotoresPct">Promotores {{ d.promotoresPct }}%</div>
-          </div>
-          <ng-template #barraVazia>
-            <div class="dept-bar disabled">
-              <div class="seg" style="width:100%; color:#666; background:#eee;">Sem dados suficientes</div>
+        <ng-container *ngFor="let d of deptBars">
+          <div class="dept-row" *ngIf="!d.insuficiente">
+            <div class="dept-header">
+              <strong class="dept-nome">{{ d.nome }}</strong>
+              <span class="dept-meta">NPS: {{ d.nps }} • Respondentes: {{ d.respondentes }}</span>
             </div>
-          </ng-template>
-        </div>
+            <div class="dept-bar">
+              <div class="seg detratores" *ngIf="d.detratoresPct > 0" [style.width.%]="d.detratoresPct">Detratores {{ d.detratoresPct }}%</div>
+              <div class="seg neutros" *ngIf="d.neutrosPct > 0" [style.width.%]="d.neutrosPct">Neutros {{ d.neutrosPct }}%</div>
+              <div class="seg promotores" *ngIf="d.promotoresPct > 0" [style.width.%]="d.promotoresPct">Promotores {{ d.promotoresPct }}%</div>
+            </div>
+          </div>
+        </ng-container>
         <div *ngIf="todosDepartamentosInsuficientes()" class="dept-global-warning" style="margin-top:1.2rem; color:#b85c00; background:#fff8e1; border-radius:0.6em; padding:0.7em 1.1em; text-align:center; font-size:1em;">
           Nenhum departamento possui respostas suficientes para análise do eNPS.
         </div>
       </div>
     </div>
+  </div>
     <!--
     <div class="colaboradores-section">
       <h3>Colaboradores</h3>

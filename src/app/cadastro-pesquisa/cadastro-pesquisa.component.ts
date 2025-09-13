@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SearchService } from '../services/search.service';
+import { QuestionService } from '../services/question.service';
 
 @Component({
   selector: 'app-cadastro-pesquisa',
@@ -10,7 +11,7 @@ import { SearchService } from '../services/search.service';
   templateUrl: './cadastro-pesquisa.component.html',
   styleUrls: ['./cadastro-pesquisa.component.css']
 })
-export class CadastroPesquisaComponent {
+export class CadastroPesquisaComponent implements OnDestroy {
   @Output() criado = new EventEmitter<void>();
   titulo = '';
   tipo = 'pulso';
@@ -22,13 +23,44 @@ export class CadastroPesquisaComponent {
   carregandoPerguntas = true;
   // campos para nova pergunta customizada
   novaPerguntaTexto = '';
+  novaPerguntaTipoResposta: 'quantitativa' | 'qualitativa' = 'quantitativa';
+  salvarNoBanco = true;
   escalaPadraoPulso: number[] = [0,1,2,3,4,5,6,7,8,9,10];
   escalaPadraoClima: number[] = [1,2,3,4,5];
 
-  constructor(private searchService: SearchService) {}
+  // Banco de perguntas (importação)
+  bancoPerguntas: any[] = [];
+  carregandoBanco = false;
+  filtroTipoBanco: 'todas'|'quantitativa'|'qualitativa' = 'todas';
+  showImportModal = false;
+
+  constructor(private searchService: SearchService, private questionsService: QuestionService) {}
 
   ngOnInit() {
     this.carregarPadrao();
+  }
+
+  openImportModal() {
+    this.showImportModal = true;
+    // lock background scroll
+    if (typeof document !== 'undefined') {
+      document.body.classList.add('body-lock');
+    }
+    this.carregarBanco();
+  }
+
+  closeImportModal() {
+    this.showImportModal = false;
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('body-lock');
+    }
+  }
+
+  ngOnDestroy(): void {
+    // safety: remove lock on destroy
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('body-lock');
+    }
   }
 
   onChangeTipo() {
@@ -39,12 +71,25 @@ export class CadastroPesquisaComponent {
     this.carregandoPerguntas = true;
     this.searchService.getDefaultQuestions(this.tipo as any).subscribe({
       next: (res) => {
-        this.perguntasPadrao = res?.perguntas || [];
-        this.perguntasSelecionadas = [...this.perguntasPadrao];
+    const base = (res?.perguntas || []).map((p: any) => ({ ...p, tipoResposta: 'quantitativa' }));
+    // Para pesquisas de Pulso, adiciona uma pergunta qualitativa padrão após a NPS
+    if (this.tipo === 'pulso' && base.length > 0) {
+      const followUp = {
+        texto: 'Com base na sua resposta anterior, qual é o principal motivo da sua nota?',
+  obrigatoria: true,
+  tipoResposta: 'qualitativa',
+  opcoes: []
+      } as any;
+      this.perguntasPadrao = [base[0], followUp, ...base.slice(1)];
+    } else {
+      this.perguntasPadrao = base;
+    }
+    this.perguntasSelecionadas = [...this.perguntasPadrao];
         this.carregandoPerguntas = false;
       },
       error: () => { this.carregandoPerguntas = false; }
     });
+  this.carregarBanco();
   }
 
   cadastrar() {
@@ -52,7 +97,13 @@ export class CadastroPesquisaComponent {
     this.sucesso = false;
     this.erro = '';
     this.carregando = true;
-    const perguntas = this.perguntasSelecionadas.map(p => ({ texto: p.texto, opcoes: p.opcoes, obrigatoria: p.obrigatoria }));
+  // Backend DTO aceita apenas: texto (string), opcoes (array), obrigatoria (boolean opcional)
+  // Para qualitativas, envie opcoes como [] para satisfazer a validação (@IsArray)
+  const perguntas = this.perguntasSelecionadas.map(p => ({
+    texto: p.texto,
+    opcoes: Array.isArray(p.opcoes) ? p.opcoes : [],
+    obrigatoria: !!p.obrigatoria,
+  }));
     this.searchService.createSearch({ titulo: this.titulo.trim(), tipo: this.tipo, perguntas })
       .subscribe({
         next: () => {
@@ -69,7 +120,8 @@ export class CadastroPesquisaComponent {
   }
 
   removerPergunta(idx: number) {
-    this.perguntasSelecionadas.splice(idx,1);
+  if (this.tipo === 'pulso' && idx === 0) { return; }
+  this.perguntasSelecionadas.splice(idx,1);
   }
 
   restaurarPadrao() {
@@ -79,8 +131,40 @@ export class CadastroPesquisaComponent {
   addPerguntaCustom() {
     const texto = this.novaPerguntaTexto.trim();
     if (!texto || texto.length < 3) return;
-  const opcoes = this.tipo === 'clima' ? this.escalaPadraoClima : this.escalaPadraoPulso;
-  this.perguntasSelecionadas.push({ texto, opcoes, obrigatoria: true });
+    const isQuant = this.novaPerguntaTipoResposta === 'quantitativa';
+  const opcoes = isQuant ? (this.tipo === 'clima' ? this.escalaPadraoClima : this.escalaPadraoPulso) : [];
+    const base = { texto, opcoes, obrigatoria: true, tipoResposta: this.novaPerguntaTipoResposta } as any;
+    if (this.salvarNoBanco) {
+      this.questionsService.create({ texto, descricaoBusca: texto, modalidade: this.tipo as any, tipoResposta: this.novaPerguntaTipoResposta }).subscribe({
+        next: (q) => {
+          this.perguntasSelecionadas.push({ ...base, questionId: q?.id });
+          this.carregarBanco(false);
+        },
+        error: () => {
+          // mesmo se falhar no banco, ainda adiciona à pesquisa
+          this.perguntasSelecionadas.push(base);
+        }
+      });
+    } else {
+      this.perguntasSelecionadas.push(base);
+    }
     this.novaPerguntaTexto = '';
+  }
+
+  carregarBanco(reset = true) {
+    this.carregandoBanco = true;
+    const params: any = { modalidade: this.tipo };
+    if (this.filtroTipoBanco !== 'todas') params.tipo = this.filtroTipoBanco;
+    this.questionsService.list(params).subscribe({
+      next: (rows) => { this.bancoPerguntas = rows || []; this.carregandoBanco = false; },
+      error: () => { this.bancoPerguntas = []; this.carregandoBanco = false; }
+    });
+  }
+
+  importarDaBase(q: any) {
+    // Monta pergunta compatível com a pesquisa atual, inferindo opções se quantitativa
+    const isQuant = q?.tipoResposta === 'quantitativa';
+  const opcoes = isQuant ? (this.tipo === 'clima' ? this.escalaPadraoClima : this.escalaPadraoPulso) : [];
+  this.perguntasSelecionadas.push({ texto: q.texto, opcoes, obrigatoria: true, questionId: q.id, tipoResposta: q.tipoResposta });
   }
 }

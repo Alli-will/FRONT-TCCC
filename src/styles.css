@@ -1,11 +1,24 @@
 @media (max-width: 900px) {
   html, body {
-    margin: 1 !important;
-    padding: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 }
 html, body {
   background: #f7f8fa !important;
+}
+
+/* Global box-sizing to avoid width overflow by padding/borders */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Evita barra de rolagem horizontal geral */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Trava o scroll/gestos do body quando um modal estiver aberto */
+body.body-lock {
+  overflow: hidden !important;
 }
 
 /* Título com gradiente reutilizável */
@@ -107,7 +120,7 @@ h2, h3 {
 .btn-ghost {
   background: transparent;
   color: #2d998b;
-  border: 1px solid transparent;
+  border: 1px solid #cbdfe7; /* contorno sutil para destacar no card branco */
   padding: 0.45rem 0.9rem;
   font-size: .78rem;
   font-weight:600;
@@ -120,7 +133,7 @@ h2, h3 {
   text-decoration:none;
   transition: background .2s ease, color .2s ease, box-shadow .25s ease;
 }
-.btn-ghost:hover { background: rgba(56,182,165,0.08); }
+.btn-ghost:hover { background: rgba(56,182,165,0.08); border-color:#38b6a5; }
 .btn-ghost:active { background: rgba(56,182,165,0.14); }
 .btn-ghost:focus { outline:2px solid #38b6a5; outline-offset:2px; }
 .btn-ghost:disabled { opacity:.5; cursor:not-allowed; }

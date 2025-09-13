@@ -84,6 +84,21 @@ export const routes: Routes = [
     loadComponent: () => import('../pesquisas/relatorios-pesquisas.component').then(m => m.RelatoriosPesquisasComponent)
   },
   {
+    path: 'perguntas',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('../perguntas/perguntas.component').then(m => m.PerguntasComponent)
+  },
+  {
+    path: 'perguntas/nova',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('../perguntas/pergunta-nova.component').then(m => m.PerguntaNovaComponent)
+  },
+  {
+    path: 'perguntas/:id/editar',
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () => import('../perguntas/pergunta-editar.component').then(m => m.PerguntaEditarComponent)
+  },
+  {
     path: 'responder-pesquisa/:id',
     canActivate: [AuthGuard],
     loadComponent: () => import('../responder-pesquisa/responder-pesquisa.component').then(m => m.ResponderPesquisaComponent)

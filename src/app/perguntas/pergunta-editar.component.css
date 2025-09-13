@@ -1,0 +1,51 @@
+.page {
+  max-width: 1320px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e0edf3;
+  border-radius: .95rem;
+  box-shadow: 0 2px 8px #00000012;
+  padding: 2.4rem 2.6rem;
+}
+
+h2 {
+  margin: .2rem 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #38b6a5 0%, #4f8cff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.row {
+  display: flex;
+  gap: .6rem;
+}
+
+input,
+select {
+  width: 100%;
+  border: 1px solid #d5e4ec;
+  border-radius: .6rem;
+  padding: .5rem .7rem;
+}
+
+.actions {
+  margin-top: .6rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: .6rem;
+}
+
+/* usa .btn-primario global para botões */

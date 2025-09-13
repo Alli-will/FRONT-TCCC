@@ -84,7 +84,7 @@ nav ul li a {
   position: fixed;
   top: 0;
   left: 0;
-  width: 250px;
+  width: 264px;
   height: 100vh;
   background: #fff; 
   box-shadow: 0 2px 16px rgba(56, 182, 155, 0.07);
@@ -114,18 +114,25 @@ nav ul li a {
   .sidebar.open {
     transform: translateX(0);
   }
+  /* Conteúdo padrão ocupa 100% quando o menu está fechado */
   main.sidebar-opened {
     margin-left: 0 !important;
     margin-top: 60px !important;
-    width: 100vw !important;
-    max-width: 100vw !important;
+    width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box;
     overflow-x: hidden;
   }
+  /* Quando o menu está ABERTO em telas médias/menores, SOBREPOR o conteúdo (não empurrar) */
+  .sidebar.open + main.sidebar-opened {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
   main {
     margin-top: 60px !important;
-    width: 100vw !important;
-    max-width: 100vw !important;
+    width: 100% !important; /* evita squeeze/scroll horizontal do 100vw */
+    max-width: 100% !important;
     box-sizing: border-box;
     overflow-x: hidden;
   }
@@ -138,15 +145,35 @@ nav ul li a {
   }
 }
 
+/* Em telas realmente pequenas, manter o menu sobreposto (sem empurrar o conteúdo) */
+@media (max-width: 900px) {
+  .sidebar.open + main.sidebar-opened {
+  margin-left: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  }
+}
+
 main {
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   margin-left: 0;
   margin-top: 70px;
 }
-main.sidebar-opened {
-  margin-left: 230px;
-  margin-top: 0 !important;
+/* Em telas grandes, empurrar conteúdo; em médias/pequenas sobrepor (ver media acima) */
+@media (min-width: 1331px) {
+  main.sidebar-opened {
+    margin-left: 264px;
+    margin-top: 0 !important;
+  }
+  .sidebar.open + main.sidebar-opened {
+    margin-left: 264px !important;
+    width: calc(100% - 264px) !important;
+    max-width: calc(100% - 264px) !important;
+  }
 }
+
+/* Evita scroll horizontal acidental */
+main { box-sizing: border-box; overflow-x: hidden; }
 
 .container {
   margin-left: 0;
@@ -157,7 +184,7 @@ main.sidebar-opened {
   height: 70px;
 }
 .container.sidebar-opened {
-  margin-left: 230px;
+  margin-left: 264px;
 }
 
 .sidebar-header {
@@ -279,7 +306,7 @@ header nav {
 }
 .sidebar-opened ~ .page-content,
 .page-content.sidebar-opened {
-  margin-left: 230px;
+  margin-left: 264px;
 }
 
 

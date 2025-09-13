@@ -1,12 +1,10 @@
-<app-menu></app-menu>
+<app-menu>
 <div class="pesquisas-page">
   <div class="header-row">
-    <!-- Para colaboradores (não admin) mostra apenas o título; abas ficam ocultas -->
   <h2 *ngIf="!isAdmin" class="gradient-text">Pesquisas Disponíveis</h2>
-    <h2 *ngIf="isAdmin"></h2>
     <div class="tabs" *ngIf="isAdmin">
-      <button (click)="modo='listar'" [class.ativo]="modo==='listar'">Pesquisas</button>
-      <button *ngIf="isAdmin" (click)="modo='cadastrar'" [class.ativo]="modo==='cadastrar'">Nova Pesquisa</button>
+      <button *ngIf="modo==='listar'" class="ativo" (click)="modo='cadastrar'">Nova Pesquisa</button>
+      <button *ngIf="modo==='cadastrar'" class="ativo" (click)="modo='listar'">Voltar para Pesquisas</button>
     </div>
   </div>
 
@@ -14,7 +12,6 @@
     <div class="card full">
   <h3 class="card-title"><span class="gradient-text">Pesquisas Disponíveis</span></h3>
       <div *ngIf="erro" class="alert erro">{{ erro }}</div>
-  <!-- Link de 'Ver Relatórios' removido; agora existe item dedicado no menu lateral -->
       <ul class="lista" *ngIf="pesquisas.length">
         <li *ngFor="let pesquisa of pesquisas">
           <div class="item">
@@ -24,12 +21,17 @@
             </div>
             <div class="meta" style="display:flex; gap:.5rem;">
               <a class="responder-link" [routerLink]="['/responder-pesquisa', pesquisa.id]">Responder</a>
-              <!-- Botão de relatório removido da listagem pública -->
             </div>
           </div>
         </li>
       </ul>
-      <div class="empty" *ngIf="!pesquisas.length && !erro">Nenhuma pesquisa Disponível no momento.</div>
+      <div class="empty" *ngIf="!pesquisas.length && !erro">
+        <svg class="empty-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 12h8M8 16h5M8 8h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Nenhuma pesquisa Disponível no momento.</span>
+      </div>
 
       <div class="paginacao" *ngIf="totalPages > 1">
         <button (click)="mudarPagina(-1)" [disabled]="page===1">«</button>
@@ -45,3 +47,4 @@
     </div>
   </div>
 </div>
+</app-menu>

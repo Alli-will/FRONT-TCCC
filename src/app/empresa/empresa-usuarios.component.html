@@ -29,7 +29,8 @@
     </div>
     <div *ngIf="loadingUsers">Carregando usuários...</div>
     <div *ngIf="usersError" class="erro">{{ usersError }}</div>
-    <table *ngIf="!loadingUsers && !usersError" class="tabela-usuarios">
+    <div *ngIf="!loadingUsers && !usersError" class="tabela-wrapper tabela-desktop">
+  <table class="tabela-usuarios">
       <thead>
         <tr><th>ID</th><th>Nome</th><th>Email</th><th>Role</th><th>Ações</th></tr>
       </thead>
@@ -46,6 +47,19 @@
         <tr *ngIf="users.length === 0"><td colspan="5">Nenhum usuário.</td></tr>
       </tbody>
     </table>
+  </div>
+
+    <!-- Lista mobile: layout empilhado sem scroll horizontal -->
+    <div *ngIf="!loadingUsers && !usersError" class="lista-usuarios-mobile">
+      <div class="usuario-card" *ngFor="let u of users">
+        <div class="linha"><span class="label">ID</span><span class="valor">{{ u.internal_id }}</span></div>
+        <div class="linha"><span class="label">Nome</span><span class="valor">{{ u.first_Name }} {{ u.last_Name }}</span></div>
+        <div class="linha"><span class="label">Email</span><span class="valor">{{ u.email }}</span></div>
+        <div class="linha"><span class="label">Role</span><span class="valor">{{ u.role }}</span></div>
+        <div class="acoes"><button type="button" class="btn-primario btn-primario--sm" (click)="toggleAdmin(u)">{{ u.role === 'admin' ? 'Tornar Employee' : 'Tornar Admin' }}</button></div>
+      </div>
+      <div class="vazio" *ngIf="users.length === 0">Nenhum usuário.</div>
+    </div>
   </div>
   </div>
 <div *ngIf="isSupport && !selectedCompany" class="erro">Carregando empresa...</div>

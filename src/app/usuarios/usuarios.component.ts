@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuComponent } from '../menu/menu.component';
+import { FormsModule } from '@angular/forms';
 import { UserService } from '../services/user.service';
 import { DepartmentService } from '../services/department.service';
 import { AuthService } from '../services/auth.service';
@@ -10,7 +11,7 @@ import { resolveApiBase } from '../services/api-base';
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [MenuComponent, CommonModule, RouterModule],
+  imports: [MenuComponent, CommonModule, RouterModule, FormsModule],
   templateUrl: './usuarios.component.html',
   styleUrls: ['./usuarios.component.css']
 })
@@ -25,10 +26,22 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   tempEditDeptId: number | null = null;
   salvandoDept = false;
   private avatarObjectUrls: string[] = [];
+  // Banner topo (feedback)
+  mensagem: string | null = null;
+  bannerTipo: 'sucesso' | 'erro' = 'sucesso';
+  private bannerTimer: any = null;
+  // Modal de confirmação
+  confirmOpen = false;
+  confirmTarget: any = null;
+  confirmMode: 'delete' | 'inactivate' | 'activate' = 'delete';
+  deleting = false;
+  toggling = false;
 
   // Paginação
   paginaAtual = 1;
   itensPorPagina = 10;
+  // Filtro de status
+  status: 'ativos' | 'inativos' | 'todos' = 'ativos';
 
   get totalPaginas(): number {
     return Math.ceil(this.colaboradoresAtivos.length / this.itensPorPagina) || 1;
@@ -65,21 +78,27 @@ export class UsuariosComponent implements OnInit, OnDestroy {
       next: (d) => this.departamentos = d || [],
       error: () => {}
     });
-    // Carrega usuários
-    this.userService.getAllUsers().subscribe({
+  // Carrega usuários (padrão: ativos)
+  this.userService.getUsersByStatus(this.status).subscribe({
       next: (users: any[]) => {
-        const mapped = (users || []).map((u: any) => {
+  const mapped = (users || []).map((u: any) => {
           const dept = this.extractDepartment(u);
           return {
           id: u.id,
           nomeCompleto: `${u.first_Name || u.firstName || ''} ${u.last_Name || u.lastName || ''}`.trim() || u.nome || u.name || u.email || 'Sem nome',
           departamento: dept.name,
           departmentId: dept.id,
+    ativo: u.ativo,
           avatarUrl: null,
           _etag: null,
           _objectUrl: null
         }});
-  this.colaboradoresAtivos = mapped;
+  // Aplica filtro de status no front (reforço visual)
+  this.colaboradoresAtivos = this.status === 'ativos'
+    ? mapped.filter((c: any) => c.ativo !== false)
+    : this.status === 'inativos'
+      ? mapped.filter((c: any) => c.ativo === false)
+      : mapped;
   this.loading = false;
   // Carrega avatares em background sem reativar tela de loading para evitar flicker
   setTimeout(() => this.carregarAvatares(false), 0);
@@ -88,6 +107,36 @@ export class UsuariosComponent implements OnInit, OnDestroy {
         this.erro = 'Erro ao carregar colaboradores.';
         this.loading = false;
       }
+    });
+  }
+
+  onStatusChange() {
+    this.loading = true;
+    this.paginaAtual = 1;
+    this.userService.getUsersByStatus(this.status).subscribe({
+      next: (users: any[]) => {
+        const mapped = (users || []).map((u: any) => {
+          const dept = this.extractDepartment(u);
+          return {
+            id: u.id,
+            nomeCompleto: `${u.first_Name || u.firstName || ''} ${u.last_Name || u.lastName || ''}`.trim() || u.nome || u.name || u.email || 'Sem nome',
+            departamento: dept.name,
+            departmentId: dept.id,
+            ativo: u.ativo,
+            avatarUrl: null,
+            _etag: null,
+            _objectUrl: null
+          };
+        });
+        this.colaboradoresAtivos = this.status === 'ativos'
+          ? mapped.filter((c: any) => c.ativo !== false)
+          : this.status === 'inativos'
+            ? mapped.filter((c: any) => c.ativo === false)
+            : mapped;
+        this.loading = false;
+        setTimeout(() => this.carregarAvatares(false), 0);
+      },
+      error: () => { this.erro = 'Erro ao carregar colaboradores.'; this.loading = false; }
     });
   }
 
@@ -204,6 +253,15 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     this.avatarObjectUrls.forEach(u => URL.revokeObjectURL(u));
   }
 
+  // Feedback
+  dismissBanner() { this.mensagem = null; }
+  private showBanner(msg: string, tipo: 'sucesso'|'erro') {
+    this.mensagem = msg;
+    this.bannerTipo = tipo;
+    if (this.bannerTimer) clearTimeout(this.bannerTimer);
+    this.bannerTimer = setTimeout(() => { this.mensagem = null; this.bannerTimer = null; }, 2500);
+  }
+
   iniciarEdicao(c: any) {
     if (!this.isAdmin) return;
     this.editandoId = c.id;
@@ -248,6 +306,73 @@ export class UsuariosComponent implements OnInit, OnDestroy {
       })
       .catch(()=>{})
       .finally(()=>{ this.salvandoDept = false; });
+  }
+
+  // Ações: Ativar/Inativar/Excluir
+  openConfirmInactivate(c: any) {
+    if (!this.isAdmin) return;
+    this.confirmTarget = c;
+    this.confirmMode = 'inactivate';
+    this.confirmOpen = true;
+    try { document.body.classList.add('body-lock'); } catch {}
+  }
+  openConfirmActivate(c: any) {
+    if (!this.isAdmin) return;
+    this.confirmTarget = c;
+    this.confirmMode = 'activate';
+    this.confirmOpen = true;
+    try { document.body.classList.add('body-lock'); } catch {}
+  }
+  openConfirmDelete(c: any) {
+    if (!this.isAdmin) return;
+    this.confirmTarget = c;
+    this.confirmMode = 'delete';
+    this.confirmOpen = true;
+    try { document.body.classList.add('body-lock'); } catch {}
+  }
+  closeConfirm() { this.confirmOpen = false; this.confirmTarget = null; this.confirmMode = 'delete'; try { document.body.classList.remove('body-lock'); } catch {} }
+  confirmarAcao() {
+    if (!this.confirmTarget) return;
+    const c = this.confirmTarget;
+    if (this.confirmMode === 'delete') {
+      if (this.deleting) return;
+      this.deleting = true;
+      this.userService.deleteUser(c.id).subscribe({
+        next: () => {
+          this.colaboradoresAtivos = this.colaboradoresAtivos.filter(x => x.id !== c.id);
+          this.showBanner('Usuário excluído com sucesso.', 'sucesso');
+          this.closeConfirm();
+        },
+        error: (e) => {
+          const msg = e?.error?.error || e?.error?.message || 'Não foi possível excluir. Se houver registros, inative o usuário.';
+          this.showBanner(msg, 'erro');
+          this.closeConfirm();
+        },
+        complete: () => { this.deleting = false; }
+      });
+    } else {
+      const ativo = this.confirmMode === 'activate';
+      if (this.toggling) return;
+      this.toggling = true;
+      this.userService.setActive(c.id, ativo).subscribe({
+        next: () => {
+          // Atualiza visualmente com suposição de campo ativo; se não houver backend pronto, só exibe banner
+          (c as any).ativo = ativo;
+          // Remove da lista se saiu do filtro atual
+          if ((this.status === 'ativos' && !ativo) || (this.status === 'inativos' && ativo)) {
+            this.colaboradoresAtivos = this.colaboradoresAtivos.filter(x => x.id !== c.id);
+          }
+          this.showBanner(ativo ? 'Usuário ativado.' : 'Usuário inativado.', 'sucesso');
+          this.closeConfirm();
+        },
+        error: (e) => {
+          const msg = e?.error?.error || e?.error?.message || 'Falha ao atualizar status.';
+          this.showBanner(msg, 'erro');
+          this.closeConfirm();
+        },
+        complete: () => { this.toggling = false; }
+      });
+    }
   }
 
   // Extrai nome/id do departamento de diferentes formatos

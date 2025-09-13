@@ -62,7 +62,6 @@
   <div class="row"><label>Telefone*</label><input name="phone" type="text" maxlength="16" [(ngModel)]="form.phone" (input)="formatPhone()" required /></div>
   <button type="submit" class="btn-primario" [disabled]="loading || empresaFormSup.invalid">{{ loading ? 'Enviando...' : 'Salvar' }}</button>
     </form>
-    <!-- Lista só quando NÃO está criando -->
     <ng-container *ngIf="!showCreateForSupport">
       <div *ngIf="loadingCompanies">Carregando empresas...</div>
       <div *ngIf="!loadingCompanies && allCompanies.length === 0">Nenhuma empresa cadastrada.</div>
@@ -77,8 +76,5 @@
     </ng-container>
   </div>
 
-  <div *ngIf="!isSupport && canCreateDepartment()" class="departamento-section">
-    <button type="button" class="btn-primario" routerLink="/departamentos">Departamentos</button>
-  </div>
 </div>
 <div *ngIf="!companyLoaded">Carregando...</div>

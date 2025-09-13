@@ -245,14 +245,15 @@
   border-radius: 1rem;
   box-shadow: 0 2px 8px #0001;
   padding: 2.2rem 2.5rem 2rem 2.5rem;
+  /* Center like other pages: fixed max width with equal gutters */
+  width: min(1320px, calc(100% - 48px));
   margin: 2rem auto;
-  max-width: 760px;
-  width: 100%;
 }
 
 @media (max-width: 1100px) {
   .usuarios-container {
-    max-width: 98vw;
+    width: calc(100% - 24px);
+    margin: 1.2rem auto;
     padding: 1.2rem 0.7rem 1rem 0.7rem;
   }
 }
@@ -264,6 +265,29 @@
   gap: 1rem;
   margin-bottom: 1rem;
 }
+.status-filter {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.status-filter label {
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.status-select {
+  padding: .3rem .55rem;
+  border: 1px solid #c9dde2;
+  border-radius: .55rem;
+  background: #f6fbfc;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: #2e5964;
+}
+.header-actions { display:flex; gap:.6rem; align-items:center; }
 .lista-colaboradores li strong {
   color: #222;
 }
@@ -292,10 +316,51 @@ li:last-child {
 }
 
 .colab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
   margin-left: 0;
-  margin-top: 0.3rem;
+  margin-top: 0.5rem;
   width: auto;
   align-self: flex-start;
+}
+
+/* Compact, consistent buttons inside the actions row */
+.colab-actions .btn-primario,
+.colab-actions .btn-ghost,
+.colab-actions .btn-alterar-depto {
+  padding: 0.42rem 0.8rem;
+  font-size: 0.78rem;
+  border-radius: 0.6rem;
+  line-height: 1;
+}
+
+/* Let the department button shrink to fit in the row */
+.colab-actions .btn-alterar-depto {
+  min-width: 0;
+}
+
+/* Subtle ghost style for secondary action */
+.colab-actions .btn-ghost {
+  background: #fff;
+  border: 1px solid #d8e9ef;
+  color: #2e5964;
+  font-weight: 700;
+}
+
+/* Danger variant tweak to align with palette */
+.colab-actions .btn-primario.danger {
+  background: #e05a6d;
+  border: 1px solid #d34b5e;
+}
+
+/* Responsive: full row under the name, wrap if needed */
+@media (max-width: 900px) {
+  .colab-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 .btn-alterar-depto {
   background: #38b6a5;
@@ -350,7 +415,6 @@ li:last-child {
   display: inline-block;
   vertical-align: middle;
 }
-@media (max-width: 900px) {
 @media (max-width: 600px) {
   .colab-nome {
     font-size: 0.85rem;
@@ -365,7 +429,6 @@ li:last-child {
   color: #23213a;
   font-weight: 600;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
   max-width: 220px;
   display: inline-block;
@@ -489,10 +552,12 @@ li:last-child {
     margin-bottom: 0.7rem;
     text-align: center;
   }
+  .status-filter { justify-content: center; margin-left: 0; }
   .header-row h2 {
     font-size: 1.1rem;
   }
-  .btn-primario {
+  /* Narrow buttons only in header actions on mobile */
+  .header-actions .btn-primario {
     width: 100%;
     font-size: 0.95rem;
     padding: 0.7rem 0;
@@ -503,6 +568,9 @@ li:last-child {
     gap: 0.5rem;
     padding: 0.7rem 0.2rem;
   }
+.modal-actions { justify-content: center; }
+.modal-actions .btn-primario,
+.modal-actions .btn-ghost { width: auto; flex: 0 0 auto; }
   .colab-avatar {
     width: 80px !important;
     height: 80px !important;
@@ -540,5 +608,35 @@ li:last-child {
   .colab-depto {
     font-size: 0.6rem;
   }
+  /* Buttons smaller on mobile: actions row + modal */
+  .colab-actions .btn-primario,
+  .colab-actions .btn-ghost,
+  .colab-actions .btn-alterar-depto,
+  .modal-actions .btn-primario,
+  .modal-actions .btn-ghost {
+    padding: 0.38rem 0.7rem !important;
+    font-size: 0.74rem !important;
+    border-radius: 0.55rem !important;
+  }
+  .modal-actions { gap: 6px; }
+  .modal-card { width: min(420px, 100%); padding: 14px; }
+  .modal-card h3 { font-size: 1rem; }
+  .modal-card p { font-size: 0.92rem; }
 }
-}
+
+/* Banner topo (feedback), igual ao de pesquisas/perguntas */
+.top-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 2100; color: #fff; padding: .75rem 1rem; display: flex; align-items: center; gap: .75rem; font-weight: 500; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
+.top-banner .msg { flex: 1; }
+.top-banner button { background: rgba(255,255,255,.18); border: 0; color: #fff; padding: .35rem .7rem; border-radius: 4px; font-size: .75rem; cursor: pointer; }
+.top-banner button:hover { background: rgba(255,255,255,.3); }
+.top-banner.erro { background: #c62828; }
+.top-banner.sucesso { background: #178667; }
+
+/* Modal de confirmação - igual ao de pesquisas/perguntas */
+.modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,.55); backdrop-filter: blur(2px); display:flex; align-items:center; justify-content:center; z-index: 9999; padding:16px; }
+.modal-card { background:#fff; width:min(520px, 100%); border-radius:12px; border:1px solid #e0edf3; box-shadow:0 10px 30px rgba(0,0,0,.18); padding:18px 18px 14px; }
+.modal-card h3 { margin:0 0 8px; font-size:1.1rem; }
+.modal-card p { margin:0 0 16px; color:#334155; }
+.modal-actions { display:flex; gap:8px; justify-content:flex-end; }
+.btn-primario.danger { background:#c62828; }
+.btn-primario.danger:hover { filter: brightness(.95); }

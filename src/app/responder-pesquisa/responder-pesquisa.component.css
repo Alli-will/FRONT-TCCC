@@ -32,6 +32,8 @@
 .escala button.likert { width:100%; max-width:380px; height:auto; padding:0.65rem 0.75rem; line-height:1.15rem; font-size:0.78rem; text-align:left; display:flex; align-items:flex-start; gap:0.6rem; white-space:normal; }
 .escala button:hover { background:#f0faf9; }
 .escala button.sel { background:linear-gradient(90deg,#38b6a5 60%, #4f8cff 100%); color:#fff; border-color:transparent; box-shadow:0 2px 8px rgba(56,182,165,.25); }
+.aberta textarea { width:100%; border:1px solid #d5e4ec; background:#fff; border-radius:0.7rem; padding:0.65rem 0.75rem; font-size:0.9rem; outline:none; resize:vertical; min-height:84px; }
+.aberta textarea:focus { border-color:#38b6a5; box-shadow:0 0 0 3px rgba(56,182,165,.15); }
 .enviar-btn { margin-top:1.2rem; background:linear-gradient(90deg,#38b6a5 60%, #4f8cff 100%); color:#fff; border:none; padding:0.85rem 1.4rem; font-weight:600; font-size:0.95rem; border-radius:0.9rem; cursor:pointer; box-shadow:0 2px 8px rgba(56,182,165,.25); }
 .enviar-btn:disabled { opacity:.6; cursor:not-allowed; }
 .alert { margin-top:1rem; padding:0.7rem 0.9rem; border-radius:0.7rem; font-size:0.8rem; }

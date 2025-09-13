@@ -220,10 +220,15 @@ import { MenuComponent } from '../menu/menu.component';
       .header { flex-direction: column; align-items: flex-start; gap: 0.7rem; }
       .meta { flex-direction: column; align-items: flex-start; gap: 0.7rem; padding: 0.8rem 0.5rem; }
     .meta-row { flex-direction: row; justify-content: flex-start; align-items: center; gap: 0.7rem; width: 100%; }
+  /* Mobile: ocultar a grade de 11 colunas da distribuição NPS e manter apenas os resumos */
+  .dist-nps { display: none !important; }
   .tbl-perguntas, .tbl-perguntas thead, .tbl-perguntas tbody, .tbl-perguntas tr, .tbl-perguntas th, .tbl-perguntas td { display: none !important; }
   .mobile-perguntas { display: block; }
   .mobile-bar { display: block; margin-top: 0.4rem; }
     }
+  /* micro ajuste para telas ultra estreitas */
+  /* Breakpoint para telas ultra estreitas permanece, mas a grade já está oculta acima */
+  @media (max-width: 360px) { }
   `]
 })
 export class RelatorioPesquisaComponent {

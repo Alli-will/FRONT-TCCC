@@ -4,7 +4,6 @@ import { AuthService } from "../services/auth.service";
 import { MenuComponent } from "../menu/menu.component";
 import { Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { DiaryService } from '../services/diary.service';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -22,7 +21,6 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private diaryService: DiaryService,
     private router: Router
   ) {}
 
@@ -42,21 +40,24 @@ export class LoginComponent {
       },
       (error) => {
         let msg: string;
-        const backendMsg = (error?.error?.message || '').toLowerCase();
+        const rawBackendMsg = error?.error?.message || '';
+        const backendMsg = rawBackendMsg.toLowerCase();
         if (error?.status === 0 || (error?.message && /network|fetch|connection/i.test(error.message))) {
           msg = 'Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente em instantes.';
         } else if (error?.status === 401) {
-          if (backendMsg.includes('usuário não cadastrado') || backendMsg.includes('usuario não cadastrado') || backendMsg.includes('usuario nao cadastrado')) {
+          if (backendMsg.includes('inativo')) {
+            msg = 'Usuário inativo. Valide com um administrador.';
+          } else if (backendMsg.includes('usuário não cadastrado') || backendMsg.includes('usuario não cadastrado') || backendMsg.includes('usuario nao cadastrado')) {
             msg = 'E-mail não encontrado. Verifique se digitou corretamente ou Contate um Administrador.';
           } else if (backendMsg.includes('senha incorreta')) {
             msg = 'Senha incorreta.';
           } else {
-            msg = 'Credenciais inválidas.';
+            msg = rawBackendMsg || 'Credenciais inválidas.';
           }
         } else if (error?.status === 403) {
           msg = 'Acesso não autorizado.';
         } else {
-          msg = (error?.error?.message) || 'Falha ao autenticar.';
+          msg = rawBackendMsg || 'Falha ao autenticar.';
         }
         this.setError(msg);
       }

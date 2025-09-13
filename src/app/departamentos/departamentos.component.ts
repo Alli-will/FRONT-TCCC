@@ -17,9 +17,14 @@ import { DepartmentService } from '../services/department.service';
     </div>
     <div class="dep-page">
       <div class="card list-card">
+        <div class="back-row">
+          <a class="btn-primario" routerLink="/usuarios">Voltar</a>
+        </div>
         <div class="header-row">
           <h2>Departamentos</h2>
-          <a class="btn-primario btn-novo" routerLink="/departamentos/novo">+ Novo</a>
+          <div class="header-actions">
+            <a class="btn-primario btn-novo" routerLink="/departamentos/novo">+ Novo</a>
+          </div>
         </div>
         <div class="busca-row">
           <input #buscaEl class="busca" type="text" placeholder="Buscar departamento..." [value]="termo" (input)="onBuscar(buscaEl.value)" />
@@ -65,7 +70,9 @@ import { DepartmentService } from '../services/department.service';
   .dep-top-banner button:hover { background:rgba(255,255,255,.3); }
     .dep-page { max-width:820px; margin:2.2rem auto; padding:0 1rem; }
     .card { background:#fff; border:1px solid #e0edf3; border-radius:.95rem; box-shadow:0 2px 8px #00000012; padding:1.2rem 1.4rem 1.3rem; }
-    .header-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.8rem; }
+  .header-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.8rem; }
+  .header-actions { display:flex; gap:.6rem; align-items:center; }
+  .back-row { margin-bottom:.6rem; }
     h2 { margin:0; font-size:1.25rem; font-weight:700; background:linear-gradient(90deg,#38b6a5 0%, #4f8cff 100%); -webkit-background-clip:text; color:transparent; letter-spacing:.5px; }
   .btn-novo { text-decoration:none; display:inline-flex; align-items:center; justify-content:center; padding:.65rem 1.1rem; font-size:.75rem; }
   .busca-row { margin: .2rem 0 0.6rem; }
