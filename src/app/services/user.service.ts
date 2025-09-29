@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, catchError, switchMap, throwError } from "rxjs";
-import { resolveApiBase } from './api-base';
+import { resolveApiBase } from "./api-base";
 
 @Injectable({
   providedIn: "root",
@@ -24,7 +24,13 @@ export class UserService {
     return this.http.post(this.apiUrl, user);
   }
 
-  createCollaboratorLocal(data: { first_Name: string; last_Name: string; email: string; password: string; departmentId?: number }): Observable<any> {
+  createCollaboratorLocal(data: {
+    first_Name: string;
+    last_Name: string;
+    email: string;
+    password: string;
+    departmentId?: number;
+  }): Observable<any> {
     return this.http.post(this.localCreateCollaboratorUrl, data);
   }
 
@@ -42,20 +48,22 @@ export class UserService {
 
   getCurrentUser(): Observable<any> {
     return this.http.get<any>(this.localMeUrl).pipe(
-      catchError(err => {
+      catchError((err) => {
         if (err.status === 404 || err.status === 0) {
           // fallback para remoto
           return this.http.get<any>(this.remoteMeUrl).pipe(
-            catchError(e2 => {
+            catchError((e2) => {
               // fallback final: tentar by-email se token disponível
-              const payloadRaw = localStorage.getItem('token');
+              const payloadRaw = localStorage.getItem("token");
               if (!payloadRaw) return throwError(() => e2);
               try {
                 const token = payloadRaw;
-                const payload = JSON.parse(atob(token.split('.')[1] || ''));
+                const payload = JSON.parse(atob(token.split(".")[1] || ""));
                 const email = payload?.email;
                 if (email) {
-                  return this.http.get<any>(`${this.remoteUserByEmailUrl}?email=${encodeURIComponent(email)}`);
+                  return this.http.get<any>(
+                    `${this.remoteUserByEmailUrl}?email=${encodeURIComponent(email)}`
+                  );
                 }
               } catch {}
               return throwError(() => e2);
@@ -69,7 +77,7 @@ export class UserService {
 
   updateCurrentUser(data: any): Observable<any> {
     return this.http.put<any>(this.localMeUrl, data).pipe(
-      catchError(err => {
+      catchError((err) => {
         if (err.status === 404 || err.status === 0) {
           return this.http.put<any>(this.remoteMeUrl, data);
         }
@@ -82,8 +90,8 @@ export class UserService {
     return this.http.get<any[]>(this.apiAllUsersUrl);
   }
 
-  getUsersByStatus(status: 'ativos' | 'inativos' | 'todos'): Observable<any[]> {
-    const s = status || 'ativos';
+  getUsersByStatus(status: "ativos" | "inativos" | "todos"): Observable<any[]> {
+    const s = status || "ativos";
     return this.http.get<any[]>(`${this.apiAllUsersUrl}?status=${encodeURIComponent(s)}`);
   }
 

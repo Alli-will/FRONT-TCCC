@@ -6,7 +6,7 @@
   min-width: 500px !important;
   max-width: 900px !important;
   background-color: white;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   font-family: Arial, sans-serif;
 }
 .thermometer {
@@ -115,7 +115,7 @@
 .arrow-icon {
   font-size: 1.7rem;
   color: #222;
-  
+
   display: block;
   line-height: 1;
   margin: 0;

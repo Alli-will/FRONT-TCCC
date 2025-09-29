@@ -92,7 +92,7 @@ button[type="submit"]:hover {
 .diary-card {
   background: #fff;
   border-radius: 24px;
-  box-shadow: 0 4px 24px rgba(56, 182, 165, 0.10);
+  box-shadow: 0 4px 24px rgba(56, 182, 165, 0.1);
   padding: 4rem 3rem;
   margin-bottom: 2rem;
   min-width: 700px;
@@ -183,7 +183,10 @@ button[type="submit"]:hover {
   font-family: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+  transition:
+    box-shadow 0.2s,
+    border 0.2s,
+    background 0.2s;
   margin: 0;
   padding: 0;
   background: #f9fafc;
@@ -257,8 +260,8 @@ button[type="submit"]:hover {
 }
 
 .share-more-label:before {
-  content: '\e0b7';
-  font-family: 'Material Icons';
+  content: "\e0b7";
+  font-family: "Material Icons";
   color: #38b6a5;
   font-size: 1.3rem;
   margin-right: 0.4rem;
@@ -311,7 +314,9 @@ button[type="submit"]:hover {
   padding: 2.5rem 2rem;
   min-width: 320px;
   max-width: 400px;
-  box-shadow: 0 4px 24px 0 rgba(56, 182, 165, 0.10), 0 1.5px 6px 0 rgba(0,0,0,0.04);
+  box-shadow:
+    0 4px 24px 0 rgba(56, 182, 165, 0.1),
+    0 1.5px 6px 0 rgba(0, 0, 0, 0.04);
   border-radius: 24px;
   background: #fff;
 }
@@ -425,7 +430,6 @@ button[type="submit"]:hover {
   font-weight: 400;
   margin-left: 6px;
 }
-
 
 .chart-footer {
   max-width: 350px;
@@ -568,7 +572,9 @@ button[type="submit"]:hover {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: border 0.2s, background 0.2s;
+  transition:
+    border 0.2s,
+    background 0.2s;
 }
 
 .emotion-btn.selected,
@@ -991,8 +997,11 @@ button[type="submit"]:hover {
 }
 .modal-razao {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.25);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1001,7 +1010,7 @@ button[type="submit"]:hover {
 .modal-content {
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
   padding: 20px 16px 16px 16px;
   min-width: 240px;
   max-width: 320px;
@@ -1066,7 +1075,7 @@ button[type="submit"]:hover {
   max-width: 700px;
   margin: 0 auto 24px auto;
   text-align: center;
-  margin-top: 5rem ;
+  margin-top: 5rem;
 }
 .diary-header h1 {
   font-size: 2.35rem;
@@ -1175,8 +1184,15 @@ button[type="submit"]:hover {
   flex: 1;
   height: 10px;
   border-radius: 8px;
-  background: linear-gradient(90deg, #ffeaea 0%, #fff4e0 25%, #fffbe6 50%, #e6fff3 75%, #e6fff3 100%);
-  box-shadow: 0 1px 4px rgba(56,182,165,0.08);
+  background: linear-gradient(
+    90deg,
+    #ffeaea 0%,
+    #fff4e0 25%,
+    #fffbe6 50%,
+    #e6fff3 75%,
+    #e6fff3 100%
+  );
+  box-shadow: 0 1px 4px rgba(56, 182, 165, 0.08);
 }
 
 .scale-desc {

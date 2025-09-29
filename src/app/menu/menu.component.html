@@ -1,51 +1,116 @@
 <!-- Botão de menu hamburguer para mobile -->
-<button *ngIf="isMobileScreen" class="hamburger-btn" (click)="toggleSidebar()" aria-label="Abrir menu"
+<button
+  *ngIf="isMobileScreen"
+  class="hamburger-btn"
+  (click)="toggleSidebar()"
+  aria-label="Abrir menu"
   [class.blocked]="modalOpen"
   [style.display]="isMobileScreen ? 'flex' : 'none'"
-  [style.zIndex]="800"  
+  [style.zIndex]="800"
   [style.position]="'fixed'"
   [style.top]="'18px'"
-  [style.left]="'0px'">
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-    stroke-linecap="round" stroke-linejoin="round">
-    <line x1="4" y1="7" x2="20" y2="7"/>
-    <line x1="4" y1="12" x2="20" y2="12"/>
-    <line x1="4" y1="17" x2="20" y2="17"/>
+  [style.left]="'0px'"
+>
+  <svg
+    width="32"
+    height="32"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line x1="4" y1="7" x2="20" y2="7" />
+    <line x1="4" y1="12" x2="20" y2="12" />
+    <line x1="4" y1="17" x2="20" y2="17" />
   </svg>
 </button>
-<div class="sidebar" [ngClass]="{ 'open': sidebarOpen, 'blocked': modalOpen }">
+<div class="sidebar" [ngClass]="{ open: sidebarOpen, blocked: modalOpen }">
   <div class="sidebar-header">
     <img src="assets/favicon.png" alt="Logo CalmaMente" class="sidebar-logo" />
     <span class="sidebar-title">CalmaMente</span>
   </div>
   <ul>
-  <!-- Itens Diário e Conteúdos ocultados -->
-  <!-- <li *ngIf="!isSupport"><a routerLink="/diario"><span class="sidebar-menu-icon material-icons">menu_book</span> Diário</a></li> -->
-  <!-- <li *ngIf="!isSupport"><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">layers</span> Conteúdos</a></li> -->
-  <!-- Nova ordem: Dashboard, Pesquisas, Usuários, Empresa -->
-  <li *ngIf="isAdmin"><a routerLink="/dashboard"><span class="sidebar-menu-icon material-icons">bar_chart</span> Dashboard</a></li>
-  <li *ngIf="!isSupport"><a routerLink="/pesquisas"><span class="sidebar-menu-icon material-icons">fact_check</span> Pesquisas</a></li>
-  <li *ngIf="isAdmin"><a routerLink="/relatorios-pesquisas"><span class="sidebar-menu-icon material-icons">insights</span> Relatórios</a></li>
-  <li *ngIf="isAdmin"><a routerLink="/perguntas"><span class="sidebar-menu-icon material-icons">help</span> Perguntas</a></li>
-  <!-- Usuários agora visível somente para admin -->
-  <li *ngIf="isAdmin"><a routerLink="/usuarios"><span class="sidebar-menu-icon material-icons">group</span> Usuários</a></li>
-  <!-- Empresa oculto para employee -->
-  <li *ngIf="isAdmin || isSupport"><a routerLink="/empresa"><span class="sidebar-menu-icon material-icons">business</span> Empresa</a></li>
-    <li *ngIf="!isLoggedIn"><a routerLink="/login"><span class="sidebar-menu-icon material-icons">login</span> Login</a></li>
+    <!-- Itens Diário e Conteúdos ocultados -->
+    <!-- <li *ngIf="!isSupport"><a routerLink="/diario"><span class="sidebar-menu-icon material-icons">menu_book</span> Diário</a></li> -->
+    <!-- <li *ngIf="!isSupport"><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">layers</span> Conteúdos</a></li> -->
+    <!-- Nova ordem: Dashboard, Pesquisas, Usuários, Empresa -->
+    <li *ngIf="isAdmin">
+      <a routerLink="/dashboard"
+        ><span class="sidebar-menu-icon material-icons">bar_chart</span> Dashboard</a
+      >
+    </li>
+    <li *ngIf="!isSupport">
+      <a routerLink="/pesquisas"
+        ><span class="sidebar-menu-icon material-icons">fact_check</span> Pesquisas</a
+      >
+    </li>
+    <li *ngIf="isAdmin">
+      <a routerLink="/relatorios-pesquisas"
+        ><span class="sidebar-menu-icon material-icons">insights</span> Relatórios</a
+      >
+    </li>
+    <li *ngIf="isAdmin">
+      <a routerLink="/perguntas"
+        ><span class="sidebar-menu-icon material-icons">help</span> Perguntas</a
+      >
+    </li>
+    <!-- Usuários agora visível somente para admin -->
+    <li *ngIf="isAdmin">
+      <a routerLink="/usuarios"
+        ><span class="sidebar-menu-icon material-icons">group</span> Usuários</a
+      >
+    </li>
+    <!-- Empresa oculto para employee -->
+    <li *ngIf="isAdmin || isSupport">
+      <a routerLink="/empresa"
+        ><span class="sidebar-menu-icon material-icons">business</span> Empresa</a
+      >
+    </li>
+    <li *ngIf="!isLoggedIn">
+      <a routerLink="/login"><span class="sidebar-menu-icon material-icons">login</span> Login</a>
+    </li>
   </ul>
   <div class="sidebar-footer">
-  <div *ngIf="isLoggedIn" class="sidebar-profile-block sidebar-profile-card" routerLink="/perfil" style="cursor:pointer" title="Ver perfil">
+    <div
+      *ngIf="isLoggedIn"
+      class="sidebar-profile-block sidebar-profile-card"
+      routerLink="/perfil"
+      style="cursor: pointer"
+      title="Ver perfil"
+    >
       <div class="sidebar-avatar" [class.tem-avatar]="avatarUrl">
-        <img *ngIf="avatarUrl; else defaultAvatar" [src]="avatarUrl" alt="Avatar" decoding="async" loading="lazy" fetchpriority="high" />
+        <img
+          *ngIf="avatarUrl; else defaultAvatar"
+          [src]="avatarUrl"
+          alt="Avatar"
+          decoding="async"
+          loading="lazy"
+          fetchpriority="high"
+        />
         <ng-template #defaultAvatar>
           <img src="assets/default-avatar.svg" alt="Avatar padrão" />
         </ng-template>
       </div>
       <div class="sidebar-profile-info">
         <div class="sidebar-profile-name">{{ userName }}</div>
-        <div class="sidebar-profile-email" style="font-size: 0.8em; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ userEmail || 'email@...' }}</div>
+        <div
+          class="sidebar-profile-email"
+          style="
+            font-size: 0.8em;
+            max-width: 110px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          "
+        >
+          {{ userEmail || "email@..." }}
+        </div>
       </div>
-      <button class="sidebar-logout-btn material-icons" (click)="logout()" title="Sair">logout</button>
+      <button class="sidebar-logout-btn material-icons" (click)="logout()" title="Sair">
+        logout
+      </button>
     </div>
   </div>
 </div>

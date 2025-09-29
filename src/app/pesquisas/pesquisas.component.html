@@ -1,50 +1,66 @@
 <app-menu>
-<div class="pesquisas-page">
-  <div class="header-row">
-  <h2 *ngIf="!isAdmin" class="gradient-text">Pesquisas Disponíveis</h2>
-    <div class="tabs" *ngIf="isAdmin">
-      <button *ngIf="modo==='listar'" class="ativo" (click)="modo='cadastrar'">Nova Pesquisa</button>
-      <button *ngIf="modo==='cadastrar'" class="ativo" (click)="modo='listar'">Voltar para Pesquisas</button>
-    </div>
-  </div>
-
-  <div class="content-grid" *ngIf="modo==='listar'">
-    <div class="card full">
-  <h3 class="card-title"><span class="gradient-text">Pesquisas Disponíveis</span></h3>
-      <div *ngIf="erro" class="alert erro">{{ erro }}</div>
-      <ul class="lista" *ngIf="pesquisas.length">
-        <li *ngFor="let pesquisa of pesquisas">
-          <div class="item">
-            <div class="info">
-              <span class="titulo">{{ pesquisa.titulo }}</span>
-              <span class="tag" [class.pulso]="pesquisa.tipo==='pulso'" [class.clima]="pesquisa.tipo==='clima'">{{ pesquisa.tipo }}</span>
-            </div>
-            <div class="meta" style="display:flex; gap:.5rem;">
-              <a class="responder-link" [routerLink]="['/responder-pesquisa', pesquisa.id]">Responder</a>
-            </div>
-          </div>
-        </li>
-      </ul>
-      <div class="empty" *ngIf="!pesquisas.length && !erro">
-        <svg class="empty-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-          <path d="M8 12h8M8 16h5M8 8h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <span>Nenhuma pesquisa Disponível no momento.</span>
-      </div>
-
-      <div class="paginacao" *ngIf="totalPages > 1">
-        <button (click)="mudarPagina(-1)" [disabled]="page===1">«</button>
-        <span>Página {{ page }} de {{ totalPages }}</span>
-        <button (click)="mudarPagina(1)" [disabled]="page===totalPages">»</button>
+  <div class="pesquisas-page">
+    <div class="header-row">
+      <h2 *ngIf="!isAdmin" class="gradient-text">Pesquisas Disponíveis</h2>
+      <div class="tabs" *ngIf="isAdmin">
+        <button *ngIf="modo === 'listar'" class="ativo" (click)="modo = 'cadastrar'">
+          Nova Pesquisa
+        </button>
+        <button *ngIf="modo === 'cadastrar'" class="ativo" (click)="modo = 'listar'">
+          Voltar para Pesquisas
+        </button>
       </div>
     </div>
-  </div>
 
-  <div class="content-grid" *ngIf="modo==='cadastrar' && isAdmin">
-    <div class="card form-card">
-      <app-cadastro-pesquisa (criado)="carregar(); modo='listar'"></app-cadastro-pesquisa>
+    <div class="content-grid" *ngIf="modo === 'listar'">
+      <div class="card full">
+        <h3 class="card-title"><span class="gradient-text">Pesquisas Disponíveis</span></h3>
+        <div *ngIf="erro" class="alert erro">{{ erro }}</div>
+        <ul class="lista" *ngIf="pesquisas.length">
+          <li *ngFor="let pesquisa of pesquisas">
+            <div class="item">
+              <div class="info">
+                <span class="titulo">{{ pesquisa.titulo }}</span>
+                <span
+                  class="tag"
+                  [class.pulso]="pesquisa.tipo === 'pulso'"
+                  [class.clima]="pesquisa.tipo === 'clima'"
+                  >{{ pesquisa.tipo }}</span
+                >
+              </div>
+              <div class="meta" style="display: flex; gap: 0.5rem">
+                <a class="responder-link" [routerLink]="['/responder-pesquisa', pesquisa.id]"
+                  >Responder</a
+                >
+              </div>
+            </div>
+          </li>
+        </ul>
+        <div class="empty" *ngIf="!pesquisas.length && !erro">
+          <svg class="empty-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" />
+            <path
+              d="M8 12h8M8 16h5M8 8h8"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span>Nenhuma pesquisa Disponível no momento.</span>
+        </div>
+
+        <div class="paginacao" *ngIf="totalPages > 1">
+          <button (click)="mudarPagina(-1)" [disabled]="page === 1">«</button>
+          <span>Página {{ page }} de {{ totalPages }}</span>
+          <button (click)="mudarPagina(1)" [disabled]="page === totalPages">»</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-grid" *ngIf="modo === 'cadastrar' && isAdmin">
+      <div class="card form-card">
+        <app-cadastro-pesquisa (criado)="carregar(); modo = 'listar'"></app-cadastro-pesquisa>
+      </div>
     </div>
   </div>
-</div>
 </app-menu>

@@ -1,51 +1,225 @@
-.empresa-usuarios-container { max-width: 1000px; margin: 1.5rem auto; padding: 1.25rem 1.5rem; background:#fff; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,.07); }
-.empresa-usuarios-container h2 { margin:0 0 1rem; }
-.lista-empresas { display:grid; gap:1rem; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); margin-bottom:1.5rem; }
-.empresa-item { background:#fdfdfd; border:1px solid #dde4e6; padding:.8rem .85rem .9rem; border-radius:8px; cursor:pointer; transition:.15s; box-shadow:0 1px 3px rgba(0,0,0,.05); }
-.empresa-item:hover { background:#f6fbfa; }
-.empresa-item.selecionada { outline:2px solid #2d776b; box-shadow:0 0 0 3px rgba(45,119,107,.18); }
-.empresa-item h4 { margin:.1rem 0 .45rem; font-size:.9rem; color:#25524c; letter-spacing:.5px; }
-.empresa-item p { margin:.15rem 0; font-size:.65rem; line-height:1.25; color:#334; letter-spacing:.2px; }
-.painel-usuarios { border:1px solid #d5e3e2; padding:1rem 1.1rem 1.2rem; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,.05); }
-.painel-usuarios .cabecalho { display:flex; align-items:center; justify-content:space-between; margin-bottom:.9rem; }
-.painel-usuarios h3 { margin:0; font-size:1rem; letter-spacing:.5px; color:#1d4742; }
-.tabela-usuarios { width:100%; border-collapse:collapse; font-size:.8rem; }
-.tabela-usuarios th { text-align:left; padding:.6rem .55rem; background:#2d776b; color:#fff; font-weight:600; font-size:.7rem; letter-spacing:.5px; }
-.tabela-usuarios td { padding:.5rem .45rem; border-bottom:1px solid #eef2f3; word-break:break-word; }
-.tabela-usuarios tbody tr:hover { background:#f3faf9; }
+.empresa-usuarios-container {
+  max-width: 1000px;
+  margin: 1.5rem auto;
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+}
+.empresa-usuarios-container h2 {
+  margin: 0 0 1rem;
+}
+.lista-empresas {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  margin-bottom: 1.5rem;
+}
+.empresa-item {
+  background: #fdfdfd;
+  border: 1px solid #dde4e6;
+  padding: 0.8rem 0.85rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.empresa-item:hover {
+  background: #f6fbfa;
+}
+.empresa-item.selecionada {
+  outline: 2px solid #2d776b;
+  box-shadow: 0 0 0 3px rgba(45, 119, 107, 0.18);
+}
+.empresa-item h4 {
+  margin: 0.1rem 0 0.45rem;
+  font-size: 0.9rem;
+  color: #25524c;
+  letter-spacing: 0.5px;
+}
+.empresa-item p {
+  margin: 0.15rem 0;
+  font-size: 0.65rem;
+  line-height: 1.25;
+  color: #334;
+  letter-spacing: 0.2px;
+}
+.painel-usuarios {
+  border: 1px solid #d5e3e2;
+  padding: 1rem 1.1rem 1.2rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+.painel-usuarios .cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+}
+.painel-usuarios h3 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  color: #1d4742;
+}
+.tabela-usuarios {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.tabela-usuarios th {
+  text-align: left;
+  padding: 0.6rem 0.55rem;
+  background: #2d776b;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+}
+.tabela-usuarios td {
+  padding: 0.5rem 0.45rem;
+  border-bottom: 1px solid #eef2f3;
+  word-break: break-word;
+}
+.tabela-usuarios tbody tr:hover {
+  background: #f3faf9;
+}
 /* Removido override local de .btn-primario para usar o estilo global com gradiente */
 /* Caso precise de versão menor futuramente, criar classe .btn-primario--sm específica */
-.btn-primario--sm { padding:0.55rem 1rem; font-size:0.8rem; border-radius:0.65rem; line-height:1; display:inline-flex; align-items:center; justify-content:center; min-width:150px; height:2.2rem; }
-.tabela-usuarios td .btn-primario--sm { width:150px; }
-.acoes .btn-primario--sm { margin-right:.25rem; }
-.row { display:flex; flex-direction:column; margin-bottom:.55rem; }
-.row label { font-size:.6rem; font-weight:600; letter-spacing:.5px; color:#234; margin-bottom:2px; }
-.row input { padding:.45rem .55rem; font-size:.65rem; border:1px solid #cad2d4; border-radius:5px; }
-.admin-form { margin-bottom:1rem; background:#fafefe; border:1px solid #dbe7e6; padding:.85rem 1rem; border-radius:8px; }
-.acoes { display:flex; gap:.6rem; margin-top:.4rem; }
-.erro { color:#b00020; font-size:.7rem; margin-top:.4rem; }
-.sucesso { color:#0a7a25; font-size:.7rem; margin-top:.4rem; }
+.btn-primario--sm {
+  padding: 0.55rem 1rem;
+  font-size: 0.8rem;
+  border-radius: 0.65rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  height: 2.2rem;
+}
+.tabela-usuarios td .btn-primario--sm {
+  width: 150px;
+}
+.acoes .btn-primario--sm {
+  margin-right: 0.25rem;
+}
+.row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.55rem;
+}
+.row label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #234;
+  margin-bottom: 2px;
+}
+.row input {
+  padding: 0.45rem 0.55rem;
+  font-size: 0.65rem;
+  border: 1px solid #cad2d4;
+  border-radius: 5px;
+}
+.admin-form {
+  margin-bottom: 1rem;
+  background: #fafefe;
+  border: 1px solid #dbe7e6;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+}
+.acoes {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+.erro {
+  color: #b00020;
+  font-size: 0.7rem;
+  margin-top: 0.4rem;
+}
+.sucesso {
+  color: #0a7a25;
+  font-size: 0.7rem;
+  margin-top: 0.4rem;
+}
 /* Voltar usa .btn-secundario global; apenas ajuste de margem */
-.voltar { margin-bottom:1rem; display:inline-flex; }
+.voltar {
+  margin-bottom: 1rem;
+  display: inline-flex;
+}
 
 /* Wrapper para scroll horizontal no mobile */
-.tabela-wrapper { width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
-.tabela-wrapper table { min-width:600px; }
-.lista-usuarios-mobile { display: none; }
+.tabela-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.tabela-wrapper table {
+  min-width: 600px;
+}
+.lista-usuarios-mobile {
+  display: none;
+}
 
 /* Ajustes mobile */
 @media (max-width: 480px) {
-	.empresa-usuarios-container { padding: 1rem; margin: 1rem .5rem; }
-	.painel-usuarios { padding: .75rem; }
-	.painel-usuarios .cabecalho { flex-wrap: wrap; gap: .5rem; }
-	.btn-primario--sm { min-width: 120px; height: 2rem; font-size: .75rem; }
-	.tabela-usuarios th, .tabela-usuarios td { padding: .5rem .4rem; font-size: .75rem; }
-	/* Esconde tabela no mobile e mostra lista empilhada */
-	.tabela-desktop { display: none; }
-	.lista-usuarios-mobile { display: grid; gap: .75rem; }
-	.usuario-card { background: #fff; border: 1px solid #e6ecee; border-radius: 10px; padding: .75rem; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
-	.usuario-card .linha { display: flex; justify-content: space-between; gap: .75rem; padding: .2rem 0; }
-	.usuario-card .label { font-size: .7rem; font-weight: 600; color: #2a4a47; }
-	.usuario-card .valor { font-size: .78rem; color: #1f2b2a; text-align: right; word-break: break-word; }
-	.usuario-card .acoes { margin-top: .5rem; display: flex; justify-content: flex-end; }
+  .empresa-usuarios-container {
+    padding: 1rem;
+    margin: 1rem 0.5rem;
+  }
+  .painel-usuarios {
+    padding: 0.75rem;
+  }
+  .painel-usuarios .cabecalho {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .btn-primario--sm {
+    min-width: 120px;
+    height: 2rem;
+    font-size: 0.75rem;
+  }
+  .tabela-usuarios th,
+  .tabela-usuarios td {
+    padding: 0.5rem 0.4rem;
+    font-size: 0.75rem;
+  }
+  /* Esconde tabela no mobile e mostra lista empilhada */
+  .tabela-desktop {
+    display: none;
+  }
+  .lista-usuarios-mobile {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .usuario-card {
+    background: #fff;
+    border: 1px solid #e6ecee;
+    border-radius: 10px;
+    padding: 0.75rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+  .usuario-card .linha {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.2rem 0;
+  }
+  .usuario-card .label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #2a4a47;
+  }
+  .usuario-card .valor {
+    font-size: 0.78rem;
+    color: #1f2b2a;
+    text-align: right;
+    word-break: break-word;
+  }
+  .usuario-card .acoes {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: flex-end;
+  }
 }

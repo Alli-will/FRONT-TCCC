@@ -4,7 +4,7 @@ import { AuthService } from "../services/auth.service";
 import { MenuComponent } from "../menu/menu.component";
 import { Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { RouterModule } from '@angular/router';
+import { RouterModule } from "@angular/router";
 
 @Component({
   selector: "app-login",
@@ -30,44 +30,59 @@ export class LoginComponent {
         localStorage.setItem("token", response.token);
         // Redirecionamento simples sem obrigatoriedade de diário:
         const payload = this.authService.getUserInfoFromToken();
-        if (payload?.role === 'support') {
+        if (payload?.role === "support") {
           this.router.navigate(["/empresa"]);
-        } else if (payload?.role === 'admin') {
+        } else if (payload?.role === "admin") {
           this.router.navigate(["/dashboard"]);
-        } else { // employee e demais
+        } else {
+          // employee e demais
           this.router.navigate(["/pesquisas"]);
         }
       },
       (error) => {
         let msg: string;
-        const rawBackendMsg = error?.error?.message || '';
+        const rawBackendMsg = error?.error?.message || "";
         const backendMsg = rawBackendMsg.toLowerCase();
-        if (error?.status === 0 || (error?.message && /network|fetch|connection/i.test(error.message))) {
-          msg = 'Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente em instantes.';
+        if (
+          error?.status === 0 ||
+          (error?.message && /network|fetch|connection/i.test(error.message))
+        ) {
+          msg =
+            "Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente em instantes.";
         } else if (error?.status === 401) {
-          if (backendMsg.includes('inativo')) {
-            msg = 'Usuário inativo. Valide com um administrador.';
-          } else if (backendMsg.includes('usuário não cadastrado') || backendMsg.includes('usuario não cadastrado') || backendMsg.includes('usuario nao cadastrado')) {
-            msg = 'E-mail não encontrado. Verifique se digitou corretamente ou Contate um Administrador.';
-          } else if (backendMsg.includes('senha incorreta')) {
-            msg = 'Senha incorreta.';
+          if (backendMsg.includes("inativo")) {
+            msg = "Usuário inativo. Valide com um administrador.";
+          } else if (
+            backendMsg.includes("usuário não cadastrado") ||
+            backendMsg.includes("usuario não cadastrado") ||
+            backendMsg.includes("usuario nao cadastrado")
+          ) {
+            msg =
+              "E-mail não encontrado. Verifique se digitou corretamente ou Contate um Administrador.";
+          } else if (backendMsg.includes("senha incorreta")) {
+            msg = "Senha incorreta.";
           } else {
-            msg = rawBackendMsg || 'Credenciais inválidas.';
+            msg = rawBackendMsg || "Credenciais inválidas.";
           }
         } else if (error?.status === 403) {
-          msg = 'Acesso não autorizado.';
+          msg = "Acesso não autorizado.";
         } else {
-          msg = rawBackendMsg || 'Falha ao autenticar.';
+          msg = rawBackendMsg || "Falha ao autenticar.";
         }
         this.setError(msg);
       }
     );
   }
 
-  dismissError() { this.mensagem = null; }
+  dismissError() {
+    this.mensagem = null;
+  }
   private setError(msg: string) {
     this.mensagem = msg;
     if (this.errorTimer) clearTimeout(this.errorTimer);
-    this.errorTimer = setTimeout(()=> { this.mensagem = null; this.errorTimer = null; }, 2500);
+    this.errorTimer = setTimeout(() => {
+      this.mensagem = null;
+      this.errorTimer = null;
+    }, 2500);
   }
 }

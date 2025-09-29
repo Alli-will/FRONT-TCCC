@@ -1,11 +1,11 @@
-<div class="card" [ngClass]="{ 'wide': wide }">
+<div class="card" [ngClass]="{ wide: wide }">
   <h3>Interpretação do ESS</h3>
-  <div class="thermometer horizontal full-bar" [ngClass]="{ 'wide': wide }">
+  <div class="thermometer horizontal full-bar" [ngClass]="{ wide: wide }">
     <div class="ess-arrow" [ngStyle]="{ left: 'calc(' + ess + '% - 16px)' }">
       <span class="arrow-icon">▲</span>
     </div>
   </div>
-  <div class="ess-value" style="margin-top: 8px;">{{ ess }}%</div>
+  <div class="ess-value" style="margin-top: 8px">{{ ess }}%</div>
   <div class="legend">
     <div><strong>80% - 100%</strong> Excelente.</div>
     <div><strong>65% - 79%</strong> Bom.</div>

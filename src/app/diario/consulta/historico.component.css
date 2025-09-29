@@ -20,10 +20,9 @@ section {
   padding: 20px;
 }
 
-
 .section-diary {
-  background-color: #f4f4f9; 
-  padding-top: 80px; 
+  background-color: #f4f4f9;
+  padding-top: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,14 +34,13 @@ section {
   margin-bottom: 20px;
 }
 
-
 form {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
   width: 100%;
-  max-width: 500px; 
+  max-width: 500px;
   margin-top: 20px;
 }
 
@@ -50,13 +48,14 @@ label {
   font-weight: bold;
 }
 
-input[type="date"], select, textarea {
+input[type="date"],
+select,
+textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
-
 
 .button-container {
   display: flex;
@@ -80,7 +79,6 @@ button {
 button:hover {
   background: linear-gradient(90deg, #38b6ff 60%, #4f8cff 100%);
 }
-
 
 .entradas-diario {
   margin-top: 30px;
@@ -108,9 +106,8 @@ button:hover {
   margin-bottom: 5px;
 }
 
-
 .historico-page {
-  background-color: #f4e1d2; 
+  background-color: #f4e1d2;
   padding: 60px 0;
   text-align: center;
 }
@@ -125,7 +122,7 @@ button:hover {
 .diario-card {
   background: #f7f7fa;
   border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   padding: 20px 18px 16px 18px;
   display: flex;
   flex-direction: column;
@@ -133,7 +130,7 @@ button:hover {
   transition: box-shadow 0.2s;
 }
 .diario-card:hover {
-  box-shadow: 0 4px 16px rgba(79,140,255,0.13);
+  box-shadow: 0 4px 16px rgba(79, 140, 255, 0.13);
 }
 .diario-card-header {
   width: 100%;
@@ -167,4 +164,3 @@ button:hover {
   margin-top: 2px;
   word-break: break-word;
 }
-

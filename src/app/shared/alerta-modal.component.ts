@@ -1,15 +1,15 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
-  selector: 'app-alerta-modal',
-  templateUrl: './alerta-modal.component.html',
-  styleUrls: ['./alerta-modal.component.css'],
+  selector: "app-alerta-modal",
+  templateUrl: "./alerta-modal.component.html",
+  styleUrls: ["./alerta-modal.component.css"],
 })
 export class AlertaModalComponent {
-  @Input() titulo: string = 'Alerta';
-  @Input() mensagem: string = '';
+  @Input() titulo: string = "Alerta";
+  @Input() mensagem: string = "";
   @Input() exibir: boolean = false;
-  @Input() textoBotao: string = 'OK';
+  @Input() textoBotao: string = "OK";
   @Output() fechar = new EventEmitter<void>();
 
   onFechar() {

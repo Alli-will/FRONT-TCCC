@@ -36,8 +36,7 @@ export class ConteudoEducacionalComponent {
     },
     {
       titulo: "Ansiedade no trabalho",
-      descricao:
-        "Dicas práticas para lidar com ansiedade em situações profissionais.",
+      descricao: "Dicas práticas para lidar com ansiedade em situações profissionais.",
       tipo: "Texto",
       tempo: "",
       categoria: "Ansiedade",
@@ -48,8 +47,7 @@ export class ConteudoEducacionalComponent {
     },
     {
       titulo: "Crise de ansiedade",
-      descricao:
-        "Áudio de um relato real sobre uma crise de ansiedade e como superá-la.",
+      descricao: "Áudio de um relato real sobre uma crise de ansiedade e como superá-la.",
       tipo: "Áudio",
       tempo: "2 min",
       categoria: "Ansiedade",

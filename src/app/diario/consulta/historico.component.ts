@@ -1,46 +1,45 @@
-import { Component, OnInit } from '@angular/core';
-import { DiaryService } from '../../services/diary.service'; 
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { DiaryService } from "../../services/diary.service";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-historico',
+  selector: "app-historico",
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './historico.component.html',
-  styleUrls: ['./historico.component.css'],
+  templateUrl: "./historico.component.html",
+  styleUrls: ["./historico.component.css"],
 })
 export class HistoricoComponent implements OnInit {
-  entradas: any[] = []; 
+  entradas: any[] = [];
 
   reasonMap: { [key: number]: string } = {
-    1: 'Trabalho',
-    2: 'Família',
-    3: 'Relacionamento',
-    4: 'Estudos',
-    5: 'Saúde',
-    6: 'Financeiro',
-    7: 'Amizades',
-    8: 'Outro',
+    1: "Trabalho",
+    2: "Família",
+    3: "Relacionamento",
+    4: "Estudos",
+    5: "Saúde",
+    6: "Financeiro",
+    7: "Amizades",
+    8: "Outro",
   };
 
   constructor(
-    private diaryService: DiaryService, 
-    private router: Router 
+    private diaryService: DiaryService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.carregarEntradas(); 
+    this.carregarEntradas();
   }
 
-  
   carregarEntradas(): void {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     if (!token) {
-      if (typeof window !== 'undefined') {
-        alert('Você precisa estar logado para visualizar o diário.');
+      if (typeof window !== "undefined") {
+        alert("Você precisa estar logado para visualizar o diário.");
       }
       return;
     }
@@ -48,7 +47,10 @@ export class HistoricoComponent implements OnInit {
     this.diaryService.getDiaryEntries(token).subscribe({
       next: (data) => {
         this.entradas = data.map((entrada: any) => {
-          let reasonName = Array.isArray(entrada.reasons) && entrada.reasons.length > 0 ? entrada.reasons[0].reason : 'N/A';
+          let reasonName =
+            Array.isArray(entrada.reasons) && entrada.reasons.length > 0
+              ? entrada.reasons[0].reason
+              : "N/A";
           return {
             ...entrada,
             reasonName,
@@ -56,16 +58,15 @@ export class HistoricoComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('Erro ao carregar entradas:', err);
-        if (typeof window !== 'undefined') {
-          alert('Erro ao carregar entradas. Tente novamente.');
+        console.error("Erro ao carregar entradas:", err);
+        if (typeof window !== "undefined") {
+          alert("Erro ao carregar entradas. Tente novamente.");
         }
       },
     });
   }
 
-  
   navegarHistorico(): void {
-    this.router.navigate(['/diario']); 
+    this.router.navigate(["/diario"]);
   }
 }

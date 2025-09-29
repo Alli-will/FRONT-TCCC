@@ -4,20 +4,42 @@
 </div>
 <div class="login-container">
   <div class="login-card">
-    <img src="assets/logo_login.png" alt="Logo da empresa" style="max-width: 120px; margin-bottom: 18px; display: block; margin-left: auto; margin-right: auto;" />
-    <p>Bem-vindo!<br></p>
+    <img
+      src="assets/logo_login.png"
+      alt="Logo da empresa"
+      style="
+        max-width: 120px;
+        margin-bottom: 18px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      "
+    />
+    <p>Bem-vindo!<br /></p>
     <form (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="email">E-mail</label>
-        <input type="email" id="email" [(ngModel)]= "email"  placeholder="Digite seu e-mail" name="email" />
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          placeholder="Digite seu e-mail"
+          name="email"
+        />
       </div>
       <div class="form-group">
         <label for="password">Senha</label>
-        <input type="password" id="password" [(ngModel)]="password" placeholder="Digite sua senha" name="senha" />
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          placeholder="Digite sua senha"
+          name="senha"
+        />
       </div>
-  <button type="submit">Entrar</button>
+      <button type="submit">Entrar</button>
     </form>
-  <a routerLink="/recuperar-senha" class="forgot-link">Esqueci minha senha</a>
-  <!-- Link de cadastro removido -->
+    <a routerLink="/recuperar-senha" class="forgot-link">Esqueci minha senha</a>
+    <!-- Link de cadastro removido -->
   </div>
 </div>

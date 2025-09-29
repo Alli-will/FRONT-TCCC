@@ -3,9 +3,7 @@
 <div *ngIf="!isLoading">
   <section id="diario" class="section-diary" aria-labelledby="diario-title">
     <div class="diary-header">
-      <h1 id="diario-title">
-        Como você está se sentindo <span class="highlight">agora</span>?
-      </h1>
+      <h1 id="diario-title">Como você está se sentindo <span class="highlight">agora</span>?</h1>
       <p class="subtitle">
         Sua saúde emocional é importante para nós. Compartilhe como você está se sentindo hoje.
       </p>
@@ -79,21 +77,17 @@
               </div>
               <div class="scale-desc">Escala de bem-estar emocional</div>
             </div>
-            <label class="share-more-label"
-              >Compartilhe algo mais!</label
-            >
+            <label class="share-more-label">Compartilhe algo mais!</label>
             <textarea
               class="diary-textarea"
               placeholder="Compartilhe algo sobre como está se sentindo ou o que está acontecendo?"
               [(ngModel)]="descricao"
               name="descricao"
             ></textarea>
-            <button class="submit-btn" (click)="abrirModalRazao()">
-              Enviar resposta
-            </button>
+            <button class="submit-btn" (click)="abrirModalRazao()">Enviar resposta</button>
             <div class="confidential-note">
-              Suas respostas são confidenciais e ajudam nossa equipe a cuidar melhor
-              do bem-estar de todos.
+              Suas respostas são confidenciais e ajudam nossa equipe a cuidar melhor do bem-estar de
+              todos.
             </div>
           </div>
         </div>
@@ -128,26 +122,46 @@
     </div>
   </section>
   <!-- Modal de seleção de razão do sentimento -->
-  <app-detalhe-modal *ngIf="modalRazaoAberto" [detalhe]="{
-    titulo: 'Selecione o motivo do seu sentimento',
-    tipo: 'texto',
-    conteudo: null
-  }" (fechar)="fecharModalRazao()">
-    <div class="modal-reasons-list" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 1.2rem;">
-      <label *ngFor="let reason of reasons" class="modal-reason-item" style="
-        display: flex;
-        align-items: center;
-        background: #f7f7fa;
-        border-radius: 8px;
-        padding: 0.6em 1em;
-        cursor: pointer;
-        border: 2px solid #e0e0e0;
-        transition: border 0.2s, box-shadow 0.2s;
-        min-width: 120px;
-        box-shadow: 0 1px 4px #0001;
-      " [style.border-color]="reasonIdSelecionado === reason.id ? '#38b6a5' : '#e0e0e0'">
-        <input type="radio" name="reason" [value]="reason.id" [(ngModel)]="reasonIdSelecionado" style="margin-right: 8px; accent-color: #38b6a5;" />
-        <span style="font-size: 1.4em; margin-right: 8px;">
+  <app-detalhe-modal
+    *ngIf="modalRazaoAberto"
+    [detalhe]="{
+      titulo: 'Selecione o motivo do seu sentimento',
+      tipo: 'texto',
+      conteudo: null,
+    }"
+    (fechar)="fecharModalRazao()"
+  >
+    <div
+      class="modal-reasons-list"
+      style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 1.2rem"
+    >
+      <label
+        *ngFor="let reason of reasons"
+        class="modal-reason-item"
+        style="
+          display: flex;
+          align-items: center;
+          background: #f7f7fa;
+          border-radius: 8px;
+          padding: 0.6em 1em;
+          cursor: pointer;
+          border: 2px solid #e0e0e0;
+          transition:
+            border 0.2s,
+            box-shadow 0.2s;
+          min-width: 120px;
+          box-shadow: 0 1px 4px #0001;
+        "
+        [style.border-color]="reasonIdSelecionado === reason.id ? '#38b6a5' : '#e0e0e0'"
+      >
+        <input
+          type="radio"
+          name="reason"
+          [value]="reason.id"
+          [(ngModel)]="reasonIdSelecionado"
+          style="margin-right: 8px; accent-color: #38b6a5"
+        />
+        <span style="font-size: 1.4em; margin-right: 8px">
           <ng-container [ngSwitch]="reason.nome">
             <span *ngSwitchCase="'Trabalho'">💼</span>
             <span *ngSwitchCase="'Família'">👨‍👩‍👧‍👦</span>
@@ -159,9 +173,28 @@
             <span *ngSwitchDefault>❓</span>
           </ng-container>
         </span>
-        <span style="font-size: 1.08em;">{{ reason.nome }}</span>
+        <span style="font-size: 1.08em">{{ reason.nome }}</span>
       </label>
     </div>
-    <button class="confirm-btn" [disabled]="!reasonIdSelecionado" (click)="confirmarRazao()" style="width: 100%; background: #38b6a5; color: #fff; border: none; border-radius: 6px; padding: 0.7em 0; font-size: 1.1em; font-weight: 500; margin-top: 0.5em; cursor: pointer; transition: background 0.2s;">Confirmar</button>
+    <button
+      class="confirm-btn"
+      [disabled]="!reasonIdSelecionado"
+      (click)="confirmarRazao()"
+      style="
+        width: 100%;
+        background: #38b6a5;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 0.7em 0;
+        font-size: 1.1em;
+        font-weight: 500;
+        margin-top: 0.5em;
+        cursor: pointer;
+        transition: background 0.2s;
+      "
+    >
+      Confirmar
+    </button>
   </app-detalhe-modal>
 </div>

@@ -3,122 +3,183 @@
   <div class="dashboard-main">
     <div class="content-grid">
       <div class="panel-card">
-        <h2 class="gradient-title" style="margin:0 0 12px;">Dashboard de Engajamento (eNPS)</h2>
-        <div class="dashboard-header-row stretch-ess" style="align-items: flex-start; gap: 32px;">
+        <h2 class="gradient-title" style="margin: 0 0 12px">Dashboard de Engajamento (eNPS)</h2>
+        <div class="dashboard-header-row stretch-ess" style="align-items: flex-start; gap: 32px">
           <!-- eNPS Geral -->
-          <div class="diary-card score-card" style="margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start; width:100%;">
-        <div class="score-title" style="text-align: left; width: 100%;">
-          <h2 class="gradient-title" style="margin:0; font-size:1.35rem;">eNPS da Última Pesquisa de Pulso</h2>
-          <div class="score-sub" *ngIf="pulsoAtual">{{ pulsoAtual.titulo }} • {{ formatDate(pulsoAtual.createdAt) }} • 1ª pergunta</div>
-          <div class="score-sub" *ngIf="!pulsoAtual">Nenhuma pesquisa de pulso encontrada</div>
-        </div>
-  <div class="score-circle-svg">
-          <svg viewBox="0 0 170 170" style="width:100%;height:auto;max-width:220px;">
-            <circle
-              cx="85"
-              cy="85"
-              r="76"
-              stroke="#eaf6ff"
-              stroke-width="16"
-              fill="none"
-            />
-            <ng-container *ngIf="metricas.respondentes > 0">
-              <circle
-                cx="85"
-                cy="85"
-                r="76"
-                [attr.stroke]="getScoreColor()"
-                stroke-width="16"
-                fill="none"
-                [attr.stroke-dasharray]="477.52"
-                [attr.stroke-dashoffset]="477.52 - (essGeral) * 4.7752"
-                stroke-linecap="round"
-                style="transition: stroke-dashoffset 0.6s;"
-                transform="rotate(-90 85 85)"
-              />
-            </ng-container>
-            <text
-              x="85"
-              y="70"
-              text-anchor="middle"
-              [attr.font-size]="metricas.respondentes > 0 ? '2.2em' : '1.1em'"
-              fill="#222"
-              font-weight="bold"
-              alignment-baseline="middle"
-              dominant-baseline="middle"
+          <div
+            class="diary-card score-card"
+            style="
+              margin: 0 auto;
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+              width: 100%;
+            "
+          >
+            <div class="score-title" style="text-align: left; width: 100%">
+              <h2 class="gradient-title" style="margin: 0; font-size: 1.35rem">
+                eNPS da Última Pesquisa de Pulso
+              </h2>
+              <div class="score-sub" *ngIf="pulsoAtual">
+                {{ pulsoAtual.titulo }} • {{ formatDate(pulsoAtual.createdAt) }} • 1ª pergunta
+              </div>
+              <div class="score-sub" *ngIf="!pulsoAtual">Nenhuma pesquisa de pulso encontrada</div>
+            </div>
+            <div class="score-circle-svg">
+              <svg viewBox="0 0 170 170" style="width: 100%; height: auto; max-width: 220px">
+                <circle cx="85" cy="85" r="76" stroke="#eaf6ff" stroke-width="16" fill="none" />
+                <ng-container *ngIf="metricas.respondentes > 0">
+                  <circle
+                    cx="85"
+                    cy="85"
+                    r="76"
+                    [attr.stroke]="getScoreColor()"
+                    stroke-width="16"
+                    fill="none"
+                    [attr.stroke-dasharray]="477.52"
+                    [attr.stroke-dashoffset]="477.52 - essGeral * 4.7752"
+                    stroke-linecap="round"
+                    style="transition: stroke-dashoffset 0.6s"
+                    transform="rotate(-90 85 85)"
+                  />
+                </ng-container>
+                <text
+                  x="85"
+                  y="70"
+                  text-anchor="middle"
+                  [attr.font-size]="metricas.respondentes > 0 ? '2.2em' : '1.1em'"
+                  fill="#222"
+                  font-weight="bold"
+                  alignment-baseline="middle"
+                  dominant-baseline="middle"
+                >
+                  <ng-container *ngIf="metricas.respondentes > 0; else eNPSIndisponivel">
+                    {{ npsReal }}
+                  </ng-container>
+                </text>
+                <ng-template #eNPSIndisponivel>
+                  <tspan x="85" dy="0">eNPS</tspan>
+                  <tspan x="85" dy="1.2em">indisponível</tspan>
+                </ng-template>
+                <text x="85" y="92" text-anchor="middle" font-size="0.75em" fill="#666"></text>
+                <ng-container *ngIf="metricas.respondentes > 0">
+                  <text
+                    x="85"
+                    y="120"
+                    text-anchor="middle"
+                    font-size="1.05em"
+                    [attr.fill]="getScoreColor()"
+                    font-weight="600"
+                  >
+                    {{ getScoreLabel() }}
+                  </text>
+                </ng-container>
+              </svg>
+            </div>
+            <div
+              class="score-desc-wrapper"
+              style="
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+                margin-top: 28px;
+              "
             >
-              <ng-container *ngIf="metricas.respondentes > 0; else eNPSIndisponivel">{{ npsReal }}</ng-container>
-            </text>
-            <ng-template #eNPSIndisponivel>
-              <tspan x="85" dy="0">eNPS</tspan>
-              <tspan x="85" dy="1.2em">indisponível</tspan>
-            </ng-template>
-            <text x="85" y="92" text-anchor="middle" font-size="0.75em" fill="#666"></text>
-            <ng-container *ngIf="metricas.respondentes > 0">
-              <text
-                x="85"
-                y="120"
-                text-anchor="middle"
-                font-size="1.05em"
-                [attr.fill]="getScoreColor()"
-                font-weight="600"
+              <div
+                class="score-desc"
+                [style.background]="getScoreDescBg()"
+                [style.color]="getScoreDescColor()"
+                style="text-align: center"
               >
-                {{ getScoreLabel() }}
-              </text>
-            </ng-container>            
-          </svg>
+                <ng-container *ngIf="metricas.respondentes > 0; else descIndisponivel">{{
+                  getScoreDesc()
+                }}</ng-container>
+                <ng-template #descIndisponivel>
+                  eNPS indisponível, não há dados suficientes para análise.
+                </ng-template>
+              </div>
+              <div class="metricas-row-below">
+                <div class="metrica-card" style="min-width: 0">
+                  <span class="metrica-titulo">Colaboradores Ativos</span>
+                  <span class="metrica-valor" style="font-size: 1.6rem">{{ metricas.ativos }}</span>
+                </div>
+                <div class="metrica-card" style="min-width: 0">
+                  <span class="metrica-titulo">Respondentes</span>
+                  <span class="metrica-valor" style="font-size: 1.6rem">{{
+                    metricas.respondentes
+                  }}</span>
+                </div>
+                <div class="metrica-card" style="min-width: 0">
+                  <span class="metrica-titulo">Detratores%</span>
+                  <span class="metrica-valor" style="font-size: 1.6rem"
+                    >{{ metricas.detratoresPercent }}%</span
+                  >
+                </div>
+                <div class="metrica-card" style="min-width: 0">
+                  <span class="metrica-titulo">Promotores%</span>
+                  <span class="metrica-valor" style="font-size: 1.6rem"
+                    >{{ metricas.promotoresPercent }}%</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-  <div class="score-desc-wrapper" style="width:100%; display:flex; flex-direction:column; gap:18px; margin-top:28px;">
-          <div class="score-desc" [style.background]="getScoreDescBg()" [style.color]="getScoreDescColor()" style="text-align:center;">
-            <ng-container *ngIf="metricas.respondentes > 0; else descIndisponivel">{{ getScoreDesc() }}</ng-container>
-            <ng-template #descIndisponivel>
-              eNPS indisponível, não há dados suficientes para análise.
-            </ng-template>
-          </div>
-          <div class="metricas-row-below">
-            <div class="metrica-card" style="min-width:0;">
-              <span class="metrica-titulo">Colaboradores Ativos</span>
-              <span class="metrica-valor" style="font-size:1.6rem;">{{ metricas.ativos }}</span>
+      </div>
+      <div class="departamentos-section">
+        <div class="panel-card">
+          <h2 class="gradient-title" style="margin: 0 0 12px; font-size: 1.35rem">
+            eNPS por Departamento
+          </h2>
+          <div class="dept-bars">
+            <ng-container *ngFor="let d of deptBars">
+              <div class="dept-row" *ngIf="!d.insuficiente">
+                <div class="dept-header">
+                  <strong class="dept-nome">{{ d.nome }}</strong>
+                  <span class="dept-meta"
+                    >NPS: {{ d.nps }} • Respondentes: {{ d.respondentes }}</span
+                  >
+                </div>
+                <div class="dept-bar">
+                  <div
+                    class="seg detratores"
+                    *ngIf="d.detratoresPct > 0"
+                    [style.width.%]="d.detratoresPct"
+                  >
+                    Detratores {{ d.detratoresPct }}%
+                  </div>
+                  <div class="seg neutros" *ngIf="d.neutrosPct > 0" [style.width.%]="d.neutrosPct">
+                    Neutros {{ d.neutrosPct }}%
+                  </div>
+                  <div
+                    class="seg promotores"
+                    *ngIf="d.promotoresPct > 0"
+                    [style.width.%]="d.promotoresPct"
+                  >
+                    Promotores {{ d.promotoresPct }}%
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <div
+              *ngIf="todosDepartamentosInsuficientes()"
+              class="dept-global-warning"
+              style="
+                margin-top: 1.2rem;
+                color: #b85c00;
+                background: #fff8e1;
+                border-radius: 0.6em;
+                padding: 0.7em 1.1em;
+                text-align: center;
+                font-size: 1em;
+              "
+            >
+              Nenhum departamento possui respostas suficientes para análise do eNPS.
             </div>
-            <div class="metrica-card" style="min-width:0;">
-              <span class="metrica-titulo">Respondentes</span>
-              <span class="metrica-valor" style="font-size:1.6rem;">{{ metricas.respondentes }}</span>
-            </div>
-            <div class="metrica-card" style="min-width:0;">
-              <span class="metrica-titulo">Detratores%</span>
-              <span class="metrica-valor" style="font-size:1.6rem;">{{ metricas.detratoresPercent }}%</span>
-            </div>
-            <div class="metrica-card" style="min-width:0;">
-              <span class="metrica-titulo">Promotores%</span>
-              <span class="metrica-valor" style="font-size:1.6rem;">{{ metricas.promotoresPercent }}%</span>
-            </div>
-          </div>
           </div>
         </div>
       </div>
     </div>
-  <div class="departamentos-section">
-    <div class="panel-card">
-      <h2 class="gradient-title" style="margin:0 0 12px; font-size:1.35rem;">eNPS por Departamento</h2>
-      <div class="dept-bars">
-        <ng-container *ngFor="let d of deptBars">
-          <div class="dept-row" *ngIf="!d.insuficiente">
-            <div class="dept-header">
-              <strong class="dept-nome">{{ d.nome }}</strong>
-              <span class="dept-meta">NPS: {{ d.nps }} • Respondentes: {{ d.respondentes }}</span>
-            </div>
-            <div class="dept-bar">
-              <div class="seg detratores" *ngIf="d.detratoresPct > 0" [style.width.%]="d.detratoresPct">Detratores {{ d.detratoresPct }}%</div>
-              <div class="seg neutros" *ngIf="d.neutrosPct > 0" [style.width.%]="d.neutrosPct">Neutros {{ d.neutrosPct }}%</div>
-              <div class="seg promotores" *ngIf="d.promotoresPct > 0" [style.width.%]="d.promotoresPct">Promotores {{ d.promotoresPct }}%</div>
-            </div>
-          </div>
-        </ng-container>
-        <div *ngIf="todosDepartamentosInsuficientes()" class="dept-global-warning" style="margin-top:1.2rem; color:#b85c00; background:#fff8e1; border-radius:0.6em; padding:0.7em 1.1em; text-align:center; font-size:1em;">
-          Nenhum departamento possui respostas suficientes para análise do eNPS.
-        </div>
-      </div>
-    </div>
-  </div>
   </div>
 </div>

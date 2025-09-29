@@ -7,13 +7,13 @@
 .card {
   background: #fff;
   border: 1px solid #e0edf3;
-  border-radius: .95rem;
+  border-radius: 0.95rem;
   box-shadow: 0 2px 8px #00000012;
   padding: 2.4rem 2.6rem;
 }
 
 h2 {
-  margin: .2rem 0 1rem;
+  margin: 0.2rem 0 1rem;
   font-size: 1.25rem;
   font-weight: 700;
   background: linear-gradient(90deg, #38b6a5 0%, #4f8cff 100%);
@@ -25,27 +25,27 @@ h2 {
 .form {
   display: flex;
   flex-direction: column;
-  gap: .6rem;
+  gap: 0.6rem;
 }
 
 .row {
   display: flex;
-  gap: .6rem;
+  gap: 0.6rem;
 }
 
 input,
 select {
   width: 100%;
   border: 1px solid #d5e4ec;
-  border-radius: .6rem;
-  padding: .5rem .7rem;
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.7rem;
 }
 
 .actions {
-  margin-top: .6rem;
+  margin-top: 0.6rem;
   display: flex;
   justify-content: flex-end;
-  gap: .6rem;
+  gap: 0.6rem;
 }
 
 /* usa .btn-primario global para botões */

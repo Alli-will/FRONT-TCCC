@@ -1,13 +1,21 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class DepartmentService {
-  private apiUrl = 'https://tcc-main.up.railway.app/departments';
+  private apiUrl = "https://tcc-main.up.railway.app/departments";
   constructor(private http: HttpClient) {}
-  getAll(): Observable<any[]> { return this.http.get<any[]>(this.apiUrl); }
-  create(name: string): Observable<any> { return this.http.post<any>(this.apiUrl, { name }); }
-  update(id: number, body: { name: string }): Observable<any> { return this.http.put<any>(`${this.apiUrl}/${id}`, body); }
-  remove(id: number): Observable<any> { return this.http.delete<any>(`${this.apiUrl}/${id}`); }
+  getAll(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
+  create(name: string): Observable<any> {
+    return this.http.post<any>(this.apiUrl, { name });
+  }
+  update(id: number, body: { name: string }): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, body);
+  }
+  remove(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
 }

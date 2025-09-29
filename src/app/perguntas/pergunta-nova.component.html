@@ -1,5 +1,12 @@
 <app-menu>
-  <div *ngIf="mensagem" class="top-banner" [class.erro]="bannerTipo==='erro'" [class.sucesso]="bannerTipo==='sucesso'" role="alert" aria-live="assertive">
+  <div
+    *ngIf="mensagem"
+    class="top-banner"
+    [class.erro]="bannerTipo === 'erro'"
+    [class.sucesso]="bannerTipo === 'sucesso'"
+    role="alert"
+    aria-live="assertive"
+  >
     <div class="msg">{{ mensagem }}</div>
     <button type="button" (click)="dismissBanner()" aria-label="Fechar">Fechar</button>
   </div>

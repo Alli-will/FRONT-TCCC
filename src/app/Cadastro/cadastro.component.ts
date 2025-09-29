@@ -21,8 +21,11 @@ export class CadastroComponent {
   };
   errorMessage: string | null = null;
 
-  constructor(private userService: UserService, private router: Router) {
-    if (typeof window !== 'undefined' && window.localStorage) {
+  constructor(
+    private userService: UserService,
+    private router: Router
+  ) {
+    if (typeof window !== "undefined" && window.localStorage) {
       const cadastroUser = localStorage.getItem("cadastroUser");
       if (cadastroUser) {
         this.user = { ...this.user, ...JSON.parse(cadastroUser) };
@@ -42,23 +45,22 @@ export class CadastroComponent {
     };
     this.userService.createUser(userPayload).subscribe(
       (response) => {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           alert("Usuário cadastrado com sucesso!");
         }
         this.router.navigate(["/login"]);
       },
       (error) => {
-       
         let msg = "Erro ao cadastrar. Tente novamente.";
         if (error?.error?.details) {
           if (Array.isArray(error.error.details)) {
-            msg = error.error.details.join(' ');
+            msg = error.error.details.join(" ");
           } else {
             msg = error.error.details;
           }
         } else if (error?.error?.message) {
           if (Array.isArray(error.error.message)) {
-            msg = error.error.message.join(' ');
+            msg = error.error.message.join(" ");
           } else {
             msg = error.error.message;
           }
@@ -66,7 +68,7 @@ export class CadastroComponent {
           msg = error.error.error;
         }
         this.errorMessage = msg;
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           alert(msg);
         }
       }

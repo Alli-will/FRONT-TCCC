@@ -1,88 +1,209 @@
 <app-menu>
-  <div *ngIf="mensagem" class="top-banner" [class.erro]="bannerTipo==='erro'" [class.sucesso]="bannerTipo==='sucesso'" role="alert" aria-live="assertive">
+  <div
+    *ngIf="mensagem"
+    class="top-banner"
+    [class.erro]="bannerTipo === 'erro'"
+    [class.sucesso]="bannerTipo === 'sucesso'"
+    role="alert"
+    aria-live="assertive"
+  >
     <div class="msg">{{ mensagem }}</div>
     <button type="button" (click)="dismissBanner()" aria-label="Fechar">Fechar</button>
   </div>
-<div class="usuarios-container">
-  <div class="header-row">
-    <h2>Colaboradores</h2>
-    <div class="status-filter" style="display:flex; align-items:center; gap:.5rem;">
-      <label for="statusSelect" class="no-gradient" style="color:#2e5964; font-weight:600;">Status</label>
-      <select id="statusSelect" [(ngModel)]="status" (ngModelChange)="onStatusChange()" class="status-select">
-        <option value="ativos">Ativos</option>
-        <option value="inativos">Inativos</option>
-        <option value="todos">Todos</option>
-      </select>
-    </div>
-    <div class="header-actions" *ngIf="isAdmin">
-      <button routerLink="/departamentos" class="btn-primario" aria-label="Ir para departamentos">
-        <span class="btn-icone" aria-hidden="true">＋</span>
-        <span>Departamentos</span>
-      </button>
-      <button routerLink="/usuarios/cadastrar" class="btn-primario" aria-label="Cadastrar novo colaborador">
-        <span class="btn-icone" aria-hidden="true">＋</span>
-        <span>Colaborador</span>
-      </button>
-    </div>
-  </div>
-  <div *ngIf="erro" class="erro">{{ erro }}</div>
-  <div *ngIf="loading">Carregando colaboradores...</div>
-  <div *ngIf="!loading && colaboradoresAtivos.length === 0">
-    {{ status==='inativos' ? 'Nenhum colaborador inativo encontrado.' : (status==='todos' ? 'Nenhum colaborador encontrado.' : 'Nenhum colaborador ativo encontrado.') }}
-  </div>
-  <ul *ngIf="!loading && colaboradoresAtivos.length > 0" class="lista-colaboradores">
-    <li *ngFor="let c of colaboradoresPaginados" class="colab-item">
-      <div class="colab-avatar" [class.tem-avatar]="c.avatarUrl">
-        <img *ngIf="c.avatarUrl; else defaultUserAvatar" [src]="c.avatarUrl" alt="Avatar de {{ c.nomeCompleto }}" loading="lazy" decoding="async" />
-        <ng-template #defaultUserAvatar>
-          <img src="assets/default-avatar.svg" alt="Avatar padrão" />
-        </ng-template>
+  <div class="usuarios-container">
+    <div class="header-row">
+      <h2>Colaboradores</h2>
+      <div class="status-filter" style="display: flex; align-items: center; gap: 0.5rem">
+        <label for="statusSelect" class="no-gradient" style="color: #2e5964; font-weight: 600"
+          >Status</label
+        >
+        <select
+          id="statusSelect"
+          [(ngModel)]="status"
+          (ngModelChange)="onStatusChange()"
+          class="status-select"
+        >
+          <option value="ativos">Ativos</option>
+          <option value="inativos">Inativos</option>
+          <option value="todos">Todos</option>
+        </select>
       </div>
-      <div class="colab-texto">
-        <strong class="colab-nome">{{ c.nomeCompleto }}</strong>
-        <span *ngIf="editandoId !== c.id" class="colab-depto" (click)="iniciarEdicao(c)" [class.editavel]="isAdmin" title="Clique para editar" >
-          {{ c.departamento }}
-        </span>
-        <div *ngIf="editandoId === c.id" class="dept-editor">
-          <select #selDept [disabled]="salvandoDept" [value]="tempEditDeptId ?? ''" (change)="tempEditDeptId = selDept.value ? +selDept.value : null">
-            <option value="">Sem departamento</option>
-            <option *ngFor="let d of departamentos" [value]="d.id">{{ d.name || d.nome || d.title || d.label || d.departmentName || d.description || d }}</option>
-          </select>
-          <button type="button" class="btn-cancelar" (click)="cancelarEdicao()" [disabled]="salvandoDept">×</button>
-          <button type="button" class="btn-confirmar" (click)="confirmarDepartamento(c)" [disabled]="salvandoDept">✓</button>
+      <div class="header-actions" *ngIf="isAdmin">
+        <button routerLink="/departamentos" class="btn-primario" aria-label="Ir para departamentos">
+          <span class="btn-icone" aria-hidden="true">＋</span>
+          <span>Departamentos</span>
+        </button>
+        <button
+          routerLink="/usuarios/cadastrar"
+          class="btn-primario"
+          aria-label="Cadastrar novo colaborador"
+        >
+          <span class="btn-icone" aria-hidden="true">＋</span>
+          <span>Colaborador</span>
+        </button>
+      </div>
+    </div>
+    <div *ngIf="erro" class="erro">{{ erro }}</div>
+    <div *ngIf="loading">Carregando colaboradores...</div>
+    <div *ngIf="!loading && colaboradoresAtivos.length === 0">
+      {{
+        status === "inativos"
+          ? "Nenhum colaborador inativo encontrado."
+          : status === "todos"
+            ? "Nenhum colaborador encontrado."
+            : "Nenhum colaborador ativo encontrado."
+      }}
+    </div>
+    <ul *ngIf="!loading && colaboradoresAtivos.length > 0" class="lista-colaboradores">
+      <li *ngFor="let c of colaboradoresPaginados" class="colab-item">
+        <div class="colab-avatar" [class.tem-avatar]="c.avatarUrl">
+          <img
+            *ngIf="c.avatarUrl; else defaultUserAvatar"
+            [src]="c.avatarUrl"
+            alt="Avatar de {{ c.nomeCompleto }}"
+            loading="lazy"
+            decoding="async"
+          />
+          <ng-template #defaultUserAvatar>
+            <img src="assets/default-avatar.svg" alt="Avatar padrão" />
+          </ng-template>
         </div>
-        <div class="colab-actions" *ngIf="isAdmin && editandoId !== c.id">
-            <button type="button" class="btn-alterar-depto" (click)="iniciarEdicao(c)">Alterar departamento</button>
-            <button type="button" class="btn-ghost" *ngIf="c.ativo !== false" (click)="openConfirmInactivate(c)">Inativar</button>
-            <button type="button" class="btn-primario" *ngIf="c.ativo === false" (click)="openConfirmActivate(c)">Ativar</button>
-            <button type="button" class="btn-primario danger" (click)="openConfirmDelete(c)">Excluir</button>
+        <div class="colab-texto">
+          <strong class="colab-nome">{{ c.nomeCompleto }}</strong>
+          <span
+            *ngIf="editandoId !== c.id"
+            class="colab-depto"
+            (click)="iniciarEdicao(c)"
+            [class.editavel]="isAdmin"
+            title="Clique para editar"
+          >
+            {{ c.departamento }}
+          </span>
+          <div *ngIf="editandoId === c.id" class="dept-editor">
+            <select
+              #selDept
+              [disabled]="salvandoDept"
+              [value]="tempEditDeptId ?? ''"
+              (change)="tempEditDeptId = selDept.value ? +selDept.value : null"
+            >
+              <option value="">Sem departamento</option>
+              <option *ngFor="let d of departamentos" [value]="d.id">
+                {{
+                  d.name || d.nome || d.title || d.label || d.departmentName || d.description || d
+                }}
+              </option>
+            </select>
+            <button
+              type="button"
+              class="btn-cancelar"
+              (click)="cancelarEdicao()"
+              [disabled]="salvandoDept"
+            >
+              ×
+            </button>
+            <button
+              type="button"
+              class="btn-confirmar"
+              (click)="confirmarDepartamento(c)"
+              [disabled]="salvandoDept"
+            >
+              ✓
+            </button>
           </div>
-      </div>
-    </li>
-  </ul>
-  <!-- Paginação -->
-  <div *ngIf="!loading && totalPaginas > 1" class="paginacao-container">
-    <button (click)="paginaAnterior()" [disabled]="paginaAtual === 1">Anterior</button>
-    <ng-container *ngFor="let p of [].constructor(totalPaginas); let i = index">
-      <button (click)="irParaPagina(i+1)" [class.ativa]="paginaAtual === (i+1)">{{ i+1 }}</button>
-    </ng-container>
-    <button (click)="proximaPagina()" [disabled]="paginaAtual === totalPaginas">Próxima</button>
-  </div>
-</div>
-
-<!-- Modal de confirmação -->
-<div class="modal-overlay" *ngIf="confirmOpen" (click)="closeConfirm()">
-  <div class="modal-card" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
-    <h3>
-      {{ confirmMode === 'delete' ? 'Excluir usuário' : (confirmMode === 'inactivate' ? 'Inativar usuário' : 'Ativar usuário') }}
-    </h3>
-    <p *ngIf="confirmMode==='delete'">Tem certeza que deseja excluir este usuário? Só é possível excluir se não houver registros no sistema.</p>
-    <p *ngIf="confirmMode!=='delete'">Confirma {{ confirmMode==='inactivate' ? 'inativar' : 'ativar' }} este usuário?</p>
-    <div class="modal-actions">
-      <button type="button" class="btn-ghost" (click)="closeConfirm()" [disabled]="deleting || toggling">Cancelar</button>
-      <button *ngIf="confirmMode==='delete'" type="button" class="btn-primario danger" (click)="confirmarAcao()" [disabled]="deleting">{{ deleting ? 'Excluindo...' : 'Excluir' }}</button>
-      <button *ngIf="confirmMode!=='delete'" type="button" class="btn-primario" (click)="confirmarAcao()" [disabled]="toggling">{{ toggling ? (confirmMode==='inactivate' ? 'Inativando...' : 'Ativando...') : (confirmMode==='inactivate' ? 'Inativar' : 'Ativar') }}</button>
+          <div class="colab-actions" *ngIf="isAdmin && editandoId !== c.id">
+            <button type="button" class="btn-alterar-depto" (click)="iniciarEdicao(c)">
+              Alterar departamento
+            </button>
+            <button
+              type="button"
+              class="btn-ghost"
+              *ngIf="c.ativo !== false"
+              (click)="openConfirmInactivate(c)"
+            >
+              Inativar
+            </button>
+            <button
+              type="button"
+              class="btn-primario"
+              *ngIf="c.ativo === false"
+              (click)="openConfirmActivate(c)"
+            >
+              Ativar
+            </button>
+            <button type="button" class="btn-primario danger" (click)="openConfirmDelete(c)">
+              Excluir
+            </button>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <!-- Paginação -->
+    <div *ngIf="!loading && totalPaginas > 1" class="paginacao-container">
+      <button (click)="paginaAnterior()" [disabled]="paginaAtual === 1">Anterior</button>
+      <ng-container *ngFor="let p of [].constructor(totalPaginas); let i = index">
+        <button (click)="irParaPagina(i + 1)" [class.ativa]="paginaAtual === i + 1">
+          {{ i + 1 }}
+        </button>
+      </ng-container>
+      <button (click)="proximaPagina()" [disabled]="paginaAtual === totalPaginas">Próxima</button>
     </div>
   </div>
-</div>
+
+  <!-- Modal de confirmação -->
+  <div class="modal-overlay" *ngIf="confirmOpen" (click)="closeConfirm()">
+    <div class="modal-card" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <h3>
+        {{
+          confirmMode === "delete"
+            ? "Excluir usuário"
+            : confirmMode === "inactivate"
+              ? "Inativar usuário"
+              : "Ativar usuário"
+        }}
+      </h3>
+      <p *ngIf="confirmMode === 'delete'">
+        Tem certeza que deseja excluir este usuário? Só é possível excluir se não houver registros
+        no sistema.
+      </p>
+      <p *ngIf="confirmMode !== 'delete'">
+        Confirma {{ confirmMode === "inactivate" ? "inativar" : "ativar" }} este usuário?
+      </p>
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-ghost"
+          (click)="closeConfirm()"
+          [disabled]="deleting || toggling"
+        >
+          Cancelar
+        </button>
+        <button
+          *ngIf="confirmMode === 'delete'"
+          type="button"
+          class="btn-primario danger"
+          (click)="confirmarAcao()"
+          [disabled]="deleting"
+        >
+          {{ deleting ? "Excluindo..." : "Excluir" }}
+        </button>
+        <button
+          *ngIf="confirmMode !== 'delete'"
+          type="button"
+          class="btn-primario"
+          (click)="confirmarAcao()"
+          [disabled]="toggling"
+        >
+          {{
+            toggling
+              ? confirmMode === "inactivate"
+                ? "Inativando..."
+                : "Ativando..."
+              : confirmMode === "inactivate"
+                ? "Inativar"
+                : "Ativar"
+          }}
+        </button>
+      </div>
+    </div>
+  </div>
 </app-menu>

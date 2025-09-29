@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { SearchService } from '../services/search.service';
-import { MenuComponent } from '../menu/menu.component';
+import { Component } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { RouterLink } from "@angular/router";
+import { SearchService } from "../services/search.service";
+import { MenuComponent } from "../menu/menu.component";
 
 @Component({
-  selector: 'app-relatorios-pesquisas',
+  selector: "app-relatorios-pesquisas",
   standalone: true,
   imports: [CommonModule, RouterLink, MenuComponent],
   template: `
@@ -30,13 +30,22 @@ import { MenuComponent } from '../menu/menu.component';
           </thead>
           <tbody>
             <tr *ngFor="let p of pesquisas; let i = index">
-              <td class="center">{{ (page-1)*pageSize + i + 1 }}</td>
+              <td class="center">{{ (page - 1) * pageSize + i + 1 }}</td>
               <td class="titulo-cell">{{ p.titulo }}</td>
-              <td class="center"><span class="pill" [class.pulso]="p.tipo==='pulso'" [class.clima]="p.tipo==='clima'">{{ p.tipo }}</span></td>
-              <td class="center resp-cell">{{ p.respondentes ?? '-' }}</td>
+              <td class="center">
+                <span
+                  class="pill"
+                  [class.pulso]="p.tipo === 'pulso'"
+                  [class.clima]="p.tipo === 'clima'"
+                  >{{ p.tipo }}</span
+                >
+              </td>
+              <td class="center resp-cell">{{ p.respondentes ?? "-" }}</td>
               <td class="center data-cell">{{ formatDate(p.createdAt) }}</td>
               <td class="center">
-                <a class="btn-primario" [routerLink]="['/relatorio-pesquisa', p.id]">Ver Relatório</a>
+                <a class="btn-primario" [routerLink]="['/relatorio-pesquisa', p.id]"
+                  >Ver Relatório</a
+                >
               </td>
             </tr>
           </tbody>
@@ -44,165 +53,319 @@ import { MenuComponent } from '../menu/menu.component';
         <ng-template #vazioTpl>
           <div class="vazio">
             <svg class="vazio-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-              <path d="M7 9h10M7 13h7M7 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" />
+              <path
+                d="M7 9h10M7 13h7M7 17h10"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
             <span>Nenhuma pesquisa encontrada.</span>
           </div>
         </ng-template>
-        <div class="paginacao" *ngIf="totalPages>1">
-          <button (click)="mudarPagina(-1)" [disabled]="page===1">«</button>
+        <div class="paginacao" *ngIf="totalPages > 1">
+          <button (click)="mudarPagina(-1)" [disabled]="page === 1">«</button>
           <span>Página {{ page }} de {{ totalPages }}</span>
-          <button (click)="mudarPagina(1)" [disabled]="page===totalPages">»</button>
+          <button (click)="mudarPagina(1)" [disabled]="page === totalPages">»</button>
         </div>
       </div>
     </div>
   `,
-  styles: [`
-  .relatorios-page { max-width:1800px; margin:0 auto; padding:2rem 1.5rem; }
+  styles: [
+    `
+      .relatorios-page {
+        max-width: 1800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+      }
 
-  @media (min-width: 1330px) {
-    .relatorios-page {
-      padding-left: 290px !important;
-      padding-right: 2rem;
-      padding-top: 2.5rem;
-      padding-bottom: 2.5rem;
-      box-sizing: border-box;
-    }
-  }
-  .loading { padding:1rem; font-size:.8rem; color:#2d5b66; }
-    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
-    h2 { margin:0; font-size:1.55rem; font-weight:700; }
-  .voltar { text-decoration:none; }
-  /* Keep action button text on one line on larger screens */
-  @media (min-width: 701px) {
-    .tbl td .btn-primario { white-space: nowrap; }
-  }
-@media (max-width: 700px) {
-  .relatorios-page .header h2 {
-    margin-top: 2.5rem !important;
-    display: block;
-  }
-  .relatorios-page {
-    padding: 1rem 0.2rem;
-  }
-  .tbl {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 12px;
-    display: block;
-    overflow-x: visible;
-  }
-  .tbl thead {
-    display: none !important;
-  }
-  .tbl tbody {
-    display: block;
-    width: 100%;
-  }
-  .tbl tr {
-    display: flex;
-    flex-direction: column;
-    background: #fff;
-    border-radius: 1rem;
-    box-shadow: 0 2px 8px #0001;
-    margin-bottom: 1.1rem;
-    padding: 0.7rem 0.7rem 0.5rem 0.7rem;
-    gap: 0.3rem;
-    width: 100%;
-    min-width: 0;
-  }
-  .tbl td {
-    display: flex;
-    align-items: center;
-    font-size: 0.97rem;
-    padding: 0.2rem 0;
-    border: none;
-    width: 100%;
-    min-width: 0;
-    word-break: break-word;
-    white-space: normal;
-  }
-  .tbl td:nth-child(1):before { content: '# '; font-weight:600; color:#38b6a5; margin-right:0.5em; }
-  .tbl td:nth-child(2):before { content: 'Título: '; font-weight:600; color:#38b6a5; margin-right:0.5em; }
-  .tbl td:nth-child(3):before { content: 'Tipo: '; font-weight:600; color:#38b6a5; margin-right:0.5em; }
-  .tbl td:nth-child(4):before { content: 'Respondentes: '; font-weight:600; color:#38b6a5; margin-right:0.5em; }
-  .tbl td:nth-child(5):before { content: 'Data: '; font-weight:600; color:#38b6a5; margin-right:0.5em; }
-  .tbl td:nth-child(6):before { content: ''; }
-  /* spacing hint for primary button on narrow cards */
-  .btn-primario { margin-left: auto; }
-}
-@media (max-width: 700px) {
-  .relatorios-page {
-    padding: 1rem 0.2rem;
-  }
-  .tbl {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    border-collapse: collapse;
-  }
-  .tbl thead, .tbl tbody, .tbl tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-  }
-  .tbl th, .tbl td {
-    font-size: 0.92rem;
-    padding: 0.5rem 0.3rem;
-    word-break: break-word;
-    white-space: normal;
-  }
-  .tbl th, .tbl td.center {
-    text-align: center;
-  }
-  .btn-primario { font-size: 0.9rem; padding: 0.55rem 0.9rem; }
-}
-    .erro { background:#ffe9e9; border:1px solid #ffc5c5; color:#d93030; padding:.75rem .95rem; border-radius:.7rem; font-size:.8rem; margin-bottom:1rem; }
-    .tbl { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e0edf3; box-shadow:0 2px 6px #0000000d; }
-  .tbl th { text-align:left; padding:.6rem .75rem; font-size:.68rem; letter-spacing:.5px; text-transform:uppercase; background:#f5f9fa; }
-  .tbl td { padding:.55rem .75rem; font-size:.8rem; border-top:1px solid #eef3f5; vertical-align:middle; }
-  .tbl th.center, .tbl td.center { text-align:center; }
-  .titulo-cell { white-space:nowrap; }
-  .data-cell { font-size:.72rem; color:#41545d; }
-    .pill { text-transform:uppercase; font-size:.6rem; letter-spacing:.5px; font-weight:700; padding:.3rem .55rem; border-radius:.6rem; background:#e2eef2; color:#2d3a41; }
-    .pill.pulso { background:#e1faf5; color:#1c7e72; }
-    .pill.clima { background:#e7f0ff; color:#2b5fa8; }
-  /* local .acao removed in favor of global .btn-primario */
-    .paginacao { margin-top:1rem; display:flex; align-items:center; gap:.8rem; font-size:.75rem; }
-    .paginacao button { background:#fff; border:1px solid #c9dbe2; padding:.35rem .65rem; border-radius:.4rem; cursor:pointer; }
-    .paginacao button:disabled { opacity:.5; cursor:default; }
-  .vazio { padding:1.2rem; font-size:.85rem; color:#546974; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5rem; }
-  .vazio-icon { width:34px; height:34px; color:#9db1ba; }
-  `]
+      @media (min-width: 1330px) {
+        .relatorios-page {
+          padding-left: 290px !important;
+          padding-right: 2rem;
+          padding-top: 2.5rem;
+          padding-bottom: 2.5rem;
+          box-sizing: border-box;
+        }
+      }
+      .loading {
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: #2d5b66;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.4rem;
+      }
+      h2 {
+        margin: 0;
+        font-size: 1.55rem;
+        font-weight: 700;
+      }
+      .voltar {
+        text-decoration: none;
+      }
+      /* Keep action button text on one line on larger screens */
+      @media (min-width: 701px) {
+        .tbl td .btn-primario {
+          white-space: nowrap;
+        }
+      }
+      @media (max-width: 700px) {
+        .relatorios-page .header h2 {
+          margin-top: 2.5rem !important;
+          display: block;
+        }
+        .relatorios-page {
+          padding: 1rem 0.2rem;
+        }
+        .tbl {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0 12px;
+          display: block;
+          overflow-x: visible;
+        }
+        .tbl thead {
+          display: none !important;
+        }
+        .tbl tbody {
+          display: block;
+          width: 100%;
+        }
+        .tbl tr {
+          display: flex;
+          flex-direction: column;
+          background: #fff;
+          border-radius: 1rem;
+          box-shadow: 0 2px 8px #0001;
+          margin-bottom: 1.1rem;
+          padding: 0.7rem 0.7rem 0.5rem 0.7rem;
+          gap: 0.3rem;
+          width: 100%;
+          min-width: 0;
+        }
+        .tbl td {
+          display: flex;
+          align-items: center;
+          font-size: 0.97rem;
+          padding: 0.2rem 0;
+          border: none;
+          width: 100%;
+          min-width: 0;
+          word-break: break-word;
+          white-space: normal;
+        }
+        .tbl td:nth-child(1):before {
+          content: "# ";
+          font-weight: 600;
+          color: #38b6a5;
+          margin-right: 0.5em;
+        }
+        .tbl td:nth-child(2):before {
+          content: "Título: ";
+          font-weight: 600;
+          color: #38b6a5;
+          margin-right: 0.5em;
+        }
+        .tbl td:nth-child(3):before {
+          content: "Tipo: ";
+          font-weight: 600;
+          color: #38b6a5;
+          margin-right: 0.5em;
+        }
+        .tbl td:nth-child(4):before {
+          content: "Respondentes: ";
+          font-weight: 600;
+          color: #38b6a5;
+          margin-right: 0.5em;
+        }
+        .tbl td:nth-child(5):before {
+          content: "Data: ";
+          font-weight: 600;
+          color: #38b6a5;
+          margin-right: 0.5em;
+        }
+        .tbl td:nth-child(6):before {
+          content: "";
+        }
+        /* spacing hint for primary button on narrow cards */
+        .btn-primario {
+          margin-left: auto;
+        }
+      }
+      @media (max-width: 700px) {
+        .relatorios-page {
+          padding: 1rem 0.2rem;
+        }
+        .tbl {
+          display: block;
+          width: 100%;
+          overflow-x: auto;
+          border-collapse: collapse;
+        }
+        .tbl thead,
+        .tbl tbody,
+        .tbl tr {
+          display: table;
+          width: 100%;
+          table-layout: fixed;
+        }
+        .tbl th,
+        .tbl td {
+          font-size: 0.92rem;
+          padding: 0.5rem 0.3rem;
+          word-break: break-word;
+          white-space: normal;
+        }
+        .tbl th,
+        .tbl td.center {
+          text-align: center;
+        }
+        .btn-primario {
+          font-size: 0.9rem;
+          padding: 0.55rem 0.9rem;
+        }
+      }
+      .erro {
+        background: #ffe9e9;
+        border: 1px solid #ffc5c5;
+        color: #d93030;
+        padding: 0.75rem 0.95rem;
+        border-radius: 0.7rem;
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+      }
+      .tbl {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border: 1px solid #e0edf3;
+        box-shadow: 0 2px 6px #0000000d;
+      }
+      .tbl th {
+        text-align: left;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.68rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        background: #f5f9fa;
+      }
+      .tbl td {
+        padding: 0.55rem 0.75rem;
+        font-size: 0.8rem;
+        border-top: 1px solid #eef3f5;
+        vertical-align: middle;
+      }
+      .tbl th.center,
+      .tbl td.center {
+        text-align: center;
+      }
+      .titulo-cell {
+        white-space: nowrap;
+      }
+      .data-cell {
+        font-size: 0.72rem;
+        color: #41545d;
+      }
+      .pill {
+        text-transform: uppercase;
+        font-size: 0.6rem;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        padding: 0.3rem 0.55rem;
+        border-radius: 0.6rem;
+        background: #e2eef2;
+        color: #2d3a41;
+      }
+      .pill.pulso {
+        background: #e1faf5;
+        color: #1c7e72;
+      }
+      .pill.clima {
+        background: #e7f0ff;
+        color: #2b5fa8;
+      }
+      /* local .acao removed in favor of global .btn-primario */
+      .paginacao {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 0.75rem;
+      }
+      .paginacao button {
+        background: #fff;
+        border: 1px solid #c9dbe2;
+        padding: 0.35rem 0.65rem;
+        border-radius: 0.4rem;
+        cursor: pointer;
+      }
+      .paginacao button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .vazio {
+        padding: 1.2rem;
+        font-size: 0.85rem;
+        color: #546974;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      .vazio-icon {
+        width: 34px;
+        height: 34px;
+        color: #9db1ba;
+      }
+    `,
+  ],
 })
 export class RelatoriosPesquisasComponent {
   pesquisas: any[] = [];
-  erro = '';
+  erro = "";
   page = 1;
   totalPages = 1;
   pageSize = 20;
   loading = true;
   constructor(private searchService: SearchService) {}
-  ngOnInit() { this.carregar(); }
+  ngOnInit() {
+    this.carregar();
+  }
   carregar() {
     this.loading = true;
     this.searchService.getAllSearches(this.page, this.pageSize, true).subscribe({
       next: (res: any) => {
-        if (res?.items) { this.pesquisas = res.items; this.totalPages = res.meta?.totalPages || 1; }
-        else this.pesquisas = res;
+        if (res?.items) {
+          this.pesquisas = res.items;
+          this.totalPages = res.meta?.totalPages || 1;
+        } else this.pesquisas = res;
         this.loading = false;
       },
-      error: () => { this.erro = 'Erro ao carregar pesquisas.'; this.loading = false; }
+      error: () => {
+        this.erro = "Erro ao carregar pesquisas.";
+        this.loading = false;
+      },
     });
   }
   mudarPagina(delta: number) {
     const nova = this.page + delta;
     if (nova < 1 || nova > this.totalPages) return;
-    this.page = nova; this.carregar();
+    this.page = nova;
+    this.carregar();
   }
   formatDate(d: any) {
-    if (!d) return '-';
-    try { const dt = new Date(d); return isNaN(dt.getTime()) ? '-' : dt.toLocaleDateString('pt-BR'); } catch { return '-'; }
+    if (!d) return "-";
+    try {
+      const dt = new Date(d);
+      return isNaN(dt.getTime()) ? "-" : dt.toLocaleDateString("pt-BR");
+    } catch {
+      return "-";
+    }
   }
 }

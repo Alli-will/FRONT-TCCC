@@ -1,20 +1,20 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
 
 const routes: Routes = [
   {
-    path: 'pesquisa',
+    path: "pesquisa",
     loadComponent: () =>
-      import('./cadastro-pesquisa/cadastro-pesquisa.component').then(
+      import("./cadastro-pesquisa/cadastro-pesquisa.component").then(
         (m) => m.CadastroPesquisaComponent
       ),
   },
   {
-    path: 'pesquisas',
+    path: "pesquisas",
     loadComponent: () =>
-      import('./pesquisas/pesquisas.component').then((m) => m.PesquisasComponent),
+      import("./pesquisas/pesquisas.component").then((m) => m.PesquisasComponent),
   },
-  { path: '', redirectTo: '/pesquisas', pathMatch: 'full' },
+  { path: "", redirectTo: "/pesquisas", pathMatch: "full" },
 ];
 
 @NgModule({

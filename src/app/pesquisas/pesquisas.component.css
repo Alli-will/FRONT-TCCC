@@ -21,7 +21,7 @@
   .tabs {
     width: 100%;
     gap: 0.3rem;
-  justify-content: flex-end;
+    justify-content: flex-end;
   }
   .card {
     padding: 1rem 0.5rem 1.2rem 0.5rem;
@@ -71,7 +71,7 @@
 }
 /* Gradient text utility (mesmo degradê usado nos demais títulos) */
 .gradient-text {
-  background: linear-gradient(90deg,#38b6a5 0%, #4f8cff 100%);
+  background: linear-gradient(90deg, #38b6a5 0%, #4f8cff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent; /* garante em navegadores WebKit */
@@ -94,16 +94,16 @@
   font-size: 0.95rem;
   color: #276b7a;
   box-shadow: 0 2px 6px #0000000d;
-  transition: all .2s;
+  transition: all 0.2s;
 }
 .tabs button:hover {
   background: #f0faf9;
 }
 .tabs button.ativo {
-  background: linear-gradient(90deg,#38b6a5 60%, #4f8cff 100%);
+  background: linear-gradient(90deg, #38b6a5 60%, #4f8cff 100%);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 2px 8px rgba(56,182,165,.25);
+  box-shadow: 0 2px 8px rgba(56, 182, 165, 0.25);
 }
 .content-grid {
   display: flex;
@@ -142,7 +142,9 @@
   border: 1px solid #e0edf3;
   border-radius: 0.8rem;
   gap: 1rem;
-  transition: background .2s, border .2s;
+  transition:
+    background 0.2s,
+    border 0.2s;
 }
 .item:hover {
   background: #f3fafa;
@@ -188,7 +190,12 @@
   flex-direction: column;
   gap: 0.5rem;
 }
-.empty .empty-icon { width: 36px; height: 36px; color: #9db1ba; flex: 0 0 auto; }
+.empty .empty-icon {
+  width: 36px;
+  height: 36px;
+  color: #9db1ba;
+  flex: 0 0 auto;
+}
 .alert.erro {
   background: #ffe9e9;
   border: 1px solid #ffc5c5;
@@ -204,11 +211,20 @@
 }
 
 /* Ajustes específicos para ampliar área das perguntas */
-app-cadastro-pesquisa .cadastro-pesquisa form { width:100%; }
-app-cadastro-pesquisa .questions-box { padding:1.1rem 1.2rem 1.2rem; }
-app-cadastro-pesquisa .qs-list li { grid-template-columns: 40px 1fr auto; }
+app-cadastro-pesquisa .cadastro-pesquisa form {
+  width: 100%;
+}
+app-cadastro-pesquisa .questions-box {
+  padding: 1.1rem 1.2rem 1.2rem;
+}
+app-cadastro-pesquisa .qs-list li {
+  grid-template-columns: 40px 1fr auto;
+}
 /* Harmonizado com aumento de fonte nas perguntas */
-app-cadastro-pesquisa .qs-list .txt { font-size:0.85rem; line-height:1.25rem; }
+app-cadastro-pesquisa .qs-list .txt {
+  font-size: 0.85rem;
+  line-height: 1.25rem;
+}
 
 /* Ajustes form interno reutilizado */
 app-cadastro-pesquisa .cadastro-pesquisa {
@@ -218,7 +234,7 @@ app-cadastro-pesquisa .cadastro-pesquisa {
   background: transparent;
 }
 app-cadastro-pesquisa h2 {
-  display:none;
+  display: none;
 }
 .cadastro-pesquisa form label {
   font-size: 0.8rem;
@@ -227,29 +243,35 @@ app-cadastro-pesquisa h2 {
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
-.cadastro-pesquisa input, .cadastro-pesquisa select {
+.cadastro-pesquisa input,
+.cadastro-pesquisa select {
   border: 1px solid #d5e4ec;
   border-radius: 0.7rem;
   background: #f9fbfc;
   padding: 0.65rem 0.8rem;
   font-size: 0.95rem;
   outline: none;
-  transition: border .2s, background .2s;
+  transition:
+    border 0.2s,
+    background 0.2s;
 }
-.cadastro-pesquisa input:focus, .cadastro-pesquisa select:focus {
+.cadastro-pesquisa input:focus,
+.cadastro-pesquisa select:focus {
   border-color: #38b6a5;
   background: #fff;
 }
 .cadastro-pesquisa button {
-  background: linear-gradient(90deg,#38b6a5 60%, #4f8cff 100%);
+  background: linear-gradient(90deg, #38b6a5 60%, #4f8cff 100%);
   border: none;
   border-radius: 0.8rem;
   padding: 0.75rem 1rem;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(56,182,165,.25);
-  transition: filter .2s, transform .15s;
+  box-shadow: 0 2px 8px rgba(56, 182, 165, 0.25);
+  transition:
+    filter 0.2s,
+    transform 0.15s;
 }
 .cadastro-pesquisa button:hover {
   filter: brightness(1.05);
@@ -258,22 +280,22 @@ app-cadastro-pesquisa h2 {
   transform: translateY(1px);
 }
 .sucesso {
-  background:#e5fff7;
-  color:#178667;
-  padding:0.6rem 0.8rem;
-  border-radius:0.6rem;
-  margin-top:1rem;
-  font-size:0.8rem;
-  border:1px solid #b9f1e1;
+  background: #e5fff7;
+  color: #178667;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.6rem;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  border: 1px solid #b9f1e1;
 }
 .erro {
-  background:#ffe9e9;
-  color:#d93030;
-  padding:0.6rem 0.8rem;
-  border-radius:0.6rem;
-  margin-top:1rem;
-  font-size:0.8rem;
-  border:1px solid #ffc5c5;
+  background: #ffe9e9;
+  color: #d93030;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.6rem;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  border: 1px solid #ffc5c5;
 }
 .paginacao {
   display: flex;
@@ -293,13 +315,13 @@ app-cadastro-pesquisa h2 {
   font-size: 0.8rem;
   color: #276b7a;
   box-shadow: 0 2px 4px #00000008;
-  transition: all .2s;
+  transition: all 0.2s;
 }
 .paginacao button:hover:not(:disabled) {
   background: #f0faf9;
 }
 .paginacao button:disabled {
-  opacity: .4;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 .responder-link {
@@ -307,13 +329,13 @@ app-cadastro-pesquisa h2 {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: linear-gradient(90deg,#38b6a5 60%, #4f8cff 100%);
+  background: linear-gradient(90deg, #38b6a5 60%, #4f8cff 100%);
   color: #fff;
   padding: 0.45rem 0.7rem;
   border-radius: 0.6rem;
   text-decoration: none;
-  box-shadow: 0 2px 6px rgba(56,182,165,.25);
-  transition: filter .2s;
+  box-shadow: 0 2px 6px rgba(56, 182, 165, 0.25);
+  transition: filter 0.2s;
 }
 .responder-link:hover {
   filter: brightness(1.05);
@@ -321,7 +343,7 @@ app-cadastro-pesquisa h2 {
 
 /* Garantir que o gradiente prevaleça sobre .card-title (que define color) */
 .card-title.gradient-text {
-  background: linear-gradient(90deg,#38b6a5 0%, #4f8cff 100%);
+  background: linear-gradient(90deg, #38b6a5 0%, #4f8cff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -330,10 +352,10 @@ app-cadastro-pesquisa h2 {
 }
 /* For span usage inside card-title */
 .card-title > .gradient-text {
-  background: linear-gradient(90deg,#38b6a5 0%, #4f8cff 100%);
+  background: linear-gradient(90deg, #38b6a5 0%, #4f8cff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent !important;
-  display:inline-block;
+  display: inline-block;
 }

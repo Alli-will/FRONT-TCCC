@@ -30,7 +30,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   modalOpen = false; // bloqueia interação quando modal global aberto
 
   private isValidBase64(s: string): boolean {
-    if (!s || typeof s !== 'string') return false;
+    if (!s || typeof s !== "string") return false;
     const trimmed = s.trim();
     if (trimmed.length === 0 || trimmed.length % 4 !== 0) return false;
     return /^[A-Za-z0-9+/]+={0,2}$/.test(trimmed);
@@ -43,16 +43,16 @@ export class MenuComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       this.sidebarOpen = window.innerWidth > 1330;
       this.isMobileScreen = window.innerWidth <= 1330;
     });
     // ouvir evento de atualização do avatar
-    window.addEventListener('avatar-updated', (e: any) => {
-  this.avatarTs = e?.detail?.ts || Date.now();
-  // invalida etag para forçar refetch
-  this.avatarEtag = null;
-  this.refreshAvatar();
+    window.addEventListener("avatar-updated", (e: any) => {
+      this.avatarTs = e?.detail?.ts || Date.now();
+      // invalida etag para forçar refetch
+      this.avatarEtag = null;
+      this.refreshAvatar();
     });
 
     this.authService.currentUser.subscribe((token) => {
@@ -60,30 +60,35 @@ export class MenuComponent implements OnInit, OnDestroy {
       if (token) {
         const payload = this.authService.getUserInfoFromToken();
         // DEBUG TEMP: remover depois
-        console.debug('[Menu] payload role:', payload?.role);
-        this.isAdmin = payload?.role === 'admin';
-  this.isSupport = payload?.role === 'support';
-  this.isEmployee = payload?.role === 'employee';
-        this.userName = (payload?.first_Name && payload?.last_Name)
-          ? `${payload.first_Name} ${payload.last_Name}`
-          : payload?.first_Name || payload?.last_Name || payload?.email || null;
+        console.debug("[Menu] payload role:", payload?.role);
+        this.isAdmin = payload?.role === "admin";
+        this.isSupport = payload?.role === "support";
+        this.isEmployee = payload?.role === "employee";
+        this.userName =
+          payload?.first_Name && payload?.last_Name
+            ? `${payload.first_Name} ${payload.last_Name}`
+            : payload?.first_Name || payload?.last_Name || payload?.email || null;
         this.userEmail = payload?.email || null;
         this.refreshAvatar();
       } else {
         this.userName = null;
         this.userEmail = null;
         this.isAdmin = false;
-  this.isSupport = false;
-  this.isEmployee = false;
+        this.isSupport = false;
+        this.isEmployee = false;
         this.avatarUrl = null;
       }
     });
 
     // ouvir eventos globais de abertura/fechamento de modais que travam a página
-    const openHandler = () => { this.modalOpen = true; };
-    const closeHandler = () => { this.modalOpen = false; };
-    window.addEventListener('body-modal-open', openHandler);
-    window.addEventListener('body-modal-close', closeHandler);
+    const openHandler = () => {
+      this.modalOpen = true;
+    };
+    const closeHandler = () => {
+      this.modalOpen = false;
+    };
+    window.addEventListener("body-modal-open", openHandler);
+    window.addEventListener("body-modal-close", closeHandler);
     // guardar para remoção
     (this as any)._modalHandlers = { openHandler, closeHandler };
   }
@@ -91,44 +96,55 @@ export class MenuComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     const h = (this as any)._modalHandlers;
     if (h) {
-      window.removeEventListener('body-modal-open', h.openHandler);
-      window.removeEventListener('body-modal-close', h.closeHandler);
+      window.removeEventListener("body-modal-open", h.openHandler);
+      window.removeEventListener("body-modal-close", h.closeHandler);
     }
   }
 
   private refreshAvatar() {
     this.loading.block();
     if (!this.isLoggedIn) {
-      if (this.objectUrl) { URL.revokeObjectURL(this.objectUrl); this.objectUrl = undefined; }
+      if (this.objectUrl) {
+        URL.revokeObjectURL(this.objectUrl);
+        this.objectUrl = undefined;
+      }
       this.avatarUrl = null;
       this.loading.unblock();
       return;
     }
-    const token = localStorage.getItem('token');
-    if (!token) { this.loading.unblock(); return; }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      this.loading.unblock();
+      return;
+    }
 
     // Base da API dinâmica: localhost em dev, Railway em prod
-  const localBase = resolveApiBase();
-  const remoteBase = 'https://tcc-main.up.railway.app';
-  let apiBase = localBase;
+    const localBase = resolveApiBase();
+    const remoteBase = "https://tcc-main.up.railway.app";
+    let apiBase = localBase;
 
     // Primeiro, consultar meta: hasAvatar + etag
-  fetch(`${apiBase}/user/me/avatar/meta?ts=${this.avatarTs}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+    fetch(`${apiBase}/user/me/avatar/meta?ts=${this.avatarTs}`, {
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(async r => {
+      .then(async (r) => {
         if (!r.ok) {
           // tenta remoto
-          const r2 = await fetch(`${remoteBase}/user/me/avatar/meta?ts=${this.avatarTs}`, { headers: { 'Authorization': `Bearer ${token}` } });
-          if (!r2.ok) throw new Error('avatar-meta-failed');
+          const r2 = await fetch(`${remoteBase}/user/me/avatar/meta?ts=${this.avatarTs}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!r2.ok) throw new Error("avatar-meta-failed");
           apiBase = remoteBase;
           return r2.json();
         }
         return r.json();
       })
-      .then(data => {
+      .then((data) => {
         if (!data?.hasAvatar) {
-          if (this.objectUrl) { URL.revokeObjectURL(this.objectUrl); this.objectUrl = undefined; }
+          if (this.objectUrl) {
+            URL.revokeObjectURL(this.objectUrl);
+            this.objectUrl = undefined;
+          }
           this.avatarUrl = null;
           this.avatarEtag = null;
           this.loading.unblock();
@@ -140,42 +156,48 @@ export class MenuComponent implements OnInit, OnDestroy {
           return;
         }
         // Buscar blob binário; só enviar If-None-Match se já tivermos etag anterior
-        const headers: any = { 'Authorization': `Bearer ${token}` };
-        if (this.avatarEtag) headers['If-None-Match'] = '"' + this.avatarEtag + '"';
+        const headers: any = { Authorization: `Bearer ${token}` };
+        if (this.avatarEtag) headers["If-None-Match"] = '"' + this.avatarEtag + '"';
         return fetch(`${apiBase}/user/me/avatar`, { headers })
-            .then(async resp => {
-              if (resp.status === 304 && this.objectUrl) {
-                this.avatarUrl = this.objectUrl;
-                this.avatarEtag = data.etag || this.avatarEtag;
-                return null;
-              }
-              if (!resp.ok) {
-                const r2 = await fetch(`${remoteBase}/user/me/avatar`, { headers });
-                if (!r2.ok) throw new Error('avatar-fetch-failed');
-                apiBase = remoteBase;
-                this.avatarEtag = data.etag || null;
-                return r2.blob();
-              }
-              this.avatarEtag = data.etag || null;
-              return resp.blob();
-            })
-            .then(blob => {
-              if (!blob) return; // 304 ou falha já tratada
-              if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
-              this.objectUrl = URL.createObjectURL(blob);
+          .then(async (resp) => {
+            if (resp.status === 304 && this.objectUrl) {
               this.avatarUrl = this.objectUrl;
-            });
+              this.avatarEtag = data.etag || this.avatarEtag;
+              return null;
+            }
+            if (!resp.ok) {
+              const r2 = await fetch(`${remoteBase}/user/me/avatar`, { headers });
+              if (!r2.ok) throw new Error("avatar-fetch-failed");
+              apiBase = remoteBase;
+              this.avatarEtag = data.etag || null;
+              return r2.blob();
+            }
+            this.avatarEtag = data.etag || null;
+            return resp.blob();
+          })
+          .then((blob) => {
+            if (!blob) return; // 304 ou falha já tratada
+            if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+            this.objectUrl = URL.createObjectURL(blob);
+            this.avatarUrl = this.objectUrl;
+          });
       })
       .catch(async () => {
         // Tentativa base64 (local e remoto)
         const tryBases = async () => {
           for (const base of [apiBase, remoteBase]) {
             try {
-              const r = await fetch(`${base}/user/me/avatar/base64?ts=${this.avatarTs}`, { headers: { 'Authorization': `Bearer ${token}` } });
+              const r = await fetch(`${base}/user/me/avatar/base64?ts=${this.avatarTs}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
               if (r.ok) {
                 const data = await r.json();
-                if (data?.hasAvatar && typeof data.base64 === 'string' && this.isValidBase64(data.base64)) {
-                  const mime = data.mimeType || 'image/png';
+                if (
+                  data?.hasAvatar &&
+                  typeof data.base64 === "string" &&
+                  this.isValidBase64(data.base64)
+                ) {
+                  const mime = data.mimeType || "image/png";
                   this.avatarUrl = `data:${mime};base64,${data.base64}`;
                   return true;
                 }
@@ -188,11 +210,16 @@ export class MenuComponent implements OnInit, OnDestroy {
         // Tentativa blob direta (local e remoto)
         for (const base of [apiBase, remoteBase]) {
           try {
-            const r2 = await fetch(`${base}/user/me/avatar?ts=${this.avatarTs}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const r2 = await fetch(`${base}/user/me/avatar?ts=${this.avatarTs}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
             if (r2.ok) {
               const blob = await r2.blob();
               if (blob && (blob as any).size > 0) {
-                if (this.objectUrl) { URL.revokeObjectURL(this.objectUrl); this.objectUrl = undefined; }
+                if (this.objectUrl) {
+                  URL.revokeObjectURL(this.objectUrl);
+                  this.objectUrl = undefined;
+                }
                 this.objectUrl = URL.createObjectURL(blob);
                 this.avatarUrl = this.objectUrl;
                 return;
@@ -201,7 +228,10 @@ export class MenuComponent implements OnInit, OnDestroy {
           } catch {}
         }
         // Falhou tudo
-        if (this.objectUrl) { URL.revokeObjectURL(this.objectUrl); this.objectUrl = undefined; }
+        if (this.objectUrl) {
+          URL.revokeObjectURL(this.objectUrl);
+          this.objectUrl = undefined;
+        }
         this.avatarUrl = null;
         this.avatarEtag = null;
       })
@@ -211,7 +241,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   toggleDropdown(): void {
     this.dropdownOpen = !this.dropdownOpen;
   }
-  logout() { this.authService.logout(); }
+  logout() {
+    this.authService.logout();
+  }
 
   preencherCadastroComUsuarioLogado() {
     const payload = this.authService.getUserInfoFromToken();
@@ -222,7 +254,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           firstName: payload.first_Name || payload.firstName || "",
           lastName: payload.last_Name || payload.lastName || "",
           email: payload.email || "",
-          password: "", 
+          password: "",
           companyId: payload.companyId || 1,
         })
       );
@@ -230,11 +262,10 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   showComingSoon() {
-    alert('Em breve!');
+    alert("Em breve!");
   }
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
   }
-
 }

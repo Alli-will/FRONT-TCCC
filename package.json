@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:app-teste": "node dist/app-teste/server/server.mjs"
+    "serve:ssr:app-teste": "node dist/app-teste/server/server.mjs",
+    "format": "prettier --write \"src/**/*.{ts,css,scss,html}\""
   },
   "private": true,
   "dependencies": {
@@ -44,6 +45,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "prettier": "^3.6.2",
     "typescript": "~5.4.2"
   }
 }

@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Injectable } from "@angular/core";
+import { CanActivate, Router } from "@angular/router";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class EmBreveGuard implements CanActivate {
   constructor(private router: Router) {}
   canActivate(): boolean {
-    if (typeof window !== 'undefined') {
-      alert('Em breve');
+    if (typeof window !== "undefined") {
+      alert("Em breve");
     }
-    this.router.navigate(['/diario']);
+    this.router.navigate(["/diario"]);
     return false;
   }
 }
