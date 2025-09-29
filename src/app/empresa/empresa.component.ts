@@ -20,7 +20,7 @@ export class EmpresaComponent implements OnInit {
     name: '',
     cnpj: '',
     address: '',
-  addressZipCode: '',
+    addressZipCode: '',
     neighborhood: '',
     municipality: '',
     state: '',
@@ -41,6 +41,8 @@ export class EmpresaComponent implements OnInit {
   buscandoCep = false;
   cepErro: string | null = null;
   private errorTimer: any = null;
+  private successTimer: any = null;
+  editing = false;
 
   constructor(private http: HttpClient, private router: Router, private auth: AuthService, private loadingSvc: LoadingService) {}
 
@@ -79,44 +81,85 @@ export class EmpresaComponent implements OnInit {
   enviar() {
     this.error = null; this.success = null;
     this.loading = true;
-  // Não dispara overlay global; apenas estado local do botão
-  const phoneDigits = (this.form.phone || '').toString().replace(/\D/g,'');
-  const cnpjDigits = (this.form.cnpj || '').toString().replace(/\D/g,'');
-  const zipDigits = (this.form.addressZipCode || '').toString().replace(/\D/g,'');
-  // Validações simples no cliente antes de chamar API
-  if (cnpjDigits.length !== 14) {
-  this.setError('CNPJ inválido');
-  this.loading = false;
-  return;
-  }
-  if (!(phoneDigits.length === 10 || phoneDigits.length === 11)) {
-  this.setError('Telefone inválido');
-  this.loading = false;
-  return;
-  }
-  if (zipDigits.length !== 8) {
-  this.setError('CEP inválido');
-  this.loading = false;
-  return;
-  }
-  const payload = { ...this.form, phone: phoneDigits, cnpj: cnpjDigits, addressZipCode: zipDigits };
-  this.http.post('https://tcc-main.up.railway.app/companies', payload).subscribe({
+    const phoneDigits = (this.form.phone || '').toString().replace(/\D/g,'');
+    const cnpjDigits = (this.form.cnpj || '').toString().replace(/\D/g,'');
+    const zipDigits = (this.form.addressZipCode || '').toString().replace(/\D/g,'');
+
+    if (cnpjDigits.length !== 14) { this.setError('CNPJ inválido'); this.loading = false; return; }
+    if (!(phoneDigits.length === 10 || phoneDigits.length === 11)) { this.setError('Telefone inválido'); this.loading = false; return; }
+    if (zipDigits.length !== 8) { this.setError('CEP inválido'); this.loading = false; return; }
+
+    const payload = { ...this.form, phone: phoneDigits, cnpj: cnpjDigits, addressZipCode: zipDigits };
+    this.http.post('https://tcc-main.up.railway.app/companies', payload).subscribe({
       next: (resp: any) => {
         this.success = 'Empresa cadastrada com sucesso!';
+        if (this.successTimer) { clearTimeout(this.successTimer); }
+        this.successTimer = setTimeout(()=> { this.success = null; this.successTimer = null; }, 2500);
         if (this.isSupport) {
-          // atualizar lista
-            this.fetchAllCompanies();
-            this.showCreateForSupport = false;
+          this.fetchAllCompanies();
+          this.showCreateForSupport = false;
         } else {
           this.companyData = resp;
           this.hasCompany = true;
         }
       },
-      error: (err) => {
-    this.setError(err?.error?.message || 'Erro ao cadastrar empresa');
-        this.loading = false; // liberar botão em caso de erro
+      error: (err) => { this.setError(err?.error?.message || 'Erro ao cadastrar empresa'); this.loading = false; },
+      complete: () => { this.loading = false; }
+    });
+  }
+
+  iniciarEdicao() {
+    if (!this.companyData) return;
+    this.editing = true;
+    this.form = {
+      name: this.companyData.name || '',
+      cnpj: this.viewCnpj(this.companyData.cnpj) || '',
+      address: this.companyData.address || '',
+      addressZipCode: this.companyData.addressZipCode || '',
+      neighborhood: this.companyData.neighborhood || '',
+      municipality: this.companyData.municipality || '',
+      state: this.companyData.state || '',
+      country: this.companyData.country || 'Brasil',
+      phone: this.viewPhone(this.companyData.phone) || ''
+    };
+  }
+
+  cancelarEdicao() {
+    this.editing = false;
+    this.success = null; this.error = null;
+  }
+
+  atualizarEmpresa() {
+    if (!this.companyData?.id) return;
+    this.error = null; this.success = null;
+    this.loading = true;
+    const phoneDigits = (this.form.phone || '').toString().replace(/\D/g,'');
+    const cnpjDigits = (this.form.cnpj || '').toString().replace(/\D/g,'');
+    const zipDigits = (this.form.addressZipCode || '').toString().replace(/\D/g,'');
+    if (cnpjDigits.length !== 14) { this.setError('CNPJ inválido'); this.loading = false; return; }
+    if (!(phoneDigits.length === 10 || phoneDigits.length === 11)) { this.setError('Telefone inválido'); this.loading = false; return; }
+    if (zipDigits.length !== 8) { this.setError('CEP inválido'); this.loading = false; return; }
+    const payload = {
+      name: this.form.name,
+      cnpj: cnpjDigits,
+      address: this.form.address,
+      addressZipCode: zipDigits,
+      neighborhood: this.form.neighborhood,
+      municipality: this.form.municipality,
+      state: this.form.state,
+      country: this.form.country,
+      phone: phoneDigits
+    };
+    this.http.patch(`https://tcc-main.up.railway.app/companies/${this.companyData.id}`, payload).subscribe({
+      next: (resp: any) => {
+        this.companyData = { ...this.companyData, ...resp };
+        this.success = 'Dados atualizados com sucesso!';
+        if (this.successTimer) { clearTimeout(this.successTimer); }
+        this.successTimer = setTimeout(()=> { this.dismissSuccess(); }, 2500);
+        this.editing = false;
       },
-  complete: () => { this.loading = false; }
+      error: (err) => { this.setError(err?.error?.message || 'Erro ao atualizar empresa'); this.loading = false; },
+      complete: () => { this.loading = false; }
     });
   }
 
@@ -136,7 +179,6 @@ export class EmpresaComponent implements OnInit {
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => {
         if (data?.erro) { this.cepErro = 'CEP não encontrado'; return; }
-        // Preenche campos se vierem
         if (data.logradouro) this.form.address = data.logradouro;
         if (data.bairro) this.form.neighborhood = data.bairro;
         if (data.localidade) this.form.municipality = data.localidade;
@@ -239,6 +281,7 @@ export class EmpresaComponent implements OnInit {
   }
 
   dismissError() { this.error = null; }
+  dismissSuccess() { this.success = null; if (this.successTimer) { clearTimeout(this.successTimer); this.successTimer = null; } }
 
   private setError(msg: string) {
     this.error = msg;

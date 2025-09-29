@@ -41,8 +41,7 @@ export class DashboardComponent implements OnInit {
   // IA removida
   busca: string = "";
   resultadosBusca: any[] = [];
-  emotionPercentages: any[] = [];
-  loadingEmotions = false;
+  // emotionPercentages removido (módulo Diário descontinuado)
   isAdmin = false;
 
   // Pulse e Clima
@@ -93,7 +92,7 @@ export class DashboardComponent implements OnInit {
   this.pulsoAtual = data.pulsoAtual || null;
   this.computeDeptBars();
     }
-    this.fetchEmotionPercentages();
+  // Diário removido: não buscar emotion percentages
     // Remover chamadas duplicadas de carregamento
   }
 
@@ -124,19 +123,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  fetchEmotionPercentages() {
-    this.loadingEmotions = true;
-    this.dashboardService.getEmotionPercentages().subscribe({
-      next: (data) => {
-        this.emotionPercentages = data;
-        this.loadingEmotions = false;
-      },
-      error: () => {
-        this.emotionPercentages = [];
-        this.loadingEmotions = false;
-      }
-    });
-  }
+  // fetchEmotionPercentages removido
 
   // buscarColaborador() {
   //   const termo = this.busca.trim().toLowerCase();

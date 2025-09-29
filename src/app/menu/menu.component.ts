@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { NgIf, NgClass } from "@angular/common";
 import { AuthService } from "../services/auth.service";
@@ -13,7 +13,7 @@ import { resolveApiBase } from "../services/api-base";
   templateUrl: "./menu.component.html",
   styleUrls: ["./menu.component.css"],
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   dropdownOpen: boolean = false;
   sidebarOpen: boolean = window.innerWidth > 1330; // Sidebar sempre expandido em telas grandes
@@ -27,6 +27,7 @@ export class MenuComponent implements OnInit {
   private avatarTs: number = Date.now();
   private objectUrl?: string; // para revogar quando necessário
   private avatarEtag: string | null = null; // última versão conhecida
+  modalOpen = false; // bloqueia interação quando modal global aberto
 
   private isValidBase64(s: string): boolean {
     if (!s || typeof s !== 'string') return false;
@@ -58,6 +59,8 @@ export class MenuComponent implements OnInit {
       this.isLoggedIn = !!token;
       if (token) {
         const payload = this.authService.getUserInfoFromToken();
+        // DEBUG TEMP: remover depois
+        console.debug('[Menu] payload role:', payload?.role);
         this.isAdmin = payload?.role === 'admin';
   this.isSupport = payload?.role === 'support';
   this.isEmployee = payload?.role === 'employee';
@@ -75,6 +78,22 @@ export class MenuComponent implements OnInit {
         this.avatarUrl = null;
       }
     });
+
+    // ouvir eventos globais de abertura/fechamento de modais que travam a página
+    const openHandler = () => { this.modalOpen = true; };
+    const closeHandler = () => { this.modalOpen = false; };
+    window.addEventListener('body-modal-open', openHandler);
+    window.addEventListener('body-modal-close', closeHandler);
+    // guardar para remoção
+    (this as any)._modalHandlers = { openHandler, closeHandler };
+  }
+
+  ngOnDestroy(): void {
+    const h = (this as any)._modalHandlers;
+    if (h) {
+      window.removeEventListener('body-modal-open', h.openHandler);
+      window.removeEventListener('body-modal-close', h.closeHandler);
+    }
   }
 
   private refreshAvatar() {

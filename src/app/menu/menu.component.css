@@ -100,6 +100,11 @@ nav ul li a {
   left: 0;
 }
 
+/* Bloqueio global (desktop e mobile) quando modal aberto */
+.sidebar.blocked { pointer-events:none; filter: blur(3px) brightness(.9) saturate(.9); transition:filter .25s ease; }
+.sidebar.blocked a, .sidebar.blocked button { pointer-events:none !important; }
+body.body-lock .sidebar { filter: blur(3px) brightness(.9) saturate(.9); pointer-events:none; }
+
 @media (max-width: 1330px) {
   .sidebar {
     position: absolute;
@@ -141,8 +146,11 @@ nav ul li a {
     position: fixed;
     top: 18px;
     left: 18px;
-    z-index: 3000; /* valor maior para garantir sobreposição */
+    z-index: 800; /* abaixo dos modais (9999) e do banner (10000) */
+    transition: filter .2s, opacity .2s;
   }
+    body.body-lock .hamburger-btn { filter: blur(2px); pointer-events:none; opacity:.4; }
+    .hamburger-btn.blocked { pointer-events:none !important; filter: blur(2px) brightness(.95); opacity:.42; }
 }
 
 /* Em telas realmente pequenas, manter o menu sobreposto (sem empurrar o conteúdo) */

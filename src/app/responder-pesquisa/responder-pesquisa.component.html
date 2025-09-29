@@ -5,7 +5,7 @@
 
     <div class="perguntas" *ngIf="pesquisa.perguntas?.length; else semPerguntas">
       <div class="pergunta-card" *ngFor="let p of pesquisa.perguntas; let i = index" [class.incompleta]="isIncompleta(i)">
-        <div class="texto">{{ i+1 }}. {{ p.texto }}</div>
+        <div class="texto">{{ i+1 }}. {{ p.texto }} <span *ngIf="p.obrigatoria!==false" class="req-marker" aria-hidden="true">*</span><span *ngIf="p.obrigatoria===false" class="opt" aria-label="Pergunta opcional">(Opcional)</span></div>
         <!-- Quantitativa: renderiza botões de escala -->
         <div class="opcoes escala" *ngIf="p.opcoes?.length">
           <button type="button" *ngFor="let v of p.opcoes"
@@ -17,6 +17,10 @@
         <div class="aberta" *ngIf="!p.opcoes || !p.opcoes.length">
           <textarea [(ngModel)]="respostas[i]" [ngModelOptions]="{standalone: true}" rows="3" placeholder="Digite sua resposta..."></textarea>
         </div>
+      </div>
+
+      <div class="legend-obrigatorias" aria-live="polite">
+        <span class="asterisco">*</span> indica pergunta obrigatória. Perguntas marcadas como (Opcional) não precisam ser respondidas para envio.
       </div>
     </div>
 

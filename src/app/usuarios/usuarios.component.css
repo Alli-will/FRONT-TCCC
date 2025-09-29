@@ -455,7 +455,6 @@ li:last-child {
   margin-top: .25rem;
 }
 .dept-editor select {
-/* Força o estilo do select em todas as situações, inclusive com encapsulamento Angular */
 .dept-editor select,
 .dept-editor select[ng-reflect-name],
 .dept-editor select[_ngcontent-c],
@@ -529,7 +528,6 @@ li:last-child {
 
 .lista-colaboradores { margin-top:.5rem; }
 
-/* Responsividade igual dashboard */
 @media (max-width: 1100px) {
   .usuarios-container {
     max-width: 98vw;
@@ -608,7 +606,6 @@ li:last-child {
   .colab-depto {
     font-size: 0.6rem;
   }
-  /* Buttons smaller on mobile: actions row + modal */
   .colab-actions .btn-primario,
   .colab-actions .btn-ghost,
   .colab-actions .btn-alterar-depto,
@@ -624,7 +621,7 @@ li:last-child {
   .modal-card p { font-size: 0.92rem; }
 }
 
-/* Banner topo (feedback), igual ao de pesquisas/perguntas */
+/* Banner topo (feedback) */
 .top-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 2100; color: #fff; padding: .75rem 1rem; display: flex; align-items: center; gap: .75rem; font-weight: 500; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
 .top-banner .msg { flex: 1; }
 .top-banner button { background: rgba(255,255,255,.18); border: 0; color: #fff; padding: .35rem .7rem; border-radius: 4px; font-size: .75rem; cursor: pointer; }
@@ -632,7 +629,7 @@ li:last-child {
 .top-banner.erro { background: #c62828; }
 .top-banner.sucesso { background: #178667; }
 
-/* Modal de confirmação - igual ao de pesquisas/perguntas */
+/* Modal de confirmação  */
 .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,.55); backdrop-filter: blur(2px); display:flex; align-items:center; justify-content:center; z-index: 9999; padding:16px; }
 .modal-card { background:#fff; width:min(520px, 100%); border-radius:12px; border:1px solid #e0edf3; box-shadow:0 10px 30px rgba(0,0,0,.18); padding:18px 18px 14px; }
 .modal-card h3 { margin:0 0 8px; font-size:1.1rem; }

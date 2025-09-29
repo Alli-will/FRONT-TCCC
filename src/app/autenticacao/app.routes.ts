@@ -18,6 +18,7 @@ import { DiaryExitGuard } from '../services/diary-exit.guard';
 import { DiarioResolver } from '../diario/diario.resolver';
 import { DashboardResolver } from '../dashboard/dashboard.resolver';
 import { AdminGuard } from './admin.guard';
+import { CanActivateFn } from '@angular/router';
 
 
 import { Component } from '@angular/core';
@@ -28,13 +29,28 @@ class RootRedirectComponent {
     const auth = inject(AuthService);
     const router = inject(Router);
     const info = auth.getUserInfoFromToken();
-  // Redireciona:
-  // support -> /empresa
-  // demais (employee, admin, etc) -> /pesquisas (nova página inicial)
   if (info?.role === 'support') router.navigate(['/empresa']);
   else router.navigate(['/pesquisas']);
   }
 }
+
+export const usuariosGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  const info = auth.getUserInfoFromToken();
+  if (info?.role === 'admin') return true;
+  router.navigate(['/pesquisas']);
+  return false;
+};
+
+export const empresaGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  const info = auth.getUserInfoFromToken();
+  if (info?.role === 'admin' || info?.role === 'support') return true;
+  router.navigate(['/pesquisas']);
+  return false;
+};
 
 export const routes: Routes = [
   { path: '', component: RootRedirectComponent, canActivate: [AuthGuard], children: [], pathMatch: 'full' },
@@ -44,8 +60,8 @@ export const routes: Routes = [
     component: ConteudoEducacionalComponent,
     canActivate: [AuthGuard, DiaryEntryGuard],
   },
-  { path: 'empresa', canActivate: [AuthGuard], loadComponent: () => import('../empresa/empresa.component').then(m => m.EmpresaComponent) },
-  { path: 'empresa/usuarios/:id', canActivate: [AuthGuard], loadComponent: () => import('../empresa/empresa-usuarios.component').then(m => m.EmpresaUsuariosComponent) },
+  { path: 'empresa', canActivate: [AuthGuard, empresaGuard], loadComponent: () => import('../empresa/empresa.component').then(m => m.EmpresaComponent) },
+  { path: 'empresa/usuarios/:id', canActivate: [AuthGuard, empresaGuard], loadComponent: () => import('../empresa/empresa-usuarios.component').then(m => m.EmpresaUsuariosComponent) },
   { path: 'departamentos', canActivate: [AuthGuard], loadComponent: () => import('../departamentos/departamentos.component').then(m => m.DepartamentosComponent) },
   { path: 'departamentos/novo', canActivate: [AuthGuard], loadComponent: () => import('../departamentos/departamento-novo.component').then(m => m.DepartamentoNovoComponent) },
   { path: "login", component: LoginComponent },
@@ -57,9 +73,9 @@ export const routes: Routes = [
     component: HistoricoComponent,
     canActivate: [AuthGuard, DiaryEntryGuard],
   },
-  { path: "usuarios", component: UsuariosComponent, canActivate: [AuthGuard] },
+  { path: "usuarios", component: UsuariosComponent, canActivate: [AuthGuard, usuariosGuard] },
   { path: "perfil", canActivate: [AuthGuard], loadComponent: () => import('../perfil/perfil.component').then(m => m.PerfilComponent) },
-  { path: 'usuarios/cadastrar', canActivate: [AuthGuard], loadComponent: () => import('../usuarios/cadastrar-colaborador.component').then(m => m.CadastrarColaboradorComponent) },
+  { path: 'usuarios/cadastrar', canActivate: [AuthGuard, usuariosGuard], loadComponent: () => import('../usuarios/cadastrar-colaborador.component').then(m => m.CadastrarColaboradorComponent) },
   { path: "home", canActivate: [EmBreveGuard], component: LoginComponent },
   {
     path: "dashboard",
@@ -67,7 +83,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard, DiaryEntryGuard, BlockSupportDashboardGuard],
     resolve: { preload: DashboardResolver }
   },
-  // --- ROTAS DE PESQUISA (standalone components) ---
+
   {
     path: 'pesquisa',
     canActivate: [AuthGuard],

@@ -5,7 +5,7 @@
       <div class="panel-card">
         <h2 class="gradient-title" style="margin:0 0 12px;">Dashboard de Engajamento (eNPS)</h2>
         <div class="dashboard-header-row stretch-ess" style="align-items: flex-start; gap: 32px;">
-          <!-- NPS Geral -->
+          <!-- eNPS Geral -->
           <div class="diary-card score-card" style="margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start; width:100%;">
         <div class="score-title" style="text-align: left; width: 100%;">
           <h2 class="gradient-title" style="margin:0; font-size:1.35rem;">eNPS da Última Pesquisa de Pulso</h2>
@@ -65,9 +65,7 @@
               >
                 {{ getScoreLabel() }}
               </text>
-            </ng-container>
-            <!-- Ajuste: descer um pouco o texto do status -->
-            
+            </ng-container>            
           </svg>
         </div>
   <div class="score-desc-wrapper" style="width:100%; display:flex; flex-direction:column; gap:18px; margin-top:28px;">
@@ -99,13 +97,6 @@
         </div>
       </div>
     </div>
-    <!-- Seção de distribuição de emoções ocultada a pedido -->
-    <!--
-    <div class="emotion-indicators-section">
-      ... (bloco original removido)
-    </div>
-    -->
-  <!-- Seção de alertas de risco removida a pedido -->
   <div class="departamentos-section">
     <div class="panel-card">
       <h2 class="gradient-title" style="margin:0 0 12px; font-size:1.35rem;">eNPS por Departamento</h2>
@@ -129,30 +120,5 @@
       </div>
     </div>
   </div>
-    <!--
-    <div class="colaboradores-section">
-      <h3>Colaboradores</h3>
-      <input
-        type="text"
-        placeholder="Buscar colaborador ou departamento..."
-        [(ngModel)]="busca"
-        (input)="buscarColaborador()"
-      />
-      <ul *ngIf="busca && resultadosBusca.length">
-        <li *ngFor="let c of resultadosBusca">
-          {{ c.nome }} - {{ c.departamento }} (Bem-estar: {{ c.bemEstar }})
-        </li>
-      </ul>
-      <ul *ngIf="busca && !resultadosBusca.length">
-        <li>Nenhum colaborador encontrado.</li>
-      </ul>
-      <ul *ngIf="!busca">
-        <li *ngFor="let c of colaboradores">
-          {{ c.nome }} - {{ c.departamento }} (Bem-estar: {{ c.bemEstar }})
-        </li>
-      </ul>
-    </div>
-    -->
   </div>
-  <!-- Bloco de IA removido -->
 </div>

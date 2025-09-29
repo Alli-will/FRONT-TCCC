@@ -1,7 +1,8 @@
 <!-- Botão de menu hamburguer para mobile -->
 <button *ngIf="isMobileScreen" class="hamburger-btn" (click)="toggleSidebar()" aria-label="Abrir menu"
+  [class.blocked]="modalOpen"
   [style.display]="isMobileScreen ? 'flex' : 'none'"
-  [style.zIndex]="3001"
+  [style.zIndex]="800"  
   [style.position]="'fixed'"
   [style.top]="'18px'"
   [style.left]="'0px'">
@@ -12,7 +13,7 @@
     <line x1="4" y1="17" x2="20" y2="17"/>
   </svg>
 </button>
-<div class="sidebar" [ngClass]="{ 'open': sidebarOpen }">
+<div class="sidebar" [ngClass]="{ 'open': sidebarOpen, 'blocked': modalOpen }">
   <div class="sidebar-header">
     <img src="assets/favicon.png" alt="Logo CalmaMente" class="sidebar-logo" />
     <span class="sidebar-title">CalmaMente</span>
@@ -26,8 +27,10 @@
   <li *ngIf="!isSupport"><a routerLink="/pesquisas"><span class="sidebar-menu-icon material-icons">fact_check</span> Pesquisas</a></li>
   <li *ngIf="isAdmin"><a routerLink="/relatorios-pesquisas"><span class="sidebar-menu-icon material-icons">insights</span> Relatórios</a></li>
   <li *ngIf="isAdmin"><a routerLink="/perguntas"><span class="sidebar-menu-icon material-icons">help</span> Perguntas</a></li>
-  <li *ngIf="!isSupport"><a routerLink="/usuarios"><span class="sidebar-menu-icon material-icons">group</span> Usuários</a></li>
-  <li *ngIf="isSupport || isAdmin || isEmployee"><a routerLink="/empresa"><span class="sidebar-menu-icon material-icons">business</span> Empresa</a></li>
+  <!-- Usuários agora visível somente para admin -->
+  <li *ngIf="isAdmin"><a routerLink="/usuarios"><span class="sidebar-menu-icon material-icons">group</span> Usuários</a></li>
+  <!-- Empresa oculto para employee -->
+  <li *ngIf="isAdmin || isSupport"><a routerLink="/empresa"><span class="sidebar-menu-icon material-icons">business</span> Empresa</a></li>
     <li *ngIf="!isLoggedIn"><a routerLink="/login"><span class="sidebar-menu-icon material-icons">login</span> Login</a></li>
   </ul>
   <div class="sidebar-footer">

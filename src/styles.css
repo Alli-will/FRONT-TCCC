@@ -8,6 +8,16 @@ html, body {
   background: #f7f8fa !important;
 }
 
+/* Remove default margins to allow fixed banners to sit truly flush at top */
+html, body { margin:0 !important; padding:0 !important; border:0; }
+
+/* Hard reset for possible host element margins that might create a gap */
+app-root, app-menu, app-empresa { margin:0 !important; padding:0 !important; display:block; }
+body > *:first-child { margin-top:0 !important; }
+
+/* Safety: remove any top border that could appear visually as a gap */
+body, app-root { border-top:0 !important; }
+
 /* Global box-sizing to avoid width overflow by padding/borders */
 *, *::before, *::after { box-sizing: border-box; }
 

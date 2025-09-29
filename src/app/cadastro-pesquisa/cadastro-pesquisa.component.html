@@ -1,4 +1,8 @@
 <div class="cadastro-pesquisa">
+  <div *ngIf="bannerMsg" class="top-banner" [ngClass]="bannerTipo">
+    <span>{{ bannerMsg }}</span>
+    <button type="button" class="close-btn" (click)="fecharBanner()">×</button>
+  </div>
   <form (ngSubmit)="cadastrar()" autocomplete="off">
     <div class="titulo-row">
       <h3>Nova Pesquisa</h3>
@@ -31,6 +35,10 @@
           <span class="idx">{{ i+1 }}.</span>
           <span class="txt">{{ p.texto }}</span>
           <div class="meta">
+            <label class="obg-toggle">
+              <input type="checkbox" [(ngModel)]="p.obrigatoria" [ngModelOptions]="{standalone: true}" />
+              <span class="flag" [class.on]="p.obrigatoria">Obrigatória</span>
+            </label>
             <span class="tag" [class.qualitativa]="p.tipoResposta==='qualitativa'" [class.quantitativa]="p.tipoResposta==='quantitativa'">{{ p.tipoResposta || 'quantitativa' }}</span>
             <span *ngIf="tipo==='pulso' && i===0" class="tag">NPS</span>
             <button *ngIf="!(tipo==='pulso' && i===0)" type="button" class="rem" (click)="removerPergunta(i)">Remover</button>
@@ -41,7 +49,7 @@
         <div class="placeholder">Todas removidas. Clique em Restaurar para trazer novamente.</div>
       </ng-template>
       <div class="add-custom">
-        <label>Nova pergunta personalizada</label>
+  <label>Nova pergunta personalizada (vem marcada como obrigatória por padrão — você pode desmarcar depois na lista)</label>
         <input type="text" [(ngModel)]="novaPerguntaTexto" name="novaPerguntaTexto" placeholder="Digite o enunciado" maxlength="200">
         <div class="inline">
           <div class="switch">
@@ -86,9 +94,9 @@
             <div class="txt">{{ q.texto }}</div>
             <div class="sub">{{ q.modalidade }} • <span class="tag" [class.quantitativa]="q.tipoResposta==='quantitativa'" [class.qualitativa]="q.tipoResposta==='qualitativa'">{{ q.tipoResposta }}</span></div>
           </div>
-          <button type="button" class="imp" (click)="importarDaBase(q)">Importar</button>
+          <button type="button" class="imp" (click)="importarDaBase(q)" [disabled]="bannerMsg && bannerTipo==='erro'">Importar</button>
         </div>
-        <div *ngIf="!bancoPerguntas.length" class="placeholder">Nenhuma pergunta encontrada.</div>
+  <div *ngIf="!bancoPerguntas.length" class="placeholder">Nenhuma pergunta ativa cadastrada para este tipo.</div>
       </div>
       <div *ngIf="carregandoBanco" class="loading-mini">Carregando...</div>
       <div class="modal-actions">

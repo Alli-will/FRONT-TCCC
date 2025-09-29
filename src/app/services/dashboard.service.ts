@@ -33,10 +33,11 @@ export class DashboardService {
     );
   }
 
+  // Diário removido: retornar array vazio para evitar 404 até remover uso no componente
   getEmotionPercentages(): Observable<any> {
-    return this.withFallback(
-      this.http.get<any>(`${this.primaryBase}/diary/emotion-percentages`),
-      () => this.http.get<any>(`${this.remoteBase}/diary/emotion-percentages`)
-    );
+    return new Observable(observer => {
+      observer.next([]);
+      observer.complete();
+    });
   }
 }

@@ -8,7 +8,6 @@ export class AdminGuard implements CanActivate {
 	canActivate(): boolean {
 		const info = this.auth.getUserInfoFromToken();
 		if (info?.role === 'admin') return true;
-		// Redireciona usuários não-admin
 		this.router.navigate(['/dashboard']);
 		return false;
 	}

@@ -1,8 +1,10 @@
-<app-menu></app-menu>
-<div *ngIf="error" class="top-error-banner" role="alert" aria-live="assertive">
+<div *ngIf="error" class="login-error-banner" role="alert" aria-live="assertive">
   <div class="msg">{{ error }}</div>
-  <button type="button" (click)="dismissError()" aria-label="Fechar">Fechar</button>
 </div>
+<div *ngIf="success" class="login-error-banner sucesso" role="status" aria-live="polite">
+  <div class="msg">{{ success }}</div>
+</div>
+<app-menu></app-menu>
 <div class="empresa-container" *ngIf="companyLoaded">
   <h2 class="gradient-title" *ngIf="isSupport && !showCreateForSupport">Empresas Cadastradas</h2>
   <h2 class="gradient-title" *ngIf="isSupport && showCreateForSupport">Cadastrar Empresa</h2>
@@ -10,13 +12,41 @@
   <h2 class="gradient-title" *ngIf="!isSupport && hasCompany">Empresa</h2>
 
   <div *ngIf="!isSupport && hasCompany && companyData" class="empresa-box">
-    <p><strong>Nome:</strong> {{ companyData.name }}</p>
-  <p><strong>CNPJ:</strong> {{ viewCnpj(companyData.cnpj) }}</p>
-    <p><strong>Endereço:</strong> {{ companyData.address }} - {{ companyData.neighborhood }}</p>
-    <p><strong>Cidade/UF:</strong> {{ companyData.municipality }} / {{ companyData.state }}</p>
-    <p><strong>País:</strong> {{ companyData.country }}</p>
-  <p><strong>Telefone:</strong> {{ viewPhone(companyData.phone) }}</p>
+    <ng-container *ngIf="!editing; else editFormTpl">
+      <p><strong>Nome:</strong> {{ companyData.name }}</p>
+	  <p><strong>CNPJ:</strong> {{ viewCnpj(companyData.cnpj) }}</p>
+      <p><strong>Endereço:</strong> {{ companyData.address }} - {{ companyData.neighborhood }}</p>
+      <p><strong>Cidade/UF:</strong> {{ companyData.municipality }} / {{ companyData.state }}</p>
+      <p><strong>País:</strong> {{ companyData.country }}</p>
+	  <p><strong>Telefone:</strong> {{ viewPhone(companyData.phone) }}</p>
+      <div class="acoes-empresa" *ngIf="role==='admin'">
+        <button type="button" class="btn-primario" (click)="iniciarEdicao()">Editar dados</button>
+      </div>
+    </ng-container>
   </div>
+
+  <ng-template #editFormTpl>
+    <form (ngSubmit)="atualizarEmpresa()" #editEmpresaForm="ngForm" class="empresa-edit-form">
+      <div class="row"><label>Nome*</label><input name="name" [(ngModel)]="form.name" required /></div>
+      <div class="row"><label>CNPJ*</label><input name="cnpj" [(ngModel)]="form.cnpj" (input)="formatCnpj()" (keydown)="onCnpjKeyDown($event)" (paste)="onCnpjPaste($event)" maxlength="18" required /></div>
+      <div class="row">
+        <label>CEP*</label>
+        <input name="addressZipCode" type="text" maxlength="9" [(ngModel)]="form.addressZipCode" (input)="formatCep()" (blur)="buscarCep()" (keyup.enter)="buscarCep()" required />
+        <small *ngIf="buscandoCep">Buscando CEP...</small>
+        <small class="erro" *ngIf="cepErro">{{ cepErro }}</small>
+      </div>
+      <div class="row"><label>Endereço*</label><input name="address" [(ngModel)]="form.address" required /></div>
+      <div class="row"><label>Bairro*</label><input name="neighborhood" [(ngModel)]="form.neighborhood" required /></div>
+      <div class="row"><label>Município*</label><input name="municipality" [(ngModel)]="form.municipality" required /></div>
+      <div class="row"><label>Estado*</label><input name="state" [(ngModel)]="form.state" required /></div>
+      <div class="row"><label>País*</label><input name="country" [(ngModel)]="form.country" required /></div>
+      <div class="row"><label>Telefone*</label><input name="phone" type="text" maxlength="16" [(ngModel)]="form.phone" (input)="formatPhone()" required /></div>
+      <div class="edit-actions">
+        <button type="submit" class="btn-primario" [disabled]="loading || editEmpresaForm.invalid">{{ loading ? 'Salvando...' : 'Salvar' }}</button>
+        <button type="button" class="btn-secundario" (click)="cancelarEdicao()" [disabled]="loading">Cancelar</button>
+      </div>
+    </form>
+  </ng-template>
 
   <!-- Form de criação para admin/employee sem empresa -->
   <form *ngIf="!isSupport && !hasCompany" (ngSubmit)="enviar()" #empresaForm="ngForm">
@@ -36,8 +66,7 @@
   <div class="row"><label>Telefone*</label><input name="phone" type="text" maxlength="16" [(ngModel)]="form.phone" (input)="formatPhone()" required /></div>
   <button type="submit" class="btn-primario" [disabled]="loading || empresaForm.invalid">{{ loading ? 'Enviando...' : 'Cadastrar' }}</button>
   </form>
-  <div *ngIf="error" class="erro">{{ error }}</div>
-  <div *ngIf="success" class="sucesso">{{ success }}</div>
+  <!-- Mensagens inline removidas em favor dos banners fixos -->
 
   <!-- Listagem para suporte -->
   <div *ngIf="isSupport">

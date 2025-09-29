@@ -191,6 +191,7 @@ h2 {
 
 .options {
 	position: relative;
+    overflow-anchor: none; /* evita salto de rolagem quando o menu abre */
 }
 
 .options-btn {
@@ -269,21 +270,23 @@ h2 {
 	min-width: 0;
 }
 
-select {
-	border: 1px solid #d5e4ec;
-	border-radius: .55rem;
-	padding: .45rem .6rem;
+.menu {
+	position: absolute;
+	right: 0;
+	top: 32px; /* aproxima do botão para reduzir necessidade de scroll vertical emergente */
+	background: #fff;
+	border: 1px solid #e0edf3;
+	box-shadow: 0 8px 20px -2px rgba(0,0,0,.16);
+	border-radius: .6rem;
+	padding: .3rem;
+	display: flex;
+	flex-direction: column;
+	min-width: 170px;
+	z-index: 2100;
+	overflow: visible;
+	max-height: 260px; /* segurança futura para listas maiores */
 }
 
-/* Paginação (igual colaboradores) */
-.paginacao-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: 0.5rem;
-	margin: 1.5rem 0 0.5rem 0;
-	flex-wrap: wrap;
-}
 .paginacao-container button {
 	background: #f6fbfc;
 	border: 1px solid #c9dde2;
@@ -312,6 +315,42 @@ select {
 		font-size: 0.92rem;
 		padding: 0.32em 0.7em;
 	}
+}
+
+/* ===== Ajustes mobile extras (largura <= 600px) para área de filtro ===== */
+@media (max-width: 600px) {
+	.filter-card {
+		padding: 10px 12px; /* ligeiro ajuste para caber melhor em telas muito estreitas */
+		gap: 10px;
+	}
+	.search-wrapper { width: 100%; }
+	.search-input-lg {
+		font-size: .95rem;
+		padding: 10px 40px 10px 12px; /* reduz altura um pouco mantendo ícone alinhado */
+		/* Evita corte visual do placeholder em alguns navegadores que aplicam ellipsis quando a largura é mt pequena */
+		text-overflow: initial;
+		white-space: nowrap;
+		overflow: hidden; /* mantém layout estável mas sem reticências adicionadas */
+	}
+	.status-filter {
+		width: 100%;
+		display: flex;
+		flex-direction: column; /* empilha label e select */
+		align-items: stretch;
+		gap: 4px;
+	}
+	.status-filter label {
+		font-size: .78rem;
+		font-weight: 600;
+		color: #38b6a5; /* segue paleta usada nos rótulos responsivos da tabela */
+		margin: 0; 
+	}
+	.status-select { width: 100%; }
+}
+
+/* Ultra-narrow (<=360px): Troca forçada para placeholder ainda mais curto */
+@media (max-width: 360px) {
+	.search-input-lg::placeholder { content: 'Buscar...'; }
 }
 
 /* Table-like layout */

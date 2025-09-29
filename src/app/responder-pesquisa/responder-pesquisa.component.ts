@@ -65,7 +65,8 @@ export class ResponderPesquisaComponent {
     this.tentativaEnvio = true;
     const perguntas = this.pesquisa.perguntas || [];
     const pendentes: number[] = [];
-    perguntas.forEach((_: any, idx: number) => {
+    perguntas.forEach((p: any, idx: number) => {
+      if (p?.obrigatoria === false) return; // não é obrigatória, ignora validação
       const v = this.respostas[idx];
       if (v === undefined || v === null || v === '') pendentes.push(idx);
     });
@@ -96,6 +97,8 @@ export class ResponderPesquisaComponent {
 
   isIncompleta(index: number): boolean {
     if (!this.tentativaEnvio) return false;
+    const p = this.pesquisa?.perguntas?.[index];
+    if (p && p.obrigatoria === false) return false;
     const v = this.respostas[index];
     return v === undefined || v === null || v === '';
   }

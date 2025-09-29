@@ -27,6 +27,8 @@
 .pergunta-card { border:1px solid #e0edf3; background:#f9fbfc; padding:1rem 1rem 1.1rem; border-radius:0.9rem; margin-bottom:1rem; }
 .pergunta-card.incompleta { border-color:#ffb4b4; background:#fff5f5; }
 .pergunta-card .texto { font-weight:600; font-size:0.95rem; margin-bottom:0.8rem; color:#2d3a41; line-height:1.4; }
+.pergunta-card .texto .req-marker { color:#d12f2f; margin-left:4px; font-weight:700; }
+.pergunta-card .texto .opt { color:#5d6d74; margin-left:6px; font-size:0.75rem; font-weight:500; }
 .escala { display:flex; flex-wrap:wrap; gap:0.4rem; }
 .escala button { background:#fff; border:1px solid #d5e4ec; width:42px; height:42px; border-radius:0.7rem; font-weight:600; font-size:0.85rem; color:#276b7a; cursor:pointer; transition:all .2s; box-shadow:0 2px 4px #00000008; }
 .escala button.likert { width:100%; max-width:380px; height:auto; padding:0.65rem 0.75rem; line-height:1.15rem; font-size:0.78rem; text-align:left; display:flex; align-items:flex-start; gap:0.6rem; white-space:normal; }
@@ -40,3 +42,5 @@
 .alert.erro { background:#ffe9e9; border:1px solid #ffc5c5; color:#d93030; }
 .alert.sucesso { background:#e5fff7; border:1px solid #b9f1e1; color:#178667; }
 .loading, .empty { text-align:center; color:#7a8b94; padding:2rem 0; }
+.legend-obrigatorias { margin-top:.2rem; font-size:.7rem; color:#5a6b71; display:flex; align-items:center; gap:.4rem; background:#f1f6f7; padding:.45rem .6rem; border:1px solid #d5e4ec; border-radius:.5rem; }
+.legend-obrigatorias .asterisco { color:#d12f2f; font-weight:700; font-size:.85rem; line-height:1; }

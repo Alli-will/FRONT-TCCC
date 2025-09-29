@@ -34,6 +34,15 @@ export class CadastroPesquisaComponent implements OnDestroy {
   filtroTipoBanco: 'todas'|'quantitativa'|'qualitativa' = 'todas';
   showImportModal = false;
 
+  // Banner de feedback
+  bannerMsg: string | null = null;
+  bannerTipo: 'sucesso' | 'erro' = 'sucesso';
+  private bannerTimer: any = null;
+
+  // Conjuntos para impedir duplicação
+  private addedIds = new Set<number>();
+  private addedTexts = new Set<string>();
+
   constructor(private searchService: SearchService, private questionsService: QuestionService) {}
 
   ngOnInit() {
@@ -46,6 +55,9 @@ export class CadastroPesquisaComponent implements OnDestroy {
     if (typeof document !== 'undefined') {
       document.body.classList.add('body-lock');
     }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('body-modal-open'));
+    }
     this.carregarBanco();
   }
 
@@ -53,6 +65,9 @@ export class CadastroPesquisaComponent implements OnDestroy {
     this.showImportModal = false;
     if (typeof document !== 'undefined') {
       document.body.classList.remove('body-lock');
+    }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('body-modal-close'));
     }
   }
 
@@ -71,7 +86,7 @@ export class CadastroPesquisaComponent implements OnDestroy {
     this.carregandoPerguntas = true;
     this.searchService.getDefaultQuestions(this.tipo as any).subscribe({
       next: (res) => {
-    const base = (res?.perguntas || []).map((p: any) => ({ ...p, tipoResposta: 'quantitativa' }));
+    const base = (res?.perguntas || []).map((p: any) => ({ ...p, tipoResposta: 'quantitativa', obrigatoria: true }));
     // Para pesquisas de Pulso, adiciona uma pergunta qualitativa padrão após a NPS
     if (this.tipo === 'pulso' && base.length > 0) {
       const followUp = {
@@ -85,6 +100,8 @@ export class CadastroPesquisaComponent implements OnDestroy {
       this.perguntasPadrao = base;
     }
     this.perguntasSelecionadas = [...this.perguntasPadrao];
+        // popular caches iniciais
+        this.rebuildCaches();
         this.carregandoPerguntas = false;
       },
       error: () => { this.carregandoPerguntas = false; }
@@ -112,6 +129,7 @@ export class CadastroPesquisaComponent implements OnDestroy {
           this.titulo = '';
           this.tipo = 'pulso';
           this.perguntasSelecionadas = [...this.perguntasPadrao];
+          this.rebuildCaches();
           setTimeout(()=> this.sucesso = false, 3000);
         },
         error: () => this.erro = 'Erro ao cadastrar pesquisa.',
@@ -122,10 +140,13 @@ export class CadastroPesquisaComponent implements OnDestroy {
   removerPergunta(idx: number) {
   if (this.tipo === 'pulso' && idx === 0) { return; }
   this.perguntasSelecionadas.splice(idx,1);
+  // Recalcula caches para permitir re-adicionar mesma pergunta depois
+  this.rebuildCaches();
   }
 
   restaurarPadrao() {
     this.perguntasSelecionadas = [...this.perguntasPadrao];
+    this.rebuildCaches();
   }
 
   addPerguntaCustom() {
@@ -134,19 +155,31 @@ export class CadastroPesquisaComponent implements OnDestroy {
     const isQuant = this.novaPerguntaTipoResposta === 'quantitativa';
   const opcoes = isQuant ? (this.tipo === 'clima' ? this.escalaPadraoClima : this.escalaPadraoPulso) : [];
     const base = { texto, opcoes, obrigatoria: true, tipoResposta: this.novaPerguntaTipoResposta } as any;
+
+    if (this.isDuplicate(base)) {
+      this.showBanner('Pergunta já adicionada.', 'erro');
+      return;
+    }
     if (this.salvarNoBanco) {
       this.questionsService.create({ texto, descricaoBusca: texto, modalidade: this.tipo as any, tipoResposta: this.novaPerguntaTipoResposta }).subscribe({
         next: (q) => {
-          this.perguntasSelecionadas.push({ ...base, questionId: q?.id });
+          const obj = { ...base, questionId: q?.id };
+          this.perguntasSelecionadas.push(obj);
+          this.registerInCaches(obj);
           this.carregarBanco(false);
+          this.showBanner('Pergunta adicionada.', 'sucesso');
         },
         error: () => {
           // mesmo se falhar no banco, ainda adiciona à pesquisa
           this.perguntasSelecionadas.push(base);
+          this.registerInCaches(base);
+          this.showBanner('Pergunta adicionada (não salva no banco).', 'sucesso');
         }
       });
     } else {
       this.perguntasSelecionadas.push(base);
+      this.registerInCaches(base);
+      this.showBanner('Pergunta adicionada.', 'sucesso');
     }
     this.novaPerguntaTexto = '';
   }
@@ -156,7 +189,12 @@ export class CadastroPesquisaComponent implements OnDestroy {
     const params: any = { modalidade: this.tipo };
     if (this.filtroTipoBanco !== 'todas') params.tipo = this.filtroTipoBanco;
     this.questionsService.list(params).subscribe({
-      next: (rows) => { this.bancoPerguntas = rows || []; this.carregandoBanco = false; },
+      next: (rows) => {
+        // Ignora perguntas inativas para importação (ativo === false)
+        const list = (rows || []).filter((q: any) => q?.ativo !== false);
+        this.bancoPerguntas = list;
+        this.carregandoBanco = false;
+      },
       error: () => { this.bancoPerguntas = []; this.carregandoBanco = false; }
     });
   }
@@ -165,6 +203,40 @@ export class CadastroPesquisaComponent implements OnDestroy {
     // Monta pergunta compatível com a pesquisa atual, inferindo opções se quantitativa
     const isQuant = q?.tipoResposta === 'quantitativa';
   const opcoes = isQuant ? (this.tipo === 'clima' ? this.escalaPadraoClima : this.escalaPadraoPulso) : [];
-  this.perguntasSelecionadas.push({ texto: q.texto, opcoes, obrigatoria: true, questionId: q.id, tipoResposta: q.tipoResposta });
+  const obj = { texto: q.texto, opcoes, obrigatoria: true, questionId: q.id, tipoResposta: q.tipoResposta };
+  if (this.isDuplicate(obj)) {
+    this.showBanner('Pergunta já adicionada.', 'erro');
+    return;
+  }
+  this.perguntasSelecionadas.push(obj);
+  this.registerInCaches(obj);
+  this.showBanner('Pergunta importada.', 'sucesso');
+  }
+
+  // ----- Duplicidade & Banner Helpers -----
+  private normalize(t: string) { return (t||'').toLowerCase().replace(/\s+/g,' ').trim(); }
+  private isDuplicate(p: any): boolean {
+    if (p.questionId && this.addedIds.has(p.questionId)) return true;
+    const n = this.normalize(p.texto);
+    return this.addedTexts.has(n);
+  }
+  private registerInCaches(p: any) {
+    if (p.questionId) this.addedIds.add(p.questionId);
+    this.addedTexts.add(this.normalize(p.texto));
+  }
+  private rebuildCaches() {
+    this.addedIds.clear();
+    this.addedTexts.clear();
+    this.perguntasSelecionadas.forEach(p => this.registerInCaches(p));
+  }
+  private showBanner(msg: string, tipo: 'sucesso'|'erro') {
+    this.bannerMsg = msg;
+    this.bannerTipo = tipo;
+    if (this.bannerTimer) clearTimeout(this.bannerTimer);
+    this.bannerTimer = setTimeout(()=> { this.bannerMsg = null; }, 2500);
+  }
+  fecharBanner() {
+    this.bannerMsg = null;
+    if (this.bannerTimer) clearTimeout(this.bannerTimer);
   }
 }
