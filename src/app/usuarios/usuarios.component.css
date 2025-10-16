@@ -7,6 +7,17 @@
   margin: 1.5rem 0 0.5rem 0;
   flex-wrap: wrap;
 }
+  .linha-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0; /* allow children to shrink */
+  }
+  .linha-top .colab-nome {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .linha-top .role-pill { flex-shrink: 0; }
 .paginacao-container button {
   background: #f6fbfc;
   border: 1px solid #c9dde2;
@@ -17,10 +28,7 @@
   padding: 0.38em 1.1em;
   margin: 0 0.1em;
   cursor: pointer;
-  transition:
-    background 0.18s,
-    color 0.18s,
-    border 0.18s;
+  transition: background 0.18s, color 0.18s, border 0.18s;
   outline: none;
 }
 .paginacao-container button.ativa,
@@ -132,6 +140,13 @@
   .colab-depto {
     font-size: 0.6rem !important;
   }
+}
+
+/* Muito estreito: em telas bem pequenas, quebra o pill para a linha de baixo */
+@media (max-width: 380px) {
+  .linha-top { flex-wrap: wrap !important; }
+  .linha-top .colab-nome { flex: 1 0 100% !important; max-width: 100% !important; display: block !important; }
+  .linha-top .role-pill { margin-top: 4px !important; }
 }
 /* Removida chave extra do final do arquivo */
 .dept-editor .btn-cancelar,
@@ -345,6 +360,55 @@ li:last-child {
   border-radius: 0.6rem;
   line-height: 1;
 }
+/* Inline edit link and actions menu */
+.link-depto {
+  background: transparent;
+  border: 0;
+  color: #2e5964;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-decoration: underline;
+  padding: 0;
+  cursor: pointer;
+}
+.actions-menu-wrapper { position: relative; }
+.actions-trigger {
+  padding: 0.42rem 0.8rem;
+  font-size: 0.78rem;
+  border-radius: 0.6rem;
+  line-height: 1;
+}
+.actions-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid #e0edf3;
+  border-radius: 0.7rem;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  min-width: 180px;
+  padding: 6px;
+  z-index: 30;
+}
+.actions-pop .item {
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 0;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.86rem;
+  color: #21343b;
+  cursor: pointer;
+}
+.actions-pop .item:hover { background: #f5f9fa; }
+.actions-pop .item.danger { color: #b22929; }
+.actions-pop hr {
+  border: 0;
+  height: 1px;
+  background: #eef3f5;
+  margin: 6px 0;
+}
 
 /* Let the department button shrink to fit in the row */
 .colab-actions .btn-alterar-depto {
@@ -370,6 +434,7 @@ li:last-child {
   .colab-actions {
     width: 100%;
     justify-content: flex-start;
+    gap: 0.5rem;
   }
 }
 .btn-alterar-depto {
@@ -438,18 +503,36 @@ li:last-child {
   display: flex;
   flex-direction: column;
   line-height: 1.1;
-  min-width: 0;
+  min-width: 0; /* enable ellipsis on children */
 }
 .colab-nome {
-  font-size: 1.18rem;
+  font-size: 1.06rem;
   color: #23213a;
-  font-weight: 600;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
-  max-width: none;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
   display: inline-block;
-  vertical-align: middle;
+}
+/* Role pill styles */
+.role-pill {
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 0.28rem 0.5rem;
+  border-radius: 999px;
+  background: #e7f0ff;
+  color: #2b5fa8;
+}
+.role-pill.admin {
+  background: #e1faf5;
+  color: #136d62;
+}
+.role-pill.employee {
+  background: #f5f8fa;
+  color: #375861;
 }
 @media (max-width: 600px) {
   .colab-nome {
@@ -461,14 +544,13 @@ li:last-child {
   }
 }
 .colab-nome {
-  font-size: 1.18rem;
+  font-size: 1.06rem;
   color: #23213a;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
   text-overflow: ellipsis;
-  max-width: 220px;
+  max-width: 100%;
   display: inline-block;
-  vertical-align: middle;
 }
 .colab-depto {
   text-transform: uppercase !important;
@@ -657,6 +739,10 @@ li:last-child {
   .colab-depto {
     font-size: 0.6rem;
   }
+  /* Força o pill a ir para baixo do nome no mobile */
+  .linha-top { flex-wrap: wrap; }
+  .linha-top .colab-nome { flex: 1 0 100%; max-width: 100%; }
+  .linha-top .role-pill { margin-top: 4px; }
   .colab-actions .btn-primario,
   .colab-actions .btn-ghost,
   .colab-actions .btn-alterar-depto,
@@ -665,6 +751,15 @@ li:last-child {
     padding: 0.38rem 0.7rem !important;
     font-size: 0.74rem !important;
     border-radius: 0.55rem !important;
+  }
+  /* Dropdown de ações: evitar corte lateral no mobile */
+  .actions-menu-wrapper { position: relative; }
+  .actions-pop {
+    left: 0 !important;
+    right: auto !important;
+    max-width: calc(100vw - 32px) !important;
+    min-width: 200px;
+    overflow-wrap: anywhere;
   }
   .modal-actions {
     gap: 6px;

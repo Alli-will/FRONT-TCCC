@@ -19,7 +19,6 @@ export class PerguntasComponent implements OnInit {
   editId: number | null = null;
   saving = false;
   openMenuId: number | null = null;
-  // Banner de feedback (igual padrão do login)
   mensagem: string | null = null;
   bannerTipo: "sucesso" | "erro" = "sucesso";
   private bannerTimer: any = null;

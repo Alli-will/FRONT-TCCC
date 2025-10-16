@@ -85,6 +85,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
           const dept = this.extractDepartment(u);
           return {
             id: u.id,
+            role: u.role || "employee",
             nomeCompleto:
               `${u.first_Name || u.firstName || ""} ${u.last_Name || u.lastName || ""}`.trim() ||
               u.nome ||
@@ -97,6 +98,8 @@ export class UsuariosComponent implements OnInit, OnDestroy {
             avatarUrl: null,
             _etag: null,
             _objectUrl: null,
+            _roleSaving: false,
+            _menuOpen: false,
           };
         });
         // Aplica filtro de status no front (reforço visual)
@@ -126,6 +129,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
           const dept = this.extractDepartment(u);
           return {
             id: u.id,
+            role: u.role || "employee",
             nomeCompleto:
               `${u.first_Name || u.firstName || ""} ${u.last_Name || u.lastName || ""}`.trim() ||
               u.nome ||
@@ -138,6 +142,8 @@ export class UsuariosComponent implements OnInit, OnDestroy {
             avatarUrl: null,
             _etag: null,
             _objectUrl: null,
+            _roleSaving: false,
+            _menuOpen: false,
           };
         });
         this.colaboradoresAtivos =
@@ -438,6 +444,68 @@ export class UsuariosComponent implements OnInit, OnDestroy {
         },
       });
     }
+  }
+
+  // Alternar papel admin/employee
+  alternarRole(c: any) {
+    if (!this.isAdmin || !c?.id || c._roleSaving) return;
+    const novo = c.role === "admin" ? "employee" : "admin";
+    c._roleSaving = true;
+    const localBase = resolveApiBase();
+    const remoteBase = "https://tcc-main.up.railway.app";
+    const tryUpdate = async (base: string) =>
+      fetch(`${base}/user/${c.id}/role`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ role: novo }),
+      });
+    tryUpdate(localBase)
+      .then((r) => (r.ok ? r.json() : tryUpdate(remoteBase).then((r2) => (r2.ok ? r2.json() : Promise.reject(r2)))))
+      .then((resp) => {
+        const updatedRole = resp?.user?.role || novo;
+        c.role = updatedRole;
+        this.showBanner(
+          updatedRole === "admin" ? "Usuário promovido a admin." : "Usuário definido como employee.",
+          "sucesso"
+        );
+      })
+      .catch(async (err) => {
+        let msg = "Erro ao atualizar role.";
+        try {
+          const data = await err.json();
+          msg = data?.error || data?.message || msg;
+        } catch {}
+        this.showBanner(msg, "erro");
+      })
+      .finally(() => {
+        c._roleSaving = false;
+      });
+  }
+
+  // UI helpers: actions popover menu
+  toggleMenu(c: any, ev?: Event) {
+    ev?.stopPropagation();
+    if (c._menuOpen) {
+      c._menuOpen = false;
+      return;
+    }
+    this.colaboradoresAtivos.forEach((x) => (x._menuOpen = false));
+    c._menuOpen = true;
+    // fechar ao clicar fora
+    setTimeout(() => {
+      const close = () => {
+        c._menuOpen = false;
+        document.removeEventListener("click", close);
+      };
+      document.addEventListener("click", close, { once: true });
+    }, 0);
+  }
+
+  alternarRoleLabel(c: any) {
+    return c.role === "admin" ? "Tornar Funcionário" : "Tornar Administrador";
   }
 
   // Extrai nome/id do departamento de diferentes formatos

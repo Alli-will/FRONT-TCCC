@@ -1,0 +1,249 @@
+<app-menu></app-menu>
+<div class="relatorio-page" *ngIf="loaded; else loadingTpl">
+  <div class="header">
+    <h2>Relatório da Pesquisa</h2>
+    <a routerLink="/relatorios-pesquisas" class="voltar btn-primario">Voltar</a>
+  </div>
+  <div *ngIf="erro" class="erro">{{ erro }}</div>
+  <ng-container *ngIf="!erro">
+    <div class="meta">
+      <div class="meta-left">
+        <h3>{{ report?.titulo }}</h3>
+        <div class="data" *ngIf="report?.createdAt">
+          Data: {{ formatDate(report.createdAt) }}
+        </div>
+        <div
+          class="pill"
+          [class.pulso]="report?.tipo === 'pulso'"
+          [class.clima]="report?.tipo === 'clima'"
+        >
+          {{ report?.tipo }}
+        </div>
+        <div class="meta-row">
+          <div class="resumo">
+            Respondentes: <strong>{{ report?.totalRespondentes }}</strong>
+          </div>
+          <ng-container *ngIf="departments.length">
+            <div class="setor-filter">
+              <label class="lbl">Setor</label>
+              <div class="select-wrapper">
+                <select [(ngModel)]="selectedDepartmentId" (change)="reload()">
+                  <option [ngValue]="undefined">Todos os Setores</option>
+                  <option *ngFor="let d of departments" [ngValue]="d.id">{{ d.name }}</option>
+                </select>
+                <span class="icon">▾</span>
+              </div>
+              <div *ngIf="selectedDepartmentId" class="chip" (click)="clearDept()">
+                {{ currentDepartmentName() }} <span class="x">×</span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <!-- meta-right removido para evitar duplicidade do seletor de setor -->
+    </div>
+    <div *ngIf="canShowNps()" class="nps-block">
+      <div class="nps-card">
+        <div class="nps-value">
+          eNPS (1ª pergunta):
+          <span [style.color]="getNpsColor(report?.nps)">{{ report?.nps }}</span>
+        </div>
+        <div class="metodo-hint">
+          Considera apenas a primeira resposta de cada usuário. Classificação: Promotores
+          (9–10), Neutros (7–8), Detratores (0–6). O eNPS é calculado por: %Promotores –
+          %Detratores. A distribuição mostra as notas da 1ª pergunta.
+        </div>
+        <div class="nps-bars">
+          <!-- Ordem: Detratores, Neutros, Promotores (cores alinhadas com distribuição) -->
+          <div
+            class="bar detratores"
+            [style.width]="pct(report?.detratores)"
+            title="Detratores"
+          >
+            Detratores {{ pct(report?.detratores) }}
+          </div>
+          <div class="bar neutros" [style.width]="pct(report?.neutros)" title="Neutros">
+            Neutros {{ pct(report?.neutros) }}
+          </div>
+          <div
+            class="bar promotores"
+            [style.width]="pct(report?.promotores)"
+            title="Promotores"
+          >
+            Promotores {{ pct(report?.promotores) }}
+          </div>
+        </div>
+        <div class="dist-nps enhanced">
+          <div
+            *ngFor="let k of npsKeys()"
+            class="nps-col"
+            [ngClass]="scoreClasse(k)"
+            [title]="scoreTooltip(k)"
+          >
+            <div class="score-line">{{ k }}</div>
+            <div class="meta-line">
+              <span class="cnt" [class.zero]="report?.npsDistribuicao[k]?.count === 0"
+                >{{ report?.npsDistribuicao[k]?.count }}x</span
+              >
+              <span class="sep">•</span>
+              <span class="perc" [class.zero]="report?.npsDistribuicao[k]?.percent === 0">{{
+                formatPercent(report?.npsDistribuicao[k]?.percent)
+              }}</span>
+            </div>
+            <div class="mini-bar-wrap">
+              <div class="mini-bar-bg"></div>
+              <div
+                class="mini-bar-fill"
+                [style.width]="(report?.npsDistribuicao[k]?.percent || 0) + '%'"
+                [style.background]="getScoreBandColor(+k, 'pulso')"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      *ngIf="selectedDepartmentId && !canShowNps() && report?.tipo === 'pulso'"
+      class="nps-bloqueado"
+    >
+      NPS indisponível para este setor: não há dados suficientes para análise(mínimo 2
+      respondentes necessários).
+    </div>
+    <h4 *ngIf="canShowPerguntas()">Perguntas</h4>
+    <div *ngIf="!canShowPerguntas()" class="nps-bloqueado">
+      Perguntas e médias não exibidas por ausência de dados suficientes para análise.
+    </div>
+    <ng-container *ngIf="canShowPerguntas() && report?.perguntas?.length">
+      <table class="tbl-perguntas desktop-table">
+        <thead>
+          <tr>
+            <th style="width:40px;">#</th>
+            <th>Pergunta</th>
+            <th style="width:90px;">Média</th>
+            <th>Distribuição</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of report.perguntas; let i = index">
+            <td class="index-cell">{{ p.index + 1 }}</td>
+            <td class="question-cell">{{ p.texto }}</td>
+            <td>
+              <ng-container *ngIf="p.tipoResposta === 'quantitativa' && p.media !== null">
+                {{ p.media }}
+              </ng-container>
+            </td>
+            <td class="dist-cell">
+              <!-- Quantitativa: mostra a barra -->
+              <div
+                class="dist-bar"
+                *ngIf="p.tipoResposta === 'quantitativa' && p.distribuicao"
+                [ngStyle]="{ background: gradientBackground(p.distribuicao, report?.tipo) }"
+                title="Distribuição das notas"
+              >
+                <ng-container *ngFor="let seg of gradientSegments(p.distribuicao, report?.tipo)">
+                  <div
+                    class="dist-label"
+                    *ngIf="seg.percent >= 5"
+                    [ngStyle]="{
+                      left: seg.start + '%',
+                      width: seg.width + '%',
+                      color: seg.textColor,
+                    }"
+                  >
+                    {{ seg.percent.toFixed(0) }}%
+                  </div>
+                </ng-container>
+              </div>
+              <!-- Qualitativa: centraliza o botão na célula -->
+              <div
+                class="dist-actions-center"
+                *ngIf="p.tipoResposta === 'qualitativa' && canShowPerguntas()"
+              >
+                <button class="btn-primario" (click)="openTextAnswersModal(i, p.texto)">
+                  Ver respostas
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="mobile-perguntas">
+        <div class="mobile-pergunta-card" *ngFor="let p of report.perguntas; let i = index">
+          <div class="mobile-pergunta-header">
+            <span class="mobile-pergunta-num">{{ p.index + 1 }}</span>
+            <span class="mobile-pergunta-media" *ngIf="p.tipoResposta === 'quantitativa' && p.media !== null"
+              >Média: <strong>{{ p.media }}</strong></span
+            >
+          </div>
+          <div class="mobile-pergunta-texto">{{ p.texto }}</div>
+          <div
+            class="dist-bar mobile-bar"
+            *ngIf="p.tipoResposta === 'quantitativa' && p.distribuicao"
+            [ngStyle]="{ background: gradientBackground(p.distribuicao, report?.tipo) }"
+            title="Distribuição das notas"
+          >
+            <ng-container *ngFor="let seg of gradientSegments(p.distribuicao, report?.tipo)">
+              <div
+                class="dist-label"
+                *ngIf="seg.percent >= 5"
+                [ngStyle]="{
+                  left: seg.start + '%',
+                  width: seg.width + '%',
+                  color: seg.textColor,
+                }"
+              >
+                {{ seg.percent.toFixed(0) }}%
+              </div>
+            </ng-container>
+          </div>
+          <div class="mobile-actions">
+            <button
+              *ngIf="p.tipoResposta === 'qualitativa' && canShowPerguntas()"
+              class="btn-primario"
+              (click)="openTextAnswersModal(i, p.texto)"
+            >
+              Ver respostas
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <div *ngIf="!report?.perguntas?.length">Sem perguntas.</div>
+  </ng-container>
+</div>
+<!-- Modal Respostas Textuais -->
+<div class="modal-overlay" *ngIf="showTextModal" (click)="closeTextAnswersModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="md-header">
+      <h5>Respostas</h5>
+      <button class="btn-ghost" (click)="closeTextAnswersModal()">Fechar</button>
+    </div>
+    <div class="modal-question" *ngIf="textQuestionTitle">
+      <strong>Pergunta:</strong> {{ textQuestionTitle }}
+    </div>
+    <div class="mini-list" *ngIf="!loadingTextAnswers && textAnswers.length; else textLoading">
+      <div class="row" *ngFor="let r of textAnswers; let i = index">
+        <div class="idx-badge" [attr.aria-label]="'Resposta ' + (i + 1)">{{ i + 1 }}</div>
+        <div class="t">
+          <div class="txt">{{ r.texto }}</div>
+        </div>
+      </div>
+    </div>
+    <ng-template #textLoading>
+      <div class="mini-list">
+        <div class="placeholder" *ngIf="loadingTextAnswers">Carregando respostas...</div>
+        <div class="placeholder" *ngIf="!loadingTextAnswers && textMinThreshold && textTotal && textTotal < textMinThreshold">
+          Por privacidade, respostas só aparecem quando houver pelo menos {{ textMinThreshold }} respostas.
+        </div>
+        <div class="placeholder" *ngIf="!loadingTextAnswers && (!textTotal || textTotal === 0)">
+          Nenhuma resposta qualitativa disponível.
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <app-menu></app-menu>
+  <div class="relatorio-page">Carregando relatório...</div>
+</ng-template>

@@ -138,20 +138,23 @@ import { MenuComponent } from "../menu/menu.component";
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let p of report.perguntas">
-                <td>{{ p.index + 1 }}</td>
-                <td>{{ p.texto }}</td>
-                <td>{{ p.media !== null ? p.media : "-" }}</td>
+              <tr *ngFor="let p of report.perguntas; let i = index">
+                <td class="index-cell">{{ p.index + 1 }}</td>
+                <td class="question-cell">{{ p.texto }}</td>
                 <td>
+                  <ng-container *ngIf="p.tipoResposta === 'quantitativa' && p.media !== null">
+                    {{ p.media }}
+                  </ng-container>
+                </td>
+                <td class="dist-cell">
+                  <!-- Quantitativa: mostra a barra -->
                   <div
                     class="dist-bar"
-                    *ngIf="p.distribuicao"
+                    *ngIf="p.tipoResposta === 'quantitativa' && p.distribuicao"
                     [ngStyle]="{ background: gradientBackground(p.distribuicao, report?.tipo) }"
                     title="Distribuição das notas"
                   >
-                    <ng-container
-                      *ngFor="let seg of gradientSegments(p.distribuicao, report?.tipo)"
-                    >
+                    <ng-container *ngFor="let seg of gradientSegments(p.distribuicao, report?.tipo)">
                       <div
                         class="dist-label"
                         *ngIf="seg.percent >= 5"
@@ -165,22 +168,31 @@ import { MenuComponent } from "../menu/menu.component";
                       </div>
                     </ng-container>
                   </div>
+                  <!-- Qualitativa: centraliza o botão na célula -->
+                  <div
+                    class="dist-actions-center"
+                    *ngIf="p.tipoResposta === 'qualitativa' && canShowPerguntas()"
+                  >
+                    <button class="btn-primario" (click)="openTextAnswersModal(i, p.texto)">
+                      Ver respostas
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
           </table>
           <div class="mobile-perguntas">
-            <div class="mobile-pergunta-card" *ngFor="let p of report.perguntas">
+            <div class="mobile-pergunta-card" *ngFor="let p of report.perguntas; let i = index">
               <div class="mobile-pergunta-header">
                 <span class="mobile-pergunta-num">{{ p.index + 1 }}</span>
-                <span class="mobile-pergunta-media"
-                  >Média: <strong>{{ p.media !== null ? p.media : "-" }}</strong></span
+                <span class="mobile-pergunta-media" *ngIf="p.tipoResposta === 'quantitativa' && p.media !== null"
+                  >Média: <strong>{{ p.media }}</strong></span
                 >
               </div>
               <div class="mobile-pergunta-texto">{{ p.texto }}</div>
               <div
                 class="dist-bar mobile-bar"
-                *ngIf="p.distribuicao"
+                *ngIf="p.tipoResposta === 'quantitativa' && p.distribuicao"
                 [ngStyle]="{ background: gradientBackground(p.distribuicao, report?.tipo) }"
                 title="Distribuição das notas"
               >
@@ -198,12 +210,53 @@ import { MenuComponent } from "../menu/menu.component";
                   </div>
                 </ng-container>
               </div>
+              <div class="mobile-actions">
+                <button
+                  *ngIf="p.tipoResposta === 'qualitativa' && canShowPerguntas()"
+                  class="btn-primario"
+                  (click)="openTextAnswersModal(i, p.texto)"
+                >
+                  Ver respostas
+                </button>
+              </div>
             </div>
           </div>
         </ng-container>
         <div *ngIf="!report?.perguntas?.length">Sem perguntas.</div>
       </ng-container>
     </div>
+    <!-- Modal Respostas Textuais -->
+    <div class="modal-overlay" *ngIf="showTextModal" (click)="closeTextAnswersModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="md-header">
+          <h5>Respostas</h5>
+          <button class="btn-ghost" (click)="closeTextAnswersModal()">Fechar</button>
+        </div>
+        <div class="modal-question" *ngIf="textQuestionTitle">
+          <strong>Pergunta:</strong> {{ textQuestionTitle }}
+        </div>
+        <div class="mini-list" *ngIf="!loadingTextAnswers && textAnswers.length; else textLoading">
+          <div class="row" *ngFor="let r of textAnswers; let i = index">
+            <div class="idx-badge" [attr.aria-label]="'Resposta ' + (i + 1)">{{ i + 1 }}</div>
+            <div class="t">
+              <div class="txt">{{ r.texto }}</div>
+            </div>
+          </div>
+        </div>
+        <ng-template #textLoading>
+          <div class="mini-list">
+            <div class="placeholder" *ngIf="loadingTextAnswers">Carregando respostas...</div>
+            <div class="placeholder" *ngIf="!loadingTextAnswers && textMinThreshold && textTotal && textTotal < textMinThreshold">
+              Por privacidade, respostas só aparecem quando houver pelo menos {{ textMinThreshold }} respostas.
+            </div>
+            <div class="placeholder" *ngIf="!loadingTextAnswers && (!textTotal || textTotal === 0)">
+              Nenhuma resposta qualitativa disponível.
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
     <ng-template #loadingTpl>
       <app-menu></app-menu>
       <div class="relatorio-page">Carregando relatório...</div>
@@ -525,9 +578,37 @@ import { MenuComponent } from "../menu/menu.component";
         vertical-align: top;
         border-top: 1px solid #eef3f5;
       }
+      /* Centralizar verticalmente a pergunta */
+      .tbl-perguntas td.index-cell,
+      .tbl-perguntas td.question-cell {
+        vertical-align: middle;
+      }
+      /* Centralização vertical na célula de distribuição */
+      .tbl-perguntas td.dist-cell {
+        vertical-align: middle;
+        display: flex;
+        align-items: center; /* centra verticalmente conteúdo (barra ou botão) */
+        justify-content: flex-start; /* mantém barra alinhada à esquerda */
+      }
+      .dist-actions-center {
+        display: flex;
+        align-items: center;
+        justify-content: center; /* centraliza o botão dentro do bloco */
+        min-height: 24px;
+  /* usar a mesma largura do bloco de distribuição */
+  width: 360px;
+        max-width: 100%;
+  min-width: 160px;
+      }
+      /* (usando .btn-primario global) */
       .mobile-bar,
       .mobile-perguntas {
         display: none;
+      }
+      /* Botão um pouco mais estreito dentro do bloco de distribuição */
+      .dist-actions-center .btn-primario {
+        padding: 0.55rem 1rem;
+        border-radius: 0.7rem;
       }
       .mobile-perguntas {
         margin-top: 1.2rem;
@@ -561,11 +642,14 @@ import { MenuComponent } from "../menu/menu.component";
         font-size: 1em;
         color: #222;
       }
+      .mobile-actions {
+        margin-top: 0.5rem;
+      }
       /* Barra de distribuição mais "grossa" conforme solicitado */
       .dist-bar {
-        width: 420px;
+        width: 360px;
         max-width: 100%;
-        min-width: 180px;
+        min-width: 160px;
         height: 24px;
         border-radius: 0.45rem;
         overflow: hidden;
@@ -651,6 +735,96 @@ import { MenuComponent } from "../menu/menu.component";
       /* Breakpoint para telas ultra estreitas permanece, mas a grade já está oculta acima */
       @media (max-width: 360px) {
       }
+      /* Modal básico (reutilizando estilos existentes do cadastro) */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: saturate(120%) blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        z-index: 9999;
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-sizing: border-box;
+      }
+      .modal-card {
+        width: min(960px, calc(100vw - 2rem));
+        max-width: 960px;
+        max-height: calc(100vh - 1.5rem);
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #fff;
+        border: 1px solid #dfe9ee;
+        border-radius: 0.9rem;
+        box-shadow: 0 10px 24px #0000002a;
+        padding: 0.8rem 0.9rem;
+        display: flex;
+        flex-direction: column;
+      }
+      .md-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+      .mini-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        max-height: 70vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .modal-question {
+        font-size: 0.9rem;
+        color: #234;
+        margin: 0 0 0.5rem 0;
+      }
+      .mini-list .row {
+        background: #f9fbfc;
+        border: 1px solid #e7f1f5;
+        padding: 0.55rem 0.6rem;
+        border-radius: 0.6rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+      }
+      .idx-badge {
+        flex: 0 0 auto;
+        min-width: 26px;
+        height: 26px;
+        padding: 0 .5rem;
+        border-radius: 999px;
+        background: #e7f0ff;
+        color: #2b5fa8;
+        font-weight: 700;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        user-select: none;
+      }
+      .mini-list .txt {
+        font-size: 0.95rem;
+        color: #1f2d32;
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        line-height: 1.4;
+      }
+      .placeholder {
+        background: #f5f8fa;
+        border: 1px dashed #c7d5db;
+        color: #5a6b71;
+        font-size: 0.9rem;
+        padding: 0.85rem 0.9rem;
+        border-radius: 0.55rem;
+        text-align: center;
+      }
     `,
   ],
 })
@@ -661,6 +835,13 @@ export class RelatorioPesquisaComponent {
   departments: any[] = [];
   selectedDepartmentId: number | undefined;
   private searchId = 0;
+  // modal respostas qualitativas
+  showTextModal = false;
+  loadingTextAnswers = false;
+  textAnswers: { texto: string }[] = [];
+  textQuestionTitle = '';
+  textTotal = 0;
+  textMinThreshold = 0;
   constructor(
     private route: ActivatedRoute,
     private search: SearchService,
@@ -812,6 +993,31 @@ export class RelatorioPesquisaComponent {
     const total = this.report?.totalRespondentes || 0;
     if (total < 2) return false;
     return true;
+  }
+  openTextAnswersModal(index: number, questionText: string) {
+    this.showTextModal = true;
+    this.loadingTextAnswers = true;
+    this.textAnswers = [];
+    this.textQuestionTitle = questionText;
+    this.search
+      .getTextAnswers(this.searchId, index, this.selectedDepartmentId)
+      .subscribe({
+        next: (res: any) => {
+          this.textAnswers = res?.respostas || [];
+          this.textTotal = res?.total || 0;
+          this.textMinThreshold = res?.min || 0;
+          this.loadingTextAnswers = false;
+        },
+        error: () => {
+          this.textAnswers = [];
+          this.textTotal = 0;
+          this.textMinThreshold = 0;
+          this.loadingTextAnswers = false;
+        },
+      });
+  }
+  closeTextAnswersModal() {
+    this.showTextModal = false;
   }
   showSegPercent(_: any) {
     return false;

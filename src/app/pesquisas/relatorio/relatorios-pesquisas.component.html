@@ -1,0 +1,63 @@
+<app-menu></app-menu>
+<div class="relatorios-page">
+  <div class="header">
+    <h2>Resultados por pesquisa</h2>
+  </div>
+  <div *ngIf="erro" class="erro">{{ erro }}</div>
+  <div *ngIf="loading && !erro" class="loading">Carregando relatórios...</div>
+  <div class="lista-wrapper" *ngIf="!erro && !loading">
+    <table class="tbl" *ngIf="pesquisas.length; else vazioTpl">
+      <thead>
+        <tr>
+          <th style="width:40px;" class="center">#</th>
+          <th>Título</th>
+          <th style="width:110px;" class="center">Tipo</th>
+          <th style="width:110px;" class="center">Respondentes</th>
+          <th style="width:120px;" class="center">Data</th>
+          <th style="width:160px;" class="center">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of pesquisas; let i = index">
+          <td class="center">{{ (page - 1) * pageSize + i + 1 }}</td>
+          <td class="titulo-cell">{{ p.titulo }}</td>
+          <td class="center">
+            <span
+              class="pill"
+              [class.pulso]="p.tipo === 'pulso'"
+              [class.clima]="p.tipo === 'clima'"
+              >{{ p.tipo }}</span
+            >
+          </td>
+          <td class="center resp-cell">{{ p.respondentes ?? '-' }}</td>
+          <td class="center data-cell">{{ formatDate(p.createdAt) }}</td>
+          <td class="center">
+            <a class="btn-primario" [routerLink]="['/relatorio-pesquisa', p.id]"
+              >Ver Relatório</a
+            >
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #vazioTpl>
+      <div class="vazio">
+        <svg class="vazio-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" />
+          <path
+            d="M7 9h10M7 13h7M7 17h10"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span>Nenhuma pesquisa encontrada.</span>
+      </div>
+    </ng-template>
+    <div class="paginacao" *ngIf="totalPages > 1">
+      <button (click)="mudarPagina(-1)" [disabled]="page === 1">«</button>
+      <span>Página {{ page }} de {{ totalPages }}</span>
+      <button (click)="mudarPagina(1)" [disabled]="page === totalPages">»</button>
+    </div>
+  </div>
+  
+</div>

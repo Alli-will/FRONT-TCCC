@@ -69,7 +69,15 @@
           </ng-template>
         </div>
         <div class="colab-texto">
-          <strong class="colab-nome">{{ c.nomeCompleto }}</strong>
+          <div class="linha-top">
+            <strong class="colab-nome">{{ c.nomeCompleto }}</strong>
+            <span
+              *ngIf="isAdmin"
+              class="role-pill"
+              [class.admin]="c.role==='admin'"
+              [class.employee]="c.role==='employee'"
+            >{{ c.role === 'admin' ? 'Administrador' : 'Funcionário' }}</span>
+          </div>
           <span
             *ngIf="editandoId !== c.id"
             class="colab-depto"
@@ -111,28 +119,21 @@
             </button>
           </div>
           <div class="colab-actions" *ngIf="isAdmin && editandoId !== c.id">
-            <button type="button" class="btn-alterar-depto" (click)="iniciarEdicao(c)">
-              Alterar departamento
-            </button>
-            <button
-              type="button"
-              class="btn-ghost"
-              *ngIf="c.ativo !== false"
-              (click)="openConfirmInactivate(c)"
-            >
-              Inativar
-            </button>
-            <button
-              type="button"
-              class="btn-primario"
-              *ngIf="c.ativo === false"
-              (click)="openConfirmActivate(c)"
-            >
-              Ativar
-            </button>
-            <button type="button" class="btn-primario danger" (click)="openConfirmDelete(c)">
-              Excluir
-            </button>
+            <div class="actions-menu-wrapper">
+              <button type="button" class="btn-primario btn-primario--sm actions-trigger" (click)="toggleMenu(c, $event)">
+                Ações ▾
+              </button>
+              <div class="actions-pop" *ngIf="c._menuOpen">
+                <button type="button" class="item" (click)="iniciarEdicao(c)">Alterar departamento</button>
+                <button type="button" class="item" (click)="alternarRole(c)" [disabled]="c._roleSaving">
+                  {{ c._roleSaving ? 'Salvando…' : alternarRoleLabel(c) }}
+                </button>
+                <button type="button" class="item" *ngIf="c.ativo !== false" (click)="openConfirmInactivate(c)">Inativar</button>
+                <button type="button" class="item" *ngIf="c.ativo === false" (click)="openConfirmActivate(c)">Ativar</button>
+                <hr />
+                <button type="button" class="item danger" (click)="openConfirmDelete(c)">Excluir</button>
+              </div>
+            </div>
           </div>
         </div>
       </li>

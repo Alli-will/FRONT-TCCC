@@ -17,7 +17,6 @@ export class PerguntaNovaComponent {
   descricaoBusca = "";
   modalidade: "pulso" | "clima" = "pulso";
   tipoResposta: "qualitativa" | "quantitativa" = "quantitativa";
-  // Banner de feedback (igual padrão do login)
   mensagem: string | null = null;
   bannerTipo: "sucesso" | "erro" = "sucesso";
   private bannerTimer: any = null;

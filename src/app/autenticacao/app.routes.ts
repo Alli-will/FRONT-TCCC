@@ -2,20 +2,14 @@ import { Routes } from "@angular/router";
 import { inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { AuthService } from "../services/auth.service";
-import { DiarioComponent } from "../diario/diario.component";
 import { BlockSupportDashboardGuard } from "./block-support-dashboard.guard";
 import { BlockSupportDiaryGuard } from "./block-support-diary.guard";
 import { LoginComponent } from "../login/login.component";
 import { CadastroComponent } from "../Cadastro/cadastro.component";
-import { HistoricoComponent } from "../diario/consulta/historico.component";
 import { AuthGuard } from "./auth.guard";
 import { EmBreveGuard } from "./em-breve.guard";
-import { ConteudoEducacionalComponent } from "../conteudo-educacional/conteudo-educacional.component";
 import { DashboardComponent } from "../dashboard/dashboard.component";
 import { UsuariosComponent } from "../usuarios/usuarios.component";
-import { DiaryEntryGuard } from "../services/diary-entry.guard";
-import { DiaryExitGuard } from "../services/diary-exit.guard";
-import { DiarioResolver } from "../diario/diario.resolver";
 import { DashboardResolver } from "../dashboard/dashboard.resolver";
 import { AdminGuard } from "./admin.guard";
 import { CanActivateFn } from "@angular/router";
@@ -60,18 +54,6 @@ export const routes: Routes = [
     pathMatch: "full",
   },
   {
-    path: "diario",
-    component: DiarioComponent,
-    canActivate: [AuthGuard, BlockSupportDiaryGuard],
-    canDeactivate: [DiaryExitGuard],
-    resolve: { preload: DiarioResolver },
-  },
-  {
-    path: "conteudo-educacional",
-    component: ConteudoEducacionalComponent,
-    canActivate: [AuthGuard, DiaryEntryGuard],
-  },
-  {
     path: "empresa",
     canActivate: [AuthGuard, empresaGuard],
     loadComponent: () => import("../empresa/empresa.component").then((m) => m.EmpresaComponent),
@@ -108,11 +90,6 @@ export const routes: Routes = [
       import("../login/definir-nova-senha.component").then((m) => m.DefinirNovaSenhaComponent),
   },
   { path: "cadastro", component: CadastroComponent },
-  {
-    path: "historico",
-    component: HistoricoComponent,
-    canActivate: [AuthGuard, DiaryEntryGuard],
-  },
   { path: "usuarios", component: UsuariosComponent, canActivate: [AuthGuard, usuariosGuard] },
   {
     path: "perfil",
@@ -131,7 +108,7 @@ export const routes: Routes = [
   {
     path: "dashboard",
     component: DashboardComponent,
-    canActivate: [AuthGuard, DiaryEntryGuard, BlockSupportDashboardGuard],
+    canActivate: [AuthGuard, BlockSupportDashboardGuard],
     resolve: { preload: DashboardResolver },
   },
 
@@ -153,7 +130,7 @@ export const routes: Routes = [
     path: "relatorios-pesquisas",
     canActivate: [AuthGuard, AdminGuard],
     loadComponent: () =>
-      import("../pesquisas/relatorios-pesquisas.component").then(
+      import("../pesquisas/relatorio/relatorios-pesquisas.component").then(
         (m) => m.RelatoriosPesquisasComponent
       ),
   },
@@ -187,7 +164,7 @@ export const routes: Routes = [
     path: "relatorio-pesquisa/:id",
     canActivate: [AuthGuard, AdminGuard],
     loadComponent: () =>
-      import("../pesquisas/relatorio-pesquisa.component").then((m) => m.RelatorioPesquisaComponent),
+      import("../pesquisas/relatorio/relatorio-pesquisa.component").then((m) => m.RelatorioPesquisaComponent),
   },
   { path: "**", redirectTo: "pesquisas" },
 ];

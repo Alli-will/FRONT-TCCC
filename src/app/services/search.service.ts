@@ -60,4 +60,14 @@ export class SearchService {
       this.http.get(`${this.remoteBase}/searches/${id}/report${q}`)
     );
   }
+
+  getTextAnswers(id: number, questionIndex: number, departmentId?: number): Observable<any> {
+    const qParams = new URLSearchParams();
+    qParams.set("questionIndex", String(questionIndex));
+    if (departmentId) qParams.set("departmentId", String(departmentId));
+    const q = `?${qParams.toString()}`;
+    return this.withFallback(this.http.get(`${this.apiUrl}/${id}/text-answers${q}`), () =>
+      this.http.get(`${this.remoteBase}/searches/${id}/text-answers${q}`)
+    );
+  }
 }
