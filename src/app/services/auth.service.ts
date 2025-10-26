@@ -43,6 +43,14 @@ export class AuthService {
     if (typeof window !== "undefined") {
       localStorage.removeItem("token");
       sessionStorage.removeItem("token");
+      // Limpa qualquer cache relacionado ao avatar
+      try {
+        localStorage.removeItem("avatarUpdatedTs");
+      } catch {}
+      // Notifica UI para limpar avatar em componentes ativos
+      try {
+        window.dispatchEvent(new CustomEvent("avatar-updated", { detail: { ts: Date.now() } }));
+      } catch {}
     }
     this.currentUserSubject.next(null);
     window.location.reload();

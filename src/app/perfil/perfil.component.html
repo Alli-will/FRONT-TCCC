@@ -91,7 +91,7 @@
       </button>
     </div>
   </form>
-  <div *ngIf="sucesso" class="sucesso">Alterações salvas.</div>
+  <div *ngIf="bannerVisible" class="sucesso">{{ bannerMessage }}</div>
   <div *ngIf="erro" class="erro">{{ erro }}</div>
 </div>
 <div *ngIf="carregando"><p>Carregando informações do perfil...</p></div>

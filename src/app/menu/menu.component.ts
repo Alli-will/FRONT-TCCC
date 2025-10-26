@@ -55,20 +55,51 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.refreshAvatar();
     });
 
+    // Atualiza o nome exibido quando o perfil for salvo (sem depender do token mudar)
+    const profileHandler = (e: any) => {
+      const dnFirst = (e?.detail?.firstName || e?.detail?.first_Name || "").toString().trim();
+      const dnLast = (e?.detail?.lastName || e?.detail?.last_Name || "").toString().trim();
+      // Exibir exatamente o conteúdo do campo Nome (first_Name) quando houver; se vazio, cair para Sobrenome e depois e-mail
+      const display = dnFirst || dnLast || (this.userEmail ? this.userEmail.split("@")[0] : null);
+      this.userName = display;
+    };
+    window.addEventListener("profile-updated", profileHandler);
+    (this as any)._profileHandler = profileHandler;
+
     this.authService.currentUser.subscribe((token) => {
       this.isLoggedIn = !!token;
       if (token) {
+        // Token mudou (login ou troca de usuário): zera cache do avatar para evitar reuso indevido
+        if (this.objectUrl) {
+          URL.revokeObjectURL(this.objectUrl);
+          this.objectUrl = undefined;
+        }
+        this.avatarUrl = null;
+        this.avatarEtag = null;
+        this.avatarTs = Date.now();
         const payload = this.authService.getUserInfoFromToken();
-        // DEBUG TEMP: remover depois
-        console.debug("[Menu] payload role:", payload?.role);
+  // papel do usuário (admin/employee/support)
         this.isAdmin = payload?.role === "admin";
         this.isSupport = payload?.role === "support";
         this.isEmployee = payload?.role === "employee";
-        this.userName =
-          payload?.first_Name && payload?.last_Name
-            ? `${payload.first_Name} ${payload.last_Name}`
-            : payload?.first_Name || payload?.last_Name || payload?.email || null;
+  // Exibir exatamente o campo first_Name (se presente), senão last_Name, senão parte local do e-mail
+  const pf = (payload?.first_Name || payload?.firstName || "").toString().trim();
+  const pl = (payload?.last_Name || payload?.lastName || "").toString().trim();
+  this.userName = pf || pl || (payload?.email ? (payload.email.split("@")[0] || null) : null);
         this.userEmail = payload?.email || null;
+        // Após recarregar a página, o token pode estar desatualizado em relação ao banco.
+        // Busca o usuário atual no backend e sobrescreve o nome exibido com o first_Name real.
+        this.userService.getCurrentUser().subscribe({
+          next: (u: any) => {
+            const first = (u?.first_Name || u?.firstName || "").toString().trim();
+            const last = (u?.last_Name || u?.lastName || "").toString().trim();
+            // Regra: exibir exatamente o campo de Nome (first)
+            this.userName = first || last || (this.userEmail ? this.userEmail.split("@")[0] : null);
+          },
+          error: () => {
+            // mantém valor derivado do token em caso de falha
+          },
+        });
         this.refreshAvatar();
       } else {
         this.userName = null;
@@ -77,6 +108,12 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.isSupport = false;
         this.isEmployee = false;
         this.avatarUrl = null;
+        // Também limpar ETag e revogar URL para garantir estado limpo
+        if (this.objectUrl) {
+          URL.revokeObjectURL(this.objectUrl);
+          this.objectUrl = undefined;
+        }
+        this.avatarEtag = null;
       }
     });
 
@@ -98,6 +135,10 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (h) {
       window.removeEventListener("body-modal-open", h.openHandler);
       window.removeEventListener("body-modal-close", h.closeHandler);
+    }
+    const ph = (this as any)._profileHandler;
+    if (ph) {
+      window.removeEventListener("profile-updated", ph);
     }
   }
 
@@ -158,7 +199,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         // Buscar blob binário; só enviar If-None-Match se já tivermos etag anterior
         const headers: any = { Authorization: `Bearer ${token}` };
         if (this.avatarEtag) headers["If-None-Match"] = '"' + this.avatarEtag + '"';
-        return fetch(`${apiBase}/user/me/avatar`, { headers })
+        return fetch(`${apiBase}/user/me/avatar?ts=${this.avatarTs}`, { headers, cache: 'no-store' as RequestCache })
           .then(async (resp) => {
             if (resp.status === 304 && this.objectUrl) {
               this.avatarUrl = this.objectUrl;
@@ -166,7 +207,7 @@ export class MenuComponent implements OnInit, OnDestroy {
               return null;
             }
             if (!resp.ok) {
-              const r2 = await fetch(`${remoteBase}/user/me/avatar`, { headers });
+              const r2 = await fetch(`${remoteBase}/user/me/avatar?ts=${this.avatarTs}`, { headers, cache: 'no-store' as RequestCache });
               if (!r2.ok) throw new Error("avatar-fetch-failed");
               apiBase = remoteBase;
               this.avatarEtag = data.etag || null;

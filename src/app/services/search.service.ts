@@ -22,9 +22,19 @@ export class SearchService {
     );
   }
 
-  createSearch(data: { titulo: string; tipo: string; perguntas?: any[] }): Observable<any> {
+  createSearch(data: { titulo: string; tipo: string; perguntas?: any[]; departmentId?: number | null; departmentIds?: number[] }): Observable<any> {
     return this.withFallback(this.http.post(this.apiUrl, data), () =>
       this.http.post(`${this.remoteBase}/searches`, data)
+    );
+  }
+  updateSearch(id: number, data: { titulo?: string; tipo?: string; perguntas?: any[]; departmentId?: number | null; departmentIds?: number[] }): Observable<any> {
+    return this.withFallback(this.http.patch(`${this.apiUrl}/${id}`, data), () =>
+      this.http.patch(`${this.remoteBase}/searches/${id}`, data)
+    );
+  }
+  deleteSearch(id: number): Observable<any> {
+    return this.withFallback(this.http.delete(`${this.apiUrl}/${id}`), () =>
+      this.http.delete(`${this.remoteBase}/searches/${id}`)
     );
   }
 

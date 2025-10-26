@@ -5,6 +5,7 @@ import { UserService } from "../services/user.service";
 import { AuthService } from "../services/auth.service";
 import { MenuComponent } from "../menu/menu.component";
 import { LoadingService } from "../services/loading.service";
+ 
 
 @Component({
   selector: "app-perfil",
@@ -37,6 +38,12 @@ export class PerfilComponent implements OnInit {
   private avatarObjectUrl?: string;
   private avatarEtag: string | null = null;
 
+  // Banner temporário (sucesso/erro)
+  bannerVisible = false;
+  bannerMessage = "";
+  bannerType: "success" | "error" = "success";
+  private bannerTimeout?: any;
+
   private isValidBase64(s: string): boolean {
     if (!s || typeof s !== "string") return false;
     const trimmed = s.trim();
@@ -52,6 +59,10 @@ export class PerfilComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Ao entrar no perfil, limpar cache local de avatar para garantir validação contra o backend
+    this.clearAvatarUrl();
+    this.avatarEtag = null;
+    this.timestamp = Date.now();
     this.userService.getCurrentUser().subscribe({
       next: (user: any) => {
         this.user.firstName = user.first_Name || user.firstName || "";
@@ -84,15 +95,61 @@ export class PerfilComponent implements OnInit {
     if (this.user.password) userPayload.password = this.user.password;
     this.userService.updateCurrentUser(userPayload).subscribe({
       next: () => {
-        this.sucesso = true;
         this.salvando = false;
         this.user.password = "";
+        // Sai do modo de edição para evitar ficar "preso" após salvar
+        this.editMode = false;
+        // Banner de sucesso por 1.2s
+        this.showBanner("Alterações salvas.", "success");
+        // Notifica app (menu, etc.) para atualizar o nome exibido sem precisar relogar
+        try {
+          window.dispatchEvent(
+            new CustomEvent("profile-updated", {
+              detail: {
+                firstName: this.user.firstName,
+                lastName: this.user.lastName,
+                email: this.user.email,
+              },
+            })
+          );
+        } catch {}
       },
       error: (err) => {
-        this.erro = err.error?.message || "Erro ao atualizar dados.";
+        // Mantém a mensagem de erro persistente para o usuário saber o que falta
+        // Tenta extrair mensagens de validação do backend (array ou string aninhada em err.error.error.message)
+        const body = err?.error;
+        let msg: string = '';
+        const nested = body?.error;
+        const nestedMsg = nested?.message;
+        if (Array.isArray(nestedMsg) && nestedMsg.length) {
+          msg = nestedMsg.join('\n');
+        } else if (typeof nestedMsg === 'string' && nestedMsg.trim()) {
+          msg = nestedMsg;
+        } else if (typeof body?.message === 'string' && body.message.trim()) {
+          msg = body.message;
+        } else if (Array.isArray(body?.message) && body.message.length) {
+          msg = body.message.join('\n');
+        }
+        this.erro = msg || "Erro ao atualizar dados.";
+        // Garante que nenhum banner residual fique visível
+        this.bannerVisible = false;
         this.salvando = false;
       },
     });
+  }
+
+  private showBanner(message: string, type: "success" | "error") {
+    // limpa timeout anterior
+    if (this.bannerTimeout) {
+      try { clearTimeout(this.bannerTimeout); } catch {}
+      this.bannerTimeout = undefined;
+    }
+    this.bannerMessage = message;
+    this.bannerType = type;
+    this.bannerVisible = true;
+    this.bannerTimeout = setTimeout(() => {
+      this.bannerVisible = false;
+    }, 1200);
   }
 
   habilitarEdicao() {
@@ -237,7 +294,7 @@ export class PerfilComponent implements OnInit {
         }
         const headers: any = { Authorization: `Bearer ${token}` };
         if (this.avatarEtag) headers["If-None-Match"] = '"' + this.avatarEtag + '"';
-        return fetch(`${apiBase}/user/me/avatar`, { headers })
+        return fetch(`${apiBase}/user/me/avatar?ts=${this.timestamp}`, { headers, cache: 'no-store' as RequestCache })
           .then((resp) => {
             if (resp.status === 304 && this.avatarObjectUrl) {
               this.avatarSrc = this.avatarObjectUrl;

@@ -259,6 +259,30 @@ form {
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 0.6rem;
   align-items: flex-start;
+  position: relative;
+}
+.qs-list li.is-dragging {
+  opacity: 0.6;
+}
+.qs-list li.drag-over {
+  border-color: #38b6a5;
+  box-shadow: 0 0 0 2px rgba(56, 182, 165, 0.12) inset;
+}
+.qs-list li.drag-over-before::before,
+.qs-list li.drag-over-after::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 3px;
+  background: #38b6a5;
+  border-radius: 2px;
+}
+.qs-list li.drag-over-before::before {
+  top: 0;
+}
+.qs-list li.drag-over-after::after {
+  bottom: 0;
 }
 
 .qs-list .idx {
@@ -279,6 +303,26 @@ form {
   gap: 0.45rem;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+.qs-list .drag-handle {
+  cursor: grab;
+  user-select: none;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: #5a6b71;
+  padding: 0 0.3rem;
+}
+.qs-list [draggable="true"] .drag-handle:hover {
+  color: #276b7a;
+}
+.qs-list .meta .reorder button{
+  background:#fff;
+  border:1px solid #dfe9ee;
+  color:#2b3e43;
+  padding:0.2rem 0.45rem;
+  border-radius:0.45rem;
+  font-size:0.7rem;
+  cursor:pointer;
 }
 
 .qs-list .rem {
@@ -641,6 +685,122 @@ form {
   }
 }
 
+/* ====== Alcance (Todos os setores | Apenas um setor) ====== */
+.field .inline {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.field .inline .switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.55rem;
+  background: #f5faf9;
+  border: 1px solid #d5e4ec;
+  border-radius: 0.7rem;
+}
+.field .inline .switch {
+  position: relative;
+}
+.field .inline .switch input[type="radio"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.field .inline .switch span,
+.field .inline .switch label span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: #276b7a;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+/* Bolinha custom*/
+.field .inline .switch span::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #a9d6d0;
+  box-shadow: inset 0 0 0 3px #eef7f5;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.field .inline .switch:hover span::before {
+  box-shadow: 0 0 0 3px rgba(56, 182, 165, 0.12), inset 0 0 0 3px #eef7f5;
+}
+.field .inline .switch input[type="radio"]:focus-visible + span::before {
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.18), inset 0 0 0 3px #eef7f5;
+}
+.field .inline .switch input[type="radio"]:checked + span::before {
+  border-color: #38b6a5;
+  background: radial-gradient(circle at center, #38b6a5 0 55%, transparent 56% 100%);
+}
+.field .inline .switch input[type="radio"][disabled] + span {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+.field .inline select {
+  border: 1px solid #d5e4ec;
+  border-radius: 0.8rem;
+  background: #f5faf9; 
+  color: #276b7a; 
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem; 
+  padding: 0.35rem 2.0rem 0.35rem 0.8rem;
+  height: 36px; 
+  line-height: 1;
+  vertical-align: middle;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transition: border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2338b6a5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 16px 16px;
+}
+.field .inline select:hover {
+  background: #eef7f5;
+  border-color: #cfe6e2;
+}
+.field .inline select:focus {
+  outline: none;
+  border-color: #38b6a5;
+  background: #fff;
+  color: #1f6f79;
+  box-shadow: 0 0 0 3px rgba(56, 182, 165, 0.15);
+}
+.field .inline select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.field .inline select option[disabled],
+.field .inline select option[value=""] {
+  color: #6b7c84;
+}
+
+@media (max-width: 700px) {
+  .field .inline select {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+}
+
 .qs-list .txt,
 .mini-list .txt {
   word-break: break-word;
@@ -712,4 +872,48 @@ form {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ====== Multi-seleção de departamentos ====== */
+.multi-list {
+  margin-top: 0.6rem;
+  background: #f9fbfc;
+  border: 1px solid #dfe9ee;
+  border-radius: 0.8rem;
+  padding: 0.6rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.4rem 0.6rem;
+}
+.multi-list .check-row {
+  background: #ffffff;
+  border: 1px solid #e8f1f4;
+  border-radius: 0.55rem;
+  padding: 0.45rem 0.55rem;
+  display: flex;
+  align-items: center;
+}
+.multi-list .check-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  font-size: 0.88rem;
+  color: #284a52;
+  cursor: pointer;
+}
+.multi-list .check-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #38b6a5;
+  cursor: pointer;
+}
+.multi-list .check-row:hover {
+  border-color: #cfe3e9;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+.multi-list .hint {
+  grid-column: 1 / -1;
+  margin-top: 0.25rem;
 }
