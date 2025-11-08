@@ -5,7 +5,6 @@ import { UserService } from "../services/user.service";
 import { AuthService } from "../services/auth.service";
 import { MenuComponent } from "../menu/menu.component";
 import { LoadingService } from "../services/loading.service";
- 
 
 @Component({
   selector: "app-perfil",
@@ -118,17 +117,17 @@ export class PerfilComponent implements OnInit {
         // Mantém a mensagem de erro persistente para o usuário saber o que falta
         // Tenta extrair mensagens de validação do backend (array ou string aninhada em err.error.error.message)
         const body = err?.error;
-        let msg: string = '';
+        let msg: string = "";
         const nested = body?.error;
         const nestedMsg = nested?.message;
         if (Array.isArray(nestedMsg) && nestedMsg.length) {
-          msg = nestedMsg.join('\n');
-        } else if (typeof nestedMsg === 'string' && nestedMsg.trim()) {
+          msg = nestedMsg.join("\n");
+        } else if (typeof nestedMsg === "string" && nestedMsg.trim()) {
           msg = nestedMsg;
-        } else if (typeof body?.message === 'string' && body.message.trim()) {
+        } else if (typeof body?.message === "string" && body.message.trim()) {
           msg = body.message;
         } else if (Array.isArray(body?.message) && body.message.length) {
-          msg = body.message.join('\n');
+          msg = body.message.join("\n");
         }
         this.erro = msg || "Erro ao atualizar dados.";
         // Garante que nenhum banner residual fique visível
@@ -141,7 +140,9 @@ export class PerfilComponent implements OnInit {
   private showBanner(message: string, type: "success" | "error") {
     // limpa timeout anterior
     if (this.bannerTimeout) {
-      try { clearTimeout(this.bannerTimeout); } catch {}
+      try {
+        clearTimeout(this.bannerTimeout);
+      } catch {}
       this.bannerTimeout = undefined;
     }
     this.bannerMessage = message;
@@ -294,7 +295,10 @@ export class PerfilComponent implements OnInit {
         }
         const headers: any = { Authorization: `Bearer ${token}` };
         if (this.avatarEtag) headers["If-None-Match"] = '"' + this.avatarEtag + '"';
-        return fetch(`${apiBase}/user/me/avatar?ts=${this.timestamp}`, { headers, cache: 'no-store' as RequestCache })
+        return fetch(`${apiBase}/user/me/avatar?ts=${this.timestamp}`, {
+          headers,
+          cache: "no-store" as RequestCache,
+        })
           .then((resp) => {
             if (resp.status === 304 && this.avatarObjectUrl) {
               this.avatarSrc = this.avatarObjectUrl;

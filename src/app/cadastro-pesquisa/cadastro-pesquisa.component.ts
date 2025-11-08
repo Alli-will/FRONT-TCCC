@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Output, OnDestroy, Input, OnChanges, SimpleChanges } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Output,
+  OnDestroy,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { SearchService } from "../services/search.service";
@@ -197,7 +205,10 @@ export class CadastroPesquisaComponent implements OnDestroy, OnChanges {
     this.sucesso = false;
     this.erro = "";
     this.carregando = true;
-    if (this.alcance === "setores" && (!Array.isArray(this.selectedDepartmentIds) || this.selectedDepartmentIds.length === 0)) {
+    if (
+      this.alcance === "setores" &&
+      (!Array.isArray(this.selectedDepartmentIds) || this.selectedDepartmentIds.length === 0)
+    ) {
       this.carregando = false;
       // Exibe como banner temporário (2.5s) em vez de erro persistente
       this.showBanner("Selecione pelo menos um departamento para direcionar a pesquisa.", "erro");
@@ -210,33 +221,34 @@ export class CadastroPesquisaComponent implements OnDestroy, OnChanges {
       opcoes: Array.isArray(p.opcoes) ? p.opcoes : [],
       obrigatoria: !!p.obrigatoria,
     }));
-  const payload: any = { titulo: this.titulo.trim(), tipo: this.tipo, perguntas };
-  // Novo: enviar departmentIds (múltiplos) ou limpar quando 'todos'
-  payload.departmentIds = this.alcance === "setores" ? [...this.selectedDepartmentIds] : [];
-  // Compatibilidade com backend legado: garantir departmentId nulo quando 'todos'
-  payload.departmentId = this.alcance === "setores" ? null : null;
-    const req$ = this.emEdicao && this.editId
-      ? this.searchService.updateSearch(this.editId, payload)
-      : this.searchService.createSearch(payload);
-    req$
-      .subscribe({
-        next: () => {
-          this.sucesso = true;
-          const tipo = this.emEdicao ? "alterada" : "cadastrada";
-          this.criado.emit({ tipo });
-          this.titulo = "";
-          this.tipo = "pulso";
-          this.perguntasSelecionadas = [...this.perguntasPadrao];
-          this.alcance = "todos";
-          this.selectedDepartmentIds = [];
-          this.emEdicao = false;
-          this.editId = null;
-          this.rebuildCaches();
-          setTimeout(() => (this.sucesso = false), 3000);
-        },
-        error: () => (this.erro = this.emEdicao ? "Erro ao atualizar pesquisa." : "Erro ao cadastrar pesquisa."),
-        complete: () => (this.carregando = false),
-      });
+    const payload: any = { titulo: this.titulo.trim(), tipo: this.tipo, perguntas };
+    // Novo: enviar departmentIds (múltiplos) ou limpar quando 'todos'
+    payload.departmentIds = this.alcance === "setores" ? [...this.selectedDepartmentIds] : [];
+    // Compatibilidade com backend legado: garantir departmentId nulo quando 'todos'
+    payload.departmentId = this.alcance === "setores" ? null : null;
+    const req$ =
+      this.emEdicao && this.editId
+        ? this.searchService.updateSearch(this.editId, payload)
+        : this.searchService.createSearch(payload);
+    req$.subscribe({
+      next: () => {
+        this.sucesso = true;
+        const tipo = this.emEdicao ? "alterada" : "cadastrada";
+        this.criado.emit({ tipo });
+        this.titulo = "";
+        this.tipo = "pulso";
+        this.perguntasSelecionadas = [...this.perguntasPadrao];
+        this.alcance = "todos";
+        this.selectedDepartmentIds = [];
+        this.emEdicao = false;
+        this.editId = null;
+        this.rebuildCaches();
+        setTimeout(() => (this.sucesso = false), 3000);
+      },
+      error: () =>
+        (this.erro = this.emEdicao ? "Erro ao atualizar pesquisa." : "Erro ao cadastrar pesquisa."),
+      complete: () => (this.carregando = false),
+    });
   }
 
   removerPergunta(idx: number) {
@@ -306,7 +318,8 @@ export class CadastroPesquisaComponent implements OnDestroy, OnChanges {
     let desiredTo = base + (before ? 0 : 1);
     // Clamp aos limites
     if (desiredTo < 0) desiredTo = 0;
-    if (desiredTo > this.perguntasSelecionadas.length) desiredTo = this.perguntasSelecionadas.length;
+    if (desiredTo > this.perguntasSelecionadas.length)
+      desiredTo = this.perguntasSelecionadas.length;
     if (desiredTo < 0 || desiredTo > this.perguntasSelecionadas.length) {
       this.onDragEnd(ev);
       return;
@@ -481,7 +494,7 @@ export class CadastroPesquisaComponent implements OnDestroy, OnChanges {
         this.selectedDepartmentIds = [...this.selectedDepartmentIds, id];
       }
     } else {
-      this.selectedDepartmentIds = this.selectedDepartmentIds.filter(x => x !== id);
+      this.selectedDepartmentIds = this.selectedDepartmentIds.filter((x) => x !== id);
     }
   }
 }

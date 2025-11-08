@@ -100,10 +100,11 @@
 
 .dashboard-main {
   flex: 1;
-  padding: 2.5rem 2rem 2rem 2rem;
-  max-width: 850px;
+  padding: 3.2rem 2.4rem 2.8rem 2.4rem; /* aumenta altura (padding vertical) */
+  max-width: 850px; /* revertendo largura anterior */
   width: 100%;
   min-width: 0;
+  transition: max-width 0.3s ease;
 }
 
 .dashboard-header-row {

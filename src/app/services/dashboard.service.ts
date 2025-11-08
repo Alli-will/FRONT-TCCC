@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable, catchError, throwError } from "rxjs";
 import { resolveApiBase } from "./api-base";
 
@@ -21,9 +21,13 @@ export class DashboardService {
     );
   }
 
-  getMetrics(): Observable<any> {
-    return this.withFallback(this.http.get<any>(this.apiUrl), () =>
-      this.http.get<any>(`${this.remoteBase}/dashboard/metrics`)
+  getMetrics(params?: { days?: number; since?: string; until?: string }): Observable<any> {
+    let p = new HttpParams();
+    if (params?.days) p = p.set("days", String(params.days));
+    if (params?.since) p = p.set("since", params.since);
+    if (params?.until) p = p.set("until", params.until);
+    return this.withFallback(this.http.get<any>(this.apiUrl, { params: p }), () =>
+      this.http.get<any>(`${this.remoteBase}/dashboard/metrics`, { params: p })
     );
   }
 
@@ -32,6 +36,18 @@ export class DashboardService {
       this.http.get<{ ess: number; valores: number[] }>(`${this.primaryBase}/dashboard/ess-geral`),
       () =>
         this.http.get<{ ess: number; valores: number[] }>(`${this.remoteBase}/dashboard/ess-geral`)
+    );
+  }
+
+  getClimaMetrics(params?: { days?: number; since?: string; until?: string }) {
+    let p = new HttpParams();
+    if (params?.days) p = p.set("days", String(params.days));
+    if (params?.since) p = p.set("since", params.since);
+    if (params?.until) p = p.set("until", params.until);
+    const local = `${this.primaryBase}/dashboard/clima/metrics`;
+    const remote = `${this.remoteBase}/dashboard/clima/metrics`;
+    return this.withFallback(this.http.get<any>(local, { params: p }), () =>
+      this.http.get<any>(remote, { params: p })
     );
   }
 

@@ -36,10 +36,19 @@
     <!-- <li *ngIf="!isSupport"><a routerLink="/diario"><span class="sidebar-menu-icon material-icons">menu_book</span> Diário</a></li> -->
     <!-- <li *ngIf="!isSupport"><a routerLink="/conteudo-educacional"><span class="sidebar-menu-icon material-icons">layers</span> Conteúdos</a></li> -->
     <!-- Nova ordem: Dashboard, Pesquisas, Usuários, Empresa -->
-    <li *ngIf="isAdmin">
-      <a routerLink="/dashboard"
-        ><span class="sidebar-menu-icon material-icons">bar_chart</span> Dashboard</a
-      >
+    <li *ngIf="isAdmin" class="has-submenu">
+      <a href="#" (click)="$event.preventDefault()">
+        <span class="sidebar-menu-icon material-icons">bar_chart</span>
+        Dashboard
+      </a>
+      <ul class="submenu">
+        <li>
+          <a routerLink="/dashboard"> Dashboard de Pulso </a>
+        </li>
+        <li>
+          <a routerLink="/dashboard-clima"> Dashboard de Clima </a>
+        </li>
+      </ul>
     </li>
     <li *ngIf="!isSupport">
       <a routerLink="/pesquisas"
@@ -56,13 +65,11 @@
         ><span class="sidebar-menu-icon material-icons">help</span> Perguntas</a
       >
     </li>
-    <!-- Usuários agora visível somente para admin -->
     <li *ngIf="isAdmin">
       <a routerLink="/usuarios"
         ><span class="sidebar-menu-icon material-icons">group</span> Usuários</a
       >
     </li>
-    <!-- Empresa oculto para employee -->
     <li *ngIf="isAdmin || isSupport">
       <a routerLink="/empresa"
         ><span class="sidebar-menu-icon material-icons">business</span> Empresa</a

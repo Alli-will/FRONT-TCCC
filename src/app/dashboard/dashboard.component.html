@@ -3,7 +3,32 @@
   <div class="dashboard-main">
     <div class="content-grid">
       <div class="panel-card">
-        <h2 class="gradient-title" style="margin: 0 0 12px">Dashboard de Engajamento (eNPS)</h2>
+        <div
+          class="panel-title-row"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 0 0 12px;
+          "
+        >
+          <h2 class="gradient-title" style="margin: 0">Dashboard de Engajamento (eNPS)</h2>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <label for="periodo" style="font-size: 0.9rem; color: #555">Período:</label>
+            <select
+              id="periodo"
+              [(ngModel)]="selectedPeriod"
+              (change)="onPeriodChange()"
+              style="padding: 6px 8px; border-radius: 6px; border: 1px solid #ddd"
+            >
+              <option value="all">Todos</option>
+              <option value="30">Últimos 30 dias</option>
+              <option value="90">Últimos 90 dias</option>
+              <option value="180">Últimos 180 dias</option>
+            </select>
+          </div>
+        </div>
         <div class="dashboard-header-row stretch-ess" style="align-items: flex-start; gap: 32px">
           <!-- eNPS Geral -->
           <div
@@ -18,10 +43,18 @@
           >
             <div class="score-title" style="text-align: left; width: 100%">
               <h2 class="gradient-title" style="margin: 0; font-size: 1.35rem">
-                eNPS da Última Pesquisa de Pulso
+                <ng-container *ngIf="pulsoAtual && pulsoAtual.id === 0; else tituloUltima">
+                  eNPS Agregado (todas as pesquisas de pulso)
+                </ng-container>
+                <ng-template #tituloUltima>eNPS da Última Pesquisa de Pulso</ng-template>
               </h2>
               <div class="score-sub" *ngIf="pulsoAtual">
-                {{ pulsoAtual.titulo }} • {{ formatDate(pulsoAtual.createdAt) }} • 1ª pergunta
+                <ng-container *ngIf="pulsoAtual.id === 0; else detalheUltima">
+                  Cálculo com base na resposta mais recente de cada colaborador.
+                </ng-container>
+                <ng-template #detalheUltima>
+                  {{ pulsoAtual.titulo }} • {{ formatDate(pulsoAtual.createdAt) }} • 1ª pergunta
+                </ng-template>
               </div>
               <div class="score-sub" *ngIf="!pulsoAtual">Nenhuma pesquisa de pulso encontrada</div>
             </div>
@@ -105,9 +138,9 @@
                   <span class="metrica-valor" style="font-size: 1.6rem">{{ metricas.ativos }}</span>
                 </div>
                 <div class="metrica-card" style="min-width: 0">
-                  <span class="metrica-titulo">Respondentes</span>
+                  <span class="metrica-titulo">Pesquisas analisadas</span>
                   <span class="metrica-valor" style="font-size: 1.6rem">{{
-                    metricas.respondentes
+                    metricas.pesquisas || 0
                   }}</span>
                 </div>
                 <div class="metrica-card" style="min-width: 0">
@@ -127,6 +160,116 @@
           </div>
         </div>
       </div>
+      <!-- Evolução Mensal do eNPS: entre Engajamento e Departamentos -->
+      <div class="evolucao-nps-section">
+        <div class="panel-card">
+          <h2 class="gradient-title" style="margin: 0 0 8px; font-size: 1.15rem">
+            Evolução Mensal do eNPS
+          </h2>
+          <div
+            *ngIf="visibleEvolucaoNps.length; else semEvolucao"
+            style="overflow-x: auto; padding-bottom: 2px"
+          >
+            <svg
+              [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+              style="width: 100%; max-width: 100%; height: auto"
+            >
+              <!-- Grid horizontal (ticks de NPS) -->
+              <ng-container *ngFor="let tick of ticksPulse">
+                <line
+                  [attr.x1]="xPlotLeft"
+                  [attr.y1]="mapNpsToY(tick)"
+                  [attr.x2]="xPlotRight"
+                  [attr.y2]="mapNpsToY(tick)"
+                  stroke="#f2f2f2"
+                  stroke-width="1"
+                  stroke-dasharray="4 4"
+                />
+                <text
+                  [attr.x]="xPlotLeft - 8"
+                  [attr.y]="mapNpsToY(tick) + 4"
+                  text-anchor="end"
+                  [attr.font-size]="tickFont"
+                  fill="#666"
+                >
+                  {{ tick }}
+                </text>
+              </ng-container>
+              <!-- Fundo claro da área de plotagem para destaque -->
+              <defs>
+                <linearGradient id="pulseAreaBg" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+                  <stop offset="100%" stop-color="#f7fbfd" stop-opacity="1" />
+                </linearGradient>
+              </defs>
+              <rect
+                [attr.x]="xPlotLeft"
+                [attr.y]="yPlotTop"
+                [attr.width]="xPlotRight - xPlotLeft"
+                [attr.height]="plotHeight"
+                fill="url(#pulseAreaBg)"
+                stroke="#eef5f9"
+                stroke-width="1"
+              ></rect>
+              <!-- Linha de evolução -->
+              <polyline
+                *ngIf="hasEvolucaoPoints()"
+                [attr.points]="buildPolylinePoints()"
+                fill="none"
+                stroke="#38b6a5"
+                [attr.stroke-width]="isMobile ? 5 : 4"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              ></polyline>
+              <!-- Meses no eixo X -->
+              <ng-container *ngFor="let m of visibleEvolucaoNps; let idx = index">
+                <text
+                  [attr.x]="xPlotLeft + idx * colW"
+                  [attr.y]="monthLabelY"
+                  text-anchor="middle"
+                  [attr.font-size]="monthFont"
+                  fill="#222"
+                >
+                  {{ formatMesLabel(m.mesFormatado) }}
+                </text>
+                <circle
+                  *ngIf="m.nps !== null"
+                  [attr.cx]="xPlotLeft + idx * colW"
+                  [attr.cy]="mapNpsToY(m.nps)"
+                  [attr.r]="pointRadius"
+                  fill="#38b6a5"
+                  stroke="#fff"
+                  stroke-width="2"
+                ></circle>
+                <text
+                  *ngIf="m.nps !== null"
+                  [attr.x]="getLabelXNps(idx)"
+                  [attr.y]="getLabelYNps(idx)"
+                  [attr.text-anchor]="getLabelAnchorNps(idx)"
+                  [attr.font-size]="labelFont"
+                  fill="#222"
+                  font-weight="500"
+                >
+                  {{ m.nps }}
+                </text>
+              </ng-container>
+            </svg>
+          </div>
+          <ng-template #semEvolucao>
+            <div
+              style="
+                padding: 0.75rem;
+                background: #f5f5f5;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                color: #555;
+              "
+            >
+              Sem dados de evolução nos últimos meses.
+            </div>
+          </ng-template>
+        </div>
+      </div>
       <div class="departamentos-section">
         <div class="panel-card">
           <h2 class="gradient-title" style="margin: 0 0 12px; font-size: 1.35rem">
@@ -138,7 +281,8 @@
                 <div class="dept-header">
                   <strong class="dept-nome">{{ d.nome }}</strong>
                   <span class="dept-meta"
-                    >NPS: {{ d.nps }} • Respondentes: {{ d.respondentes }}</span
+                    >NPS: {{ d.nps }} • Respondentes: {{ d.respondentes }} • Respostas:
+                    {{ d.respostas }}</span
                   >
                 </div>
                 <div class="dept-bar">
@@ -147,17 +291,17 @@
                     *ngIf="d.detratoresPct > 0"
                     [style.width.%]="d.detratoresPct"
                   >
-                    Detratores {{ d.detratoresPct }}%
+                    Detratores {{ d.detratoresPct | number: "1.1-1" }}%
                   </div>
                   <div class="seg neutros" *ngIf="d.neutrosPct > 0" [style.width.%]="d.neutrosPct">
-                    Neutros {{ d.neutrosPct }}%
+                    Neutros {{ d.neutrosPct | number: "1.1-1" }}%
                   </div>
                   <div
                     class="seg promotores"
                     *ngIf="d.promotoresPct > 0"
                     [style.width.%]="d.promotoresPct"
                   >
-                    Promotores {{ d.promotoresPct }}%
+                    Promotores {{ d.promotoresPct | number: "1.1-1" }}%
                   </div>
                 </div>
               </div>

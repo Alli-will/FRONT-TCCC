@@ -10,8 +10,14 @@ export class AdminGuard implements CanActivate {
   ) {}
   canActivate(): boolean {
     const info = this.auth.getUserInfoFromToken();
-    if (info?.role === "admin") return true;
-    this.router.navigate(["/dashboard"]);
+    if (info?.role === 'admin') return true;
+    // Se não autenticado ou expirado -> login
+    if (!this.auth.isAuthenticated()) {
+      this.router.navigate(['/login'], { queryParams: { reason: 'auth' } });
+      return false;
+    }
+    // Usuário logado mas não admin: fallback amigável
+    this.router.navigate(['/pesquisas'], { queryParams: { denied: 'admin' } });
     return false;
   }
 }

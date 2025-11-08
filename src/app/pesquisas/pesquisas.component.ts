@@ -27,7 +27,7 @@ export class PesquisasComponent {
   bannerMsg: string | null = null;
   bannerTipo: "sucesso" | "erro" = "sucesso";
   private bannerTimer: any = null;
-  // Modal informativo 
+  // Modal informativo
   showInfoModal = false;
   infoTitle = "";
   infoMessage = "";
@@ -106,14 +106,17 @@ export class PesquisasComponent {
     this.confirmMessage = "Confirma excluir esta pesquisa? Essa ação não pode ser desfeita.";
     this.showConfirmModal = true;
     try {
-      if (typeof document !== 'undefined') document.body.classList.add('body-lock');
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('body-modal-open'));
+      if (typeof document !== "undefined") document.body.classList.add("body-lock");
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("body-modal-open"));
     } catch {}
   }
 
   confirmExcluir() {
     if (this.deletando) return;
-    if (!this.confirmTargetId) { this.showConfirmModal = false; return; }
+    if (!this.confirmTargetId) {
+      this.showConfirmModal = false;
+      return;
+    }
     const id = this.confirmTargetId;
     this.deletando = true;
     this.searchService.deleteSearch(id).subscribe({
@@ -122,8 +125,8 @@ export class PesquisasComponent {
         this.confirmTargetId = null;
         this.deletando = false;
         try {
-          if (typeof document !== 'undefined') document.body.classList.remove('body-lock');
-          if (typeof window !== 'undefined') window.dispatchEvent(new Event('body-modal-close'));
+          if (typeof document !== "undefined") document.body.classList.remove("body-lock");
+          if (typeof window !== "undefined") window.dispatchEvent(new Event("body-modal-close"));
         } catch {}
         this.carregar();
         this.showBanner("Pesquisa excluída com sucesso.", "sucesso");
@@ -133,8 +136,8 @@ export class PesquisasComponent {
         this.confirmTargetId = null;
         this.deletando = false;
         try {
-          if (typeof document !== 'undefined') document.body.classList.remove('body-lock');
-          if (typeof window !== 'undefined') window.dispatchEvent(new Event('body-modal-close'));
+          if (typeof document !== "undefined") document.body.classList.remove("body-lock");
+          if (typeof window !== "undefined") window.dispatchEvent(new Event("body-modal-close"));
         } catch {}
         this.openInfoModal(
           "Ação não concluída",
@@ -149,8 +152,8 @@ export class PesquisasComponent {
     this.showConfirmModal = false;
     this.confirmTargetId = null;
     try {
-      if (typeof document !== 'undefined') document.body.classList.remove('body-lock');
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('body-modal-close'));
+      if (typeof document !== "undefined") document.body.classList.remove("body-lock");
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("body-modal-close"));
     } catch {}
   }
 
@@ -159,7 +162,8 @@ export class PesquisasComponent {
     this.modo = "listar";
     this.editando = null;
     const tipo = evt?.tipo || "cadastrada";
-    const msg = tipo === "alterada" ? "Pesquisa alterada com sucesso." : "Pesquisa cadastrada com sucesso.";
+    const msg =
+      tipo === "alterada" ? "Pesquisa alterada com sucesso." : "Pesquisa cadastrada com sucesso.";
     this.showBanner(msg, "sucesso");
   }
 

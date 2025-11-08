@@ -1,11 +1,10 @@
 // ...existing code...
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MenuComponent } from "../menu/menu.component";
 import { CadastroPesquisaComponent } from "../cadastro-pesquisa/cadastro-pesquisa.component";
 import { FormsModule } from "@angular/forms";
 import { DashboardService } from "../services/dashboard.service";
-import { EssThermometerComponent } from "../ess-thermometer/ess-thermometer.component";
 import { ActivatedRoute } from "@angular/router";
 import { AuthService } from "../services/auth.service";
 
@@ -16,7 +15,7 @@ import { AuthService } from "../services/auth.service";
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.css"],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   colaboradores: any[] = [];
   todosDepartamentosInsuficientes(): boolean {
     return this.deptBars.length > 0 && this.deptBars.every((d: any) => d.insuficiente);
@@ -25,6 +24,7 @@ export class DashboardComponent implements OnInit {
   deptBars: Array<{
     nome: string;
     respondentes: number;
+    respostas: number;
     promotores: number;
     detratores: number;
     neutros: number;
@@ -33,6 +33,16 @@ export class DashboardComponent implements OnInit {
     neutrosPct: number;
     nps: number | null;
     insuficiente: boolean;
+  }> = [];
+  evolucaoNps: Array<{
+    mes: string;
+    mesFormatado: string;
+    uniqueUsers: number;
+    promotores: number;
+    neutros: number;
+    detratores: number;
+    respondentes: number;
+    nps: number | null;
   }> = [];
   colaboradoresEmRisco: any[] = [];
   metricas: any = {
@@ -54,6 +64,8 @@ export class DashboardComponent implements OnInit {
   resultadosBusca: any[] = [];
   // emotionPercentages removido (módulo Diário descontinuado)
   isAdmin = false;
+  // Filtro de período
+  selectedPeriod: "all" | "30" | "90" | "180" = "all";
 
   // Pulse e Clima
   pulseScore: number = 0;
@@ -90,6 +102,7 @@ export class DashboardComponent implements OnInit {
   // Métodos de chat de IA removidos
 
   ngOnInit() {
+    this.initResponsive();
     this.isAdmin = this.authService.isAdmin();
     const preload = this.route.snapshot.data["preload"];
     if (preload) {
@@ -104,14 +117,31 @@ export class DashboardComponent implements OnInit {
       this.departamentos = data.departamentos || [];
       this.colaboradoresEmRisco = data.colaboradoresEmRisco || [];
       this.pulsoAtual = data.pulsoAtual || null;
+      this.evolucaoNps = Array.isArray(data.evolucaoNps) ? data.evolucaoNps : [];
       this.computeDeptBars();
     }
     // Diário removido: não buscar emotion percentages
     // Remover chamadas duplicadas de carregamento
   }
 
+  ngOnDestroy(): void {
+    if (typeof window !== "undefined" && this.resizeListener) {
+      window.removeEventListener("resize", this.resizeListener);
+    }
+  }
+
+  private buildPeriodParams(): { days?: number } | undefined {
+    if (this.selectedPeriod === "all") return undefined;
+    return { days: Number(this.selectedPeriod) };
+  }
+
+  onPeriodChange() {
+    this.carregarDadosDashboard();
+  }
+
   carregarDadosDashboard() {
-    this.dashboardService.getMetrics().subscribe({
+    const params = this.buildPeriodParams();
+    this.dashboardService.getMetrics(params).subscribe({
       next: (data) => {
         this.metricas = data.metricas || {};
         this.npsReal = this.metricas.nps || 0;
@@ -122,6 +152,7 @@ export class DashboardComponent implements OnInit {
         this.departamentos = data.departamentos || [];
         this.colaboradoresEmRisco = data.colaboradoresEmRisco || [];
         this.pulsoAtual = data.pulsoAtual || null;
+        this.evolucaoNps = Array.isArray(data.evolucaoNps) ? data.evolucaoNps : [];
         this.computeDeptBars();
         // Removido cálculo local de ESS geral para não sobrescrever o valor do backend
       },
@@ -148,33 +179,194 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // fetchEmotionPercentages removido
+  // --- Evolução NPS helpers (Eixos invertidos: X = meses, Y = valor NPS) ---
+  // Configurações base do gráfico
+  private chartCfg = { width: 800, left: 80, right: 60, top: 20 } as const; // margens equilibradas para centralização e evitar corte do último mês
+  // Responsividade do gráfico
+  isMobile = false;
+  private resizeListener: any;
+  private updateResponsiveCfg() {
+    if (typeof window === "undefined") return;
+    this.isMobile = window.matchMedia("(max-width: 600px)").matches;
+  }
+  private initResponsive() {
+    this.updateResponsiveCfg();
+    if (typeof window !== "undefined") {
+      this.resizeListener = () => this.updateResponsiveCfg();
+      window.addEventListener("resize", this.resizeListener);
+    }
+  }
+  get colW(): number {
+    if (this.isMobile) return 70;
+    const n = Math.max(1, this.visibleEvolucaoNps.length);
+    const baseMin = 80;
+    const available = 1100;
+    const dynamic = n > 1 ? Math.floor(available / (n - 1)) : baseMin;
+    return Math.max(baseMin, Math.min(dynamic, 160));
+  }
+  get pointRadius(): number {
+    return this.isMobile ? 8 : 9;
+  }
+  get tickFont(): number {
+    return this.isMobile ? 16 : 15;
+  }
+  get labelFont(): number {
+    return this.isMobile ? 16 : 15;
+  }
+  get monthFont(): number {
+    return this.isMobile ? 20 : 17;
+  }
+  get ticksPulse(): number[] {
+    return this.isMobile ? [-100, 0, 100] : [-100, -75, -50, -25, 0, 25, 50, 75, 100];
+  }
 
-  // buscarColaborador() {
-  //   const termo = this.busca.trim().toLowerCase();
-  //   if (!termo) {
-  //     this.resultadosBusca = [];
-  //     return;
-  //   }
-  //   this.resultadosBusca = this.colaboradores.filter(
-  //     (c) =>
-  //       c.nome.toLowerCase().includes(termo) ||
-  //       c.departamento.toLowerCase().includes(termo)
-  //   );
-  // }
+  get visibleEvolucaoNps() {
+    if (!Array.isArray(this.evolucaoNps)) return [] as typeof this.evolucaoNps;
+    return this.isMobile ? this.evolucaoNps.slice(-6) : this.evolucaoNps;
+  }
+  get plotHeight(): number {
+    return this.isMobile ? 190 : 480;
+  }
+  get bottomMargin(): number {
+    return Math.max(36, this.monthFont + 22);
+  }
+  get chartHeight(): number {
+    return this.chartCfg.top + this.plotHeight + this.bottomMargin + 18;
+  }
+  get chartWidth(): number {
+    const n = Math.max(1, this.visibleEvolucaoNps.length);
+    return this.chartCfg.left + (n - 1) * this.colW + this.chartCfg.right;
+  }
+  get xPlotLeft(): number {
+    return this.chartCfg.left;
+  }
+  get xPlotRight(): number {
+    return this.chartWidth - this.chartCfg.right;
+  }
+  get yPlotTop(): number {
+    return this.chartCfg.top;
+  }
+  get monthLabelY(): number {
+    return this.chartHeight - Math.max(4, Math.round(this.monthFont * 0.3));
+  }
+  formatMesLabel(lbl: string): string {
+    if (!lbl) return "";
+    if (!this.isMobile) return lbl;
+    if (/^\d{2}\/\d{4}$/.test(lbl)) return lbl.slice(0, 2) + "/" + lbl.slice(5);
+    return lbl;
+  }
+  private xAtMonth(idx: number): number {
+    return this.chartCfg.left + idx * this.colW;
+  }
+  getMonthLabelX(idx: number): number {
+    const pad = 4;
+    if (idx === 0) return Math.max(this.xPlotLeft + pad, this.xAtMonth(idx));
+    if (idx === this.visibleEvolucaoNps.length - 1)
+      return Math.min(this.xPlotRight - pad, this.xAtMonth(idx));
+    return this.xAtMonth(idx);
+  }
+  getMonthLabelAnchor(idx: number): "start" | "middle" | "end" {
+    if (idx === 0) return "start";
+    if (idx === this.visibleEvolucaoNps.length - 1) return "end";
+    return "middle";
+  }
+  mapNpsToY(nps: number | null | undefined): number {
+    const v = typeof nps === "number" ? Math.max(-100, Math.min(100, nps)) : 0;
+    const t = (v + 100) / 200; // 0..1
+    return this.chartCfg.top + (1 - t) * this.plotHeight; // +100 no topo, -100 embaixo
+  }
+  buildPolylinePoints(): string {
+    const arr = this.visibleEvolucaoNps;
+    if (!Array.isArray(arr)) return "";
+    const pts: string[] = [];
+    arr.forEach((e, idx) => {
+      if (e && typeof e.nps === "number") {
+        const x = this.xAtMonth(idx);
+        const y = this.mapNpsToY(e.nps);
+        pts.push(`${x},${y}`);
+      }
+    });
+    return pts.join(" ");
+  }
+  hasEvolucaoPoints(): boolean {
+    const arr = this.visibleEvolucaoNps;
+    return Array.isArray(arr) && arr.some((e) => e && typeof e.nps === "number");
+  }
+
+  private getPointXNps(idx: number): number {
+    return this.xAtMonth(idx);
+  }
+  private getPointYNps(idx: number): number {
+    const arr = this.visibleEvolucaoNps as any[];
+    const e = arr[idx];
+    if (!e || typeof e.nps !== "number") return this.mapNpsToY(0);
+    return this.mapNpsToY(e.nps);
+  }
+  private getLabelSideNps(idx: number): "left" | "right" {
+    const y = this.getPointYNps(idx);
+    let prevY: number | null = null;
+    let nextY: number | null = null;
+    const arr = this.visibleEvolucaoNps as any[];
+    for (let i = idx - 1; i >= 0; i--) {
+      const e = arr[i];
+      if (e && typeof e.nps === "number") {
+        prevY = this.mapNpsToY(e.nps);
+        break;
+      }
+    }
+    for (let i = idx + 1; i < arr.length; i++) {
+      const e = arr[i];
+      if (e && typeof e.nps === "number") {
+        nextY = this.mapNpsToY(e.nps);
+        break;
+      }
+    }
+    if (prevY !== null && nextY !== null) {
+      const dPrev = Math.abs(y - prevY);
+      const dNext = Math.abs(y - nextY);
+      return dPrev > dNext ? "right" : "left";
+    }
+    if (prevY !== null) {
+      return y < prevY ? "left" : "right";
+    }
+    if (nextY !== null) {
+      return nextY < y ? "left" : "right";
+    }
+    return "right";
+  }
+  getLabelXNps(idx: number): number {
+    const base = this.getPointXNps(idx);
+    const side = this.getLabelSideNps(idx);
+    const off = this.isMobile ? 10 : 8;
+    const x = base + (side === "right" ? off : -off);
+    return Math.max(this.xPlotLeft + 4, Math.min(this.xPlotRight - 4, x));
+  }
+  getLabelAnchorNps(idx: number): "start" | "end" | "middle" {
+    const side = this.getLabelSideNps(idx);
+    return side === "right" ? "start" : "end";
+  }
+  getLabelYNps(idx: number): number {
+    const yPoint = this.getPointYNps(idx);
+    const above = yPoint - (this.pointRadius + 6);
+    const below = yPoint + (this.pointRadius + 14);
+    const topLimit = this.chartCfg.top + Math.max(10, Math.round(this.tickFont * 0.8));
+    const bottomLimit = this.monthLabelY - 4;
+    const chosen = above < topLimit + 4 ? below : above;
+    return Math.max(topLimit, Math.min(bottomLimit, chosen));
+  }
 
   getEmotionColor(key: string): string {
     switch (key) {
       case "Muito mal":
-        return "#f44336"; // vermelho
+        return "#f44336";
       case "Mal":
-        return "#ff9800"; // laranja
+        return "#ff9800";
       case "Neutro":
-        return "#ffc107"; // amarelo
+        return "#ffc107";
       case "Bem":
-        return "#2196f3"; // azul claro
+        return "#2196f3";
       case "Muito bem":
-        return "#1976d2"; // azul escuro
+        return "#1976d2";
       default:
         return "#bbb";
     }
@@ -187,7 +379,6 @@ export class DashboardComponent implements OnInit {
     return `${dash} ${circ - dash}`;
   }
 
-  // Cores e textos baseados em NPS real
   getScoreColor(): string {
     if (this.npsReal >= 75) return "#2e7d32"; // verde mais forte para "excelente"
     if (this.npsReal >= 50) return "#38b6a5"; // verde normal para "muito bom"
@@ -232,48 +423,45 @@ export class DashboardComponent implements OnInit {
   }
 
   private computeDeptBars() {
-    const by: Record<
-      string,
-      { prom: number; det: number; neu: number; total: number; nps?: number }
-    > = {};
-    // usar colaboradores (cada um tem departamento e categoria)
-    for (const c of this.colaboradores) {
-      const dept = c.departamento || "Sem departamento";
-      if (!by[dept]) by[dept] = { prom: 0, det: 0, neu: 0, total: 0 };
-      by[dept].total++;
-      if (c.categoria === "promotor") by[dept].prom++;
-      else if (c.categoria === "detrator") by[dept].det++;
-      else by[dept].neu++;
-    }
-    // opcional: usar NPS do backend por departamento se disponível
-    const npsByDept: Record<string, number> = {};
+    const bars: Array<{
+      nome: string;
+      respondentes: number;
+      respostas: number;
+      promotores: number;
+      detratores: number;
+      neutros: number;
+      promotoresPct: number;
+      detratoresPct: number;
+      neutrosPct: number;
+      nps: number | null;
+      insuficiente: boolean;
+    }> = [];
     for (const d of this.departamentos || []) {
-      if (typeof d?.nome === "string" && typeof d?.nps === "number") npsByDept[d.nome] = d.nps;
+      const nome = d?.nome || "Sem departamento";
+      const unique = Number(d?.uniqueUsers ?? 0) || 0; // distintos por usuário
+      const prom = Number(d?.promotores ?? 0) || 0;
+      const det = Number(d?.detratores ?? 0) || 0;
+      const neu = Number(d?.neutros ?? 0) || 0;
+      const totalResp = Math.max(0, Number(d?.respostas ?? 0));
+      const insuficiente = unique < 3;
+      const promPct = totalResp ? Math.round((prom / totalResp) * 1000) / 10 : 0;
+      const detPct = totalResp ? Math.round((det / totalResp) * 1000) / 10 : 0;
+      const neuPct = Math.max(0, parseFloat((100 - promPct - detPct).toFixed(1)));
+      const npsVal = typeof d?.nps === "number" ? d.nps : 0;
+      bars.push({
+        nome,
+        respondentes: unique,
+        respostas: totalResp,
+        promotores: prom,
+        detratores: det,
+        neutros: neu,
+        promotoresPct: promPct,
+        detratoresPct: detPct,
+        neutrosPct: neuPct,
+        nps: insuficiente ? null : npsVal,
+        insuficiente,
+      });
     }
-    this.deptBars = Object.entries(by)
-      .map(([nome, v]) => {
-        const total = v.total || 0;
-        const promPct = total ? Math.round((v.prom / total) * 1000) / 10 : 0;
-        const detPct = total ? Math.round((v.det / total) * 1000) / 10 : 0;
-        const neuPct = Math.max(0, 100 - promPct - detPct); // garante soma 100
-        const insuficiente = total < 2; // considerar apenas se >= 2 respondentes
-        // calcular NPS se backend não trouxe
-        const npsCalc = total ? Math.round((v.prom / total - v.det / total) * 100) : 0;
-        const npsBack = nome in npsByDept ? npsByDept[nome] : npsCalc;
-        const nps: number | null = insuficiente ? null : npsBack;
-        return {
-          nome,
-          respondentes: total,
-          promotores: v.prom,
-          detratores: v.det,
-          neutros: v.neu,
-          promotoresPct: promPct,
-          detratoresPct: detPct,
-          neutrosPct: neuPct,
-          nps,
-          insuficiente,
-        };
-      })
-      .sort((a, b) => a.nome.localeCompare(b.nome));
+    this.deptBars = bars.sort((a, b) => a.nome.localeCompare(b.nome));
   }
 }

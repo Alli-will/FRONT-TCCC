@@ -154,7 +154,9 @@ import { MenuComponent } from "../menu/menu.component";
                     [ngStyle]="{ background: gradientBackground(p.distribuicao, report?.tipo) }"
                     title="Distribuição das notas"
                   >
-                    <ng-container *ngFor="let seg of gradientSegments(p.distribuicao, report?.tipo)">
+                    <ng-container
+                      *ngFor="let seg of gradientSegments(p.distribuicao, report?.tipo)"
+                    >
                       <div
                         class="dist-label"
                         *ngIf="seg.percent >= 5"
@@ -185,7 +187,9 @@ import { MenuComponent } from "../menu/menu.component";
             <div class="mobile-pergunta-card" *ngFor="let p of report.perguntas; let i = index">
               <div class="mobile-pergunta-header">
                 <span class="mobile-pergunta-num">{{ p.index + 1 }}</span>
-                <span class="mobile-pergunta-media" *ngIf="p.tipoResposta === 'quantitativa' && p.media !== null"
+                <span
+                  class="mobile-pergunta-media"
+                  *ngIf="p.tipoResposta === 'quantitativa' && p.media !== null"
                   >Média: <strong>{{ p.media }}</strong></span
                 >
               </div>
@@ -246,8 +250,14 @@ import { MenuComponent } from "../menu/menu.component";
         <ng-template #textLoading>
           <div class="mini-list">
             <div class="placeholder" *ngIf="loadingTextAnswers">Carregando respostas...</div>
-            <div class="placeholder" *ngIf="!loadingTextAnswers && textMinThreshold && textTotal && textTotal < textMinThreshold">
-              Por privacidade, respostas só aparecem quando houver pelo menos {{ textMinThreshold }} respostas.
+            <div
+              class="placeholder"
+              *ngIf="
+                !loadingTextAnswers && textMinThreshold && textTotal && textTotal < textMinThreshold
+              "
+            >
+              Por privacidade, respostas só aparecem quando houver pelo menos
+              {{ textMinThreshold }} respostas.
             </div>
             <div class="placeholder" *ngIf="!loadingTextAnswers && (!textTotal || textTotal === 0)">
               Nenhuma resposta qualitativa disponível.
@@ -595,10 +605,10 @@ import { MenuComponent } from "../menu/menu.component";
         align-items: center;
         justify-content: center; /* centraliza o botão dentro do bloco */
         min-height: 24px;
-  /* usar a mesma largura do bloco de distribuição */
-  width: 360px;
+        /* usar a mesma largura do bloco de distribuição */
+        width: 360px;
         max-width: 100%;
-  min-width: 160px;
+        min-width: 160px;
       }
       /* (usando .btn-primario global) */
       .mobile-bar,
@@ -796,7 +806,7 @@ import { MenuComponent } from "../menu/menu.component";
         flex: 0 0 auto;
         min-width: 26px;
         height: 26px;
-        padding: 0 .5rem;
+        padding: 0 0.5rem;
         border-radius: 999px;
         background: #e7f0ff;
         color: #2b5fa8;
@@ -839,7 +849,7 @@ export class RelatorioPesquisaComponent {
   showTextModal = false;
   loadingTextAnswers = false;
   textAnswers: { texto: string }[] = [];
-  textQuestionTitle = '';
+  textQuestionTitle = "";
   textTotal = 0;
   textMinThreshold = 0;
   constructor(
@@ -999,22 +1009,20 @@ export class RelatorioPesquisaComponent {
     this.loadingTextAnswers = true;
     this.textAnswers = [];
     this.textQuestionTitle = questionText;
-    this.search
-      .getTextAnswers(this.searchId, index, this.selectedDepartmentId)
-      .subscribe({
-        next: (res: any) => {
-          this.textAnswers = res?.respostas || [];
-          this.textTotal = res?.total || 0;
-          this.textMinThreshold = res?.min || 0;
-          this.loadingTextAnswers = false;
-        },
-        error: () => {
-          this.textAnswers = [];
-          this.textTotal = 0;
-          this.textMinThreshold = 0;
-          this.loadingTextAnswers = false;
-        },
-      });
+    this.search.getTextAnswers(this.searchId, index, this.selectedDepartmentId).subscribe({
+      next: (res: any) => {
+        this.textAnswers = res?.respostas || [];
+        this.textTotal = res?.total || 0;
+        this.textMinThreshold = res?.min || 0;
+        this.loadingTextAnswers = false;
+      },
+      error: () => {
+        this.textAnswers = [];
+        this.textTotal = 0;
+        this.textMinThreshold = 0;
+        this.loadingTextAnswers = false;
+      },
+    });
   }
   closeTextAnswersModal() {
     this.showTextModal = false;

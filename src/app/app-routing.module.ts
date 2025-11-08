@@ -14,6 +14,11 @@ const routes: Routes = [
     loadComponent: () =>
       import("./pesquisas/pesquisas.component").then((m) => m.PesquisasComponent),
   },
+  {
+    path: "dashboard-clima",
+    loadComponent: () =>
+      import("./dashboard-clima/dashboard-clima.component").then((m) => m.DashboardClimaComponent),
+  },
   { path: "", redirectTo: "/pesquisas", pathMatch: "full" },
 ];
 

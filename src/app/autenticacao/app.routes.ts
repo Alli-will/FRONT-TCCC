@@ -40,8 +40,13 @@ export const empresaGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
   const info = auth.getUserInfoFromToken();
-  if (info?.role === "admin" || info?.role === "support") return true;
-  router.navigate(["/pesquisas"]);
+  const role = (info?.role || '').toString().toLowerCase();
+  if (role === 'admin' || role === 'support') return true;
+  if (!auth.isAuthenticated()) {
+    router.navigate(['/login'], { queryParams: { reason: 'auth' } });
+    return false;
+  }
+  router.navigate(['/pesquisas'], { queryParams: { denied: 'empresa' } });
   return false;
 };
 
@@ -112,6 +117,14 @@ export const routes: Routes = [
     resolve: { preload: DashboardResolver },
   },
 
+  // Dashboard de Clima Organizacional
+  {
+    path: "dashboard-clima",
+    canActivate: [AuthGuard, AdminGuard],
+    loadComponent: () =>
+      import("../dashboard-clima/dashboard-clima.component").then((m) => m.DashboardClimaComponent),
+  },
+
   {
     path: "pesquisa",
     canActivate: [AuthGuard],
@@ -164,7 +177,9 @@ export const routes: Routes = [
     path: "relatorio-pesquisa/:id",
     canActivate: [AuthGuard, AdminGuard],
     loadComponent: () =>
-      import("../pesquisas/relatorio/relatorio-pesquisa.component").then((m) => m.RelatorioPesquisaComponent),
+      import("../pesquisas/relatorio/relatorio-pesquisa.component").then(
+        (m) => m.RelatorioPesquisaComponent
+      ),
   },
   { path: "**", redirectTo: "pesquisas" },
 ];

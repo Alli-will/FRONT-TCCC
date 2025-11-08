@@ -6,6 +6,7 @@ import { MenuComponent } from "../menu/menu.component";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { AuthService } from "../services/auth.service";
+import { resolveApiBase } from "../services/api-base";
 import { LoadingService } from "../services/loading.service";
 
 @Component({
@@ -51,6 +52,9 @@ export class EmpresaComponent implements OnInit {
     private loadingSvc: LoadingService
   ) {}
 
+  private baseUrl = resolveApiBase();
+  private api(path: string) { return `${this.baseUrl}${path.startsWith('/') ? path : '/' + path}`; }
+
   ngOnInit() {
     const info = this.auth.getUserInfoFromToken();
     this.role = info?.role || null;
@@ -67,7 +71,8 @@ export class EmpresaComponent implements OnInit {
   }
 
   private loadCompany(id: number) {
-    this.http.get(`https://tcc-main.up.railway.app/companies/${id}`).subscribe({
+    const headers = this.auth.getAuthHeaders();
+    this.http.get(this.api(`/companies/${id}`), { headers }).subscribe({
       next: (data) => {
         this.companyData = data;
         this.hasCompany = true;
@@ -84,7 +89,8 @@ export class EmpresaComponent implements OnInit {
 
   private fetchAllCompanies() {
     this.loadingCompanies = true;
-    this.http.get<any[]>(`https://tcc-main.up.railway.app/companies`).subscribe({
+    const headers = this.auth.getAuthHeaders();
+    this.http.get<any[]>(this.api(`/companies`), { headers }).subscribe({
       next: (data) => {
         this.allCompanies = data || [];
       },
@@ -127,7 +133,8 @@ export class EmpresaComponent implements OnInit {
       cnpj: cnpjDigits,
       addressZipCode: zipDigits,
     };
-    this.http.post("https://tcc-main.up.railway.app/companies", payload).subscribe({
+  const headers = this.auth.getAuthHeaders();
+  this.http.post(this.api('/companies'), payload, { headers }).subscribe({
       next: (resp: any) => {
         this.success = "Empresa cadastrada com sucesso!";
         if (this.successTimer) {
@@ -211,30 +218,30 @@ export class EmpresaComponent implements OnInit {
       country: this.form.country,
       phone: phoneDigits,
     };
-    this.http.patch(`https://tcc-main.up.railway.app/companies/${this.companyData.id}`, payload).subscribe({
-      next: (resp: any) => {
-        this.companyData = { ...this.companyData, ...resp };
-        this.success = "Dados atualizados com sucesso!";
-        if (this.successTimer) {
-          clearTimeout(this.successTimer);
-        }
-        this.successTimer = setTimeout(() => {
-          this.dismissSuccess();
-        }, 2500);
-        this.editing = false;
-      },
-      error: (err) => {
-        this.setError(err?.error?.message || "Erro ao atualizar empresa");
-        this.loading = false;
-      },
-      complete: () => {
-        this.loading = false;
-      },
-    });
+    const headers = this.auth.getAuthHeaders();
+    this.http.patch(this.api(`/companies/${this.companyData.id}`), payload, { headers }).subscribe({
+        next: (resp: any) => {
+          this.companyData = { ...this.companyData, ...resp };
+          this.success = "Dados atualizados com sucesso!";
+          if (this.successTimer) {
+            clearTimeout(this.successTimer);
+          }
+          this.successTimer = setTimeout(() => {
+            this.dismissSuccess();
+          }, 2500);
+          this.editing = false;
+        },
+        error: (err) => {
+          this.setError(err?.error?.message || "Erro ao atualizar empresa");
+          this.loading = false;
+        },
+        complete: () => {
+          this.loading = false;
+        },
+      });
   }
 
   canCreateDepartment(): boolean {
-    // Agora somente ADMIN pode cadastrar departamentos (employee oculto)
     return this.role === "admin";
   }
 
@@ -289,9 +296,8 @@ export class EmpresaComponent implements OnInit {
     if (digits.length > 5) out = out.substring(0, 6) + "." + digits.substring(5);
     if (digits.length > 8) out = out.substring(0, 10) + "." + digits.substring(8);
     if (digits.length > 11) out = out.substring(0, 14) + "/" + digits.substring(11);
-    if (digits.length > 15) out = out.substring(0, 16) + digits.substring(15); // safeguard
+    if (digits.length > 15) out = out.substring(0, 16) + digits.substring(15);
     if (digits.length > 12) {
-      // Recompute final with proper slashes and dash
       out =
         digits.substring(0, 2) +
         "." +
@@ -321,7 +327,7 @@ export class EmpresaComponent implements OnInit {
     if (!digits) return; // deixa cair no fluxo normal
     digits = digits.substring(0, 14);
     e.preventDefault();
-    this.form.cnpj = digits; // set raw digits first
+    this.form.cnpj = digits; 
     this.formatCnpj();
   }
 

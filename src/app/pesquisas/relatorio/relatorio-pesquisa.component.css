@@ -208,6 +208,9 @@ h2 {
   gap: 0.45rem;
   margin-top: 1rem;
 }
+.dist-clima {
+  grid-template-columns: repeat(5, 1fr);
+}
 .dist-nps.enhanced .nps-col {
   position: relative;
   background: #fff;
@@ -323,13 +326,13 @@ h2 {
 .tbl-perguntas td.dist-cell {
   vertical-align: middle;
   display: flex;
-  align-items: center; 
+  align-items: center;
   justify-content: flex-start;
 }
 .dist-actions-center {
   display: flex;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
   min-height: 32px;
   width: 360px;
   max-width: 100%;
@@ -529,7 +532,7 @@ h2 {
   flex: 0 0 auto;
   min-width: 26px;
   height: 26px;
-  padding: 0 .5rem;
+  padding: 0 0.5rem;
   border-radius: 999px;
   background: #e7f0ff;
   color: #2b5fa8;

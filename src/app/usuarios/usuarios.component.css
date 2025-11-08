@@ -7,17 +7,19 @@
   margin: 1.5rem 0 0.5rem 0;
   flex-wrap: wrap;
 }
-  .linha-top {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-width: 0; /* allow children to shrink */
-  }
-  .linha-top .colab-nome {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-  .linha-top .role-pill { flex-shrink: 0; }
+.linha-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0; /* allow children to shrink */
+}
+.linha-top .colab-nome {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.linha-top .role-pill {
+  flex-shrink: 0;
+}
 .paginacao-container button {
   background: #f6fbfc;
   border: 1px solid #c9dde2;
@@ -28,7 +30,10 @@
   padding: 0.38em 1.1em;
   margin: 0 0.1em;
   cursor: pointer;
-  transition: background 0.18s, color 0.18s, border 0.18s;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border 0.18s;
   outline: none;
 }
 .paginacao-container button.ativa,
@@ -144,9 +149,17 @@
 
 /* Muito estreito: em telas bem pequenas, quebra o pill para a linha de baixo */
 @media (max-width: 380px) {
-  .linha-top { flex-wrap: wrap !important; }
-  .linha-top .colab-nome { flex: 1 0 100% !important; max-width: 100% !important; display: block !important; }
-  .linha-top .role-pill { margin-top: 4px !important; }
+  .linha-top {
+    flex-wrap: wrap !important;
+  }
+  .linha-top .colab-nome {
+    flex: 1 0 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+  }
+  .linha-top .role-pill {
+    margin-top: 4px !important;
+  }
 }
 /* Removida chave extra do final do arquivo */
 .dept-editor .btn-cancelar,
@@ -371,7 +384,9 @@ li:last-child {
   padding: 0;
   cursor: pointer;
 }
-.actions-menu-wrapper { position: relative; }
+.actions-menu-wrapper {
+  position: relative;
+}
 .actions-trigger {
   padding: 0.42rem 0.8rem;
   font-size: 0.78rem;
@@ -385,7 +400,7 @@ li:last-child {
   background: #fff;
   border: 1px solid #e0edf3;
   border-radius: 0.7rem;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
   min-width: 180px;
   padding: 6px;
   z-index: 30;
@@ -401,8 +416,12 @@ li:last-child {
   color: #21343b;
   cursor: pointer;
 }
-.actions-pop .item:hover { background: #f5f9fa; }
-.actions-pop .item.danger { color: #b22929; }
+.actions-pop .item:hover {
+  background: #f5f9fa;
+}
+.actions-pop .item.danger {
+  color: #b22929;
+}
 .actions-pop hr {
   border: 0;
   height: 1px;
@@ -743,9 +762,16 @@ li:last-child {
     font-size: 0.6rem;
   }
   /* Força o pill a ir para baixo do nome no mobile */
-  .linha-top { flex-wrap: wrap; }
-  .linha-top .colab-nome { flex: 1 0 100%; max-width: 100%; }
-  .linha-top .role-pill { margin-top: 4px; }
+  .linha-top {
+    flex-wrap: wrap;
+  }
+  .linha-top .colab-nome {
+    flex: 1 0 100%;
+    max-width: 100%;
+  }
+  .linha-top .role-pill {
+    margin-top: 4px;
+  }
   .colab-actions .btn-primario,
   .colab-actions .btn-ghost,
   .colab-actions .btn-alterar-depto,
@@ -756,7 +782,9 @@ li:last-child {
     border-radius: 0.55rem !important;
   }
   /* Dropdown de ações: evitar corte lateral no mobile */
-  .actions-menu-wrapper { position: relative; }
+  .actions-menu-wrapper {
+    position: relative;
+  }
   .actions-pop {
     left: 0 !important;
     right: auto !important;

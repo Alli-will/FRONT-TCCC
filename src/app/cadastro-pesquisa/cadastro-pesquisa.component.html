@@ -6,7 +6,7 @@
   </div>
   <form (ngSubmit)="cadastrar()" autocomplete="off">
     <div class="titulo-row">
-      <h3>{{ emEdicao ? 'Editar Pesquisa' : 'Nova Pesquisa' }}</h3>
+      <h3>{{ emEdicao ? "Editar Pesquisa" : "Nova Pesquisa" }}</h3>
       <span class="badge" [class.pulso]="tipo === 'pulso'" [class.clima]="tipo === 'clima'">{{
         tipo
       }}</span>
@@ -45,10 +45,16 @@
     <div class="field">
       <label>Alcance</label>
       <div class="inline">
-        <label class="switch"><input type="radio" [(ngModel)]="alcance" name="alcance" value="todos" /> <span>Todos os departamentos</span></label>
-        <label class="switch"><input type="radio" [(ngModel)]="alcance" name="alcance" value="setores" /> <span>Selecionar departamentos</span></label>
+        <label class="switch"
+          ><input type="radio" [(ngModel)]="alcance" name="alcance" value="todos" />
+          <span>Todos os departamentos</span></label
+        >
+        <label class="switch"
+          ><input type="radio" [(ngModel)]="alcance" name="alcance" value="setores" />
+          <span>Selecionar departamentos</span></label
+        >
       </div>
-      <div class="multi-list" *ngIf="alcance==='setores'">
+      <div class="multi-list" *ngIf="alcance === 'setores'">
         <div class="check-row" *ngFor="let d of departamentos">
           <label>
             <input
@@ -56,10 +62,15 @@
               [checked]="selectedDepartmentIds.includes(d.id)"
               (change)="toggleDepartment(d.id, $any($event.target).checked)"
             />
-            <span>{{ d.name || d.nome || d.title || d.label || d.departmentName || d.description || d }}</span>
+            <span>{{
+              d.name || d.nome || d.title || d.label || d.departmentName || d.description || d
+            }}</span>
           </label>
         </div>
-        <small class="hint">Marque um ou mais departamentos. Somente colaboradores desses departamentos verão a pesquisa.</small>
+        <small class="hint"
+          >Marque um ou mais departamentos. Somente colaboradores desses departamentos verão a
+          pesquisa.</small
+        >
       </div>
     </div>
     <div *ngIf="sucesso" class="sucesso">Salvo!</div>
@@ -82,16 +93,18 @@
         </div>
       </div>
       <ul class="qs-list" *ngIf="perguntasSelecionadas.length; else noneTpl">
-    <li *ngFor="let p of perguntasSelecionadas; let i = index"
-            [draggable]="canDrag(i)"
-            (dragstart)="onDragStart(i, $event)"
-            (dragover)="onDragOver(i, $event)"
-            (drop)="onDrop(i, $event)"
-            (dragend)="onDragEnd($event)"
-      [class.is-dragging]="dragIndex===i"
-      [class.drag-over]="dragOverIndex===i"
-      [class.drag-over-before]="dragOverIndex===i && dragOverBefore === true"
-      [class.drag-over-after]="dragOverIndex===i && dragOverBefore === false">
+        <li
+          *ngFor="let p of perguntasSelecionadas; let i = index"
+          [draggable]="canDrag(i)"
+          (dragstart)="onDragStart(i, $event)"
+          (dragover)="onDragOver(i, $event)"
+          (drop)="onDrop(i, $event)"
+          (dragend)="onDragEnd($event)"
+          [class.is-dragging]="dragIndex === i"
+          [class.drag-over]="dragOverIndex === i"
+          [class.drag-over-before]="dragOverIndex === i && dragOverBefore === true"
+          [class.drag-over-after]="dragOverIndex === i && dragOverBefore === false"
+        >
           <span class="idx">{{ i + 1 }}.</span>
           <span class="txt">{{ p.texto }}</span>
           <div class="meta">
@@ -185,7 +198,7 @@
 
       <div class="actions">
         <button type="submit" [disabled]="!titulo.trim() || carregando">
-          <span *ngIf="!carregando">{{ emEdicao ? 'Salvar' : 'Cadastrar' }}</span>
+          <span *ngIf="!carregando">{{ emEdicao ? "Salvar" : "Cadastrar" }}</span>
           <span *ngIf="carregando" class="loader"></span>
         </button>
       </div>

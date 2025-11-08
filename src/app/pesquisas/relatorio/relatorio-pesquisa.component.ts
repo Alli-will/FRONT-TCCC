@@ -25,7 +25,7 @@ export class RelatorioPesquisaComponent {
   showTextModal = false;
   loadingTextAnswers = false;
   textAnswers: { texto: string }[] = [];
-  textQuestionTitle = '';
+  textQuestionTitle = "";
   textTotal = 0;
   textMinThreshold = 0;
   constructor(
@@ -185,22 +185,20 @@ export class RelatorioPesquisaComponent {
     this.loadingTextAnswers = true;
     this.textAnswers = [];
     this.textQuestionTitle = questionText;
-    this.search
-      .getTextAnswers(this.searchId, index, this.selectedDepartmentId)
-      .subscribe({
-        next: (res: any) => {
-          this.textAnswers = res?.respostas || [];
-          this.textTotal = res?.total || 0;
-          this.textMinThreshold = res?.min || 0;
-          this.loadingTextAnswers = false;
-        },
-        error: () => {
-          this.textAnswers = [];
-          this.textTotal = 0;
-          this.textMinThreshold = 0;
-          this.loadingTextAnswers = false;
-        },
-      });
+    this.search.getTextAnswers(this.searchId, index, this.selectedDepartmentId).subscribe({
+      next: (res: any) => {
+        this.textAnswers = res?.respostas || [];
+        this.textTotal = res?.total || 0;
+        this.textMinThreshold = res?.min || 0;
+        this.loadingTextAnswers = false;
+      },
+      error: () => {
+        this.textAnswers = [];
+        this.textTotal = 0;
+        this.textMinThreshold = 0;
+        this.loadingTextAnswers = false;
+      },
+    });
   }
   closeTextAnswersModal() {
     this.showTextModal = false;
@@ -221,6 +219,75 @@ export class RelatorioPesquisaComponent {
     let cat = v <= 6 ? "Detrator" : v <= 8 ? "Neutro" : "Promotor";
     const count = this.report?.npsDistribuicao?.[k]?.count || 0;
     const percent = this.report?.npsDistribuicao?.[k]?.percent || 0;
+    return `Nota ${k} • ${count} respostas • ${this.formatPercent(percent)} • ${cat}`;
+  }
+
+  climaMedia(): number | null {
+    const m = this.report?.climaMedia;
+    return typeof m === "number" ? m : null;
+  }
+  climaDist(): any | null {
+    return this.report?.climaDistribuicao || null;
+  }
+  canShowClimaCard(): boolean {
+    if (this.report?.tipo !== "clima") return false;
+    const total = this.report?.totalRespondentes || 0;
+    if (total < 2) return false;
+    return !!this.report?.climaDistribuicao;
+  }
+  climaPerc() {
+    const dist = this.climaDist() || {};
+    const val = (k: string) => Number(dist[k]?.percent || 0);
+    const desfav = val("1") + val("2");
+    const neutro = val("3");
+    const fav = val("4") + val("5");
+    // normaliza se necessário
+    const total = desfav + neutro + fav;
+    if (total > 0 && Math.abs(total - 100) > 0.01) {
+      return {
+        desfav: (desfav / total) * 100,
+        neutro: (neutro / total) * 100,
+        fav: (fav / total) * 100,
+      };
+    }
+    return { desfav, neutro, fav };
+  }
+  climaColorByMedia(m: number): string {
+    if (m >= 4.3) return "#2e7d32"; // Fortemente Positivo
+    if (m >= 3.5) return "#38b6a5"; // Positivo
+    if (m >= 2.7) return "#fbc02d"; // Neutro
+    if (m >= 1.9) return "#ff7043"; // Negativo
+    return "#e53935"; // Fortemente Negativo
+  }
+  climaColor(): string {
+    const m = this.climaMedia();
+    return this.climaColorByMedia(m ?? 3);
+  }
+  climaLabel(): string {
+    const m = this.climaMedia() ?? 3;
+    if (m >= 4.3) return "Concordo Totalmente / Fortemente Positivo";
+    if (m >= 3.5) return "Concordo / Positivo";
+    if (m >= 2.7) return "Neutro / Indiferente";
+    if (m >= 1.9) return "Discordo / Negativo";
+    return "Discordo Totalmente / Fortemente Negativo";
+  }
+  climaKeys() {
+    return ["1", "2", "3", "4", "5"];
+  }
+  climaScoreClasse(k: string) {
+    const v = Number(k);
+    if (isNaN(v)) return "";
+    if (v <= 2) return "detrator";
+    if (v === 3) return "neutro";
+    return "promotor";
+  }
+  climaScoreTooltip(k: string) {
+    const v = Number(k);
+    if (isNaN(v)) return "";
+    const dist = this.climaDist() || {};
+    const count = dist[k]?.count || 0;
+    const percent = dist[k]?.percent || 0;
+    const cat = v <= 2 ? "Desfavorável" : v === 3 ? "Neutro" : "Favorável";
     return `Nota ${k} • ${count} respostas • ${this.formatPercent(percent)} • ${cat}`;
   }
 }

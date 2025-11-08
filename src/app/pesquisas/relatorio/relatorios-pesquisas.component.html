@@ -9,12 +9,12 @@
     <table class="tbl" *ngIf="pesquisas.length; else vazioTpl">
       <thead>
         <tr>
-          <th style="width:40px;" class="center">#</th>
+          <th style="width: 40px" class="center">#</th>
           <th>Título</th>
-          <th style="width:110px;" class="center">Tipo</th>
-          <th style="width:110px;" class="center">Respondentes</th>
-          <th style="width:120px;" class="center">Data</th>
-          <th style="width:160px;" class="center">Ações</th>
+          <th style="width: 110px" class="center">Tipo</th>
+          <th style="width: 110px" class="center">Respondentes</th>
+          <th style="width: 120px" class="center">Data</th>
+          <th style="width: 160px" class="center">Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -29,12 +29,10 @@
               >{{ p.tipo }}</span
             >
           </td>
-          <td class="center resp-cell">{{ p.respondentes ?? '-' }}</td>
+          <td class="center resp-cell">{{ p.respondentes ?? "-" }}</td>
           <td class="center data-cell">{{ formatDate(p.createdAt) }}</td>
           <td class="center">
-            <a class="btn-primario" [routerLink]="['/relatorio-pesquisa', p.id]"
-              >Ver Relatório</a
-            >
+            <a class="btn-primario" [routerLink]="['/relatorio-pesquisa', p.id]">Ver Relatório</a>
           </td>
         </tr>
       </tbody>
@@ -59,5 +57,4 @@
       <button (click)="mudarPagina(1)" [disabled]="page === totalPages">»</button>
     </div>
   </div>
-  
 </div>

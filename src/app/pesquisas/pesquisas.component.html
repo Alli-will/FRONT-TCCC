@@ -32,19 +32,33 @@
                   >{{ pesquisa.tipo }}</span
                 >
               </div>
-              <div class="meta" style="display: flex; gap: 0.5rem; align-items: center;">
-                <a class="responder-link" [routerLink]="['/responder-pesquisa', pesquisa.id]">Responder</a>
+              <div class="meta" style="display: flex; gap: 0.5rem; align-items: center">
+                <a class="responder-link" [routerLink]="['/responder-pesquisa', pesquisa.id]"
+                  >Responder</a
+                >
                 <ng-container *ngIf="isAdmin">
                   <button
                     class="btn-ghost"
                     (click)="iniciarEdicao(pesquisa)"
-                    [title]="(pesquisa.respondentes ?? 0) > 0 ? 'Já possui respostas e não pode ser editada' : ''"
-                  >Editar</button>
+                    [title]="
+                      (pesquisa.respondentes ?? 0) > 0
+                        ? 'Já possui respostas e não pode ser editada'
+                        : ''
+                    "
+                  >
+                    Editar
+                  </button>
                   <button
                     class="btn-ghost danger"
                     (click)="excluir(pesquisa)"
-                    [title]="(pesquisa.respondentes ?? 0) > 0 ? 'Já possui respostas e não pode ser excluída' : ''"
-                  >Excluir</button>
+                    [title]="
+                      (pesquisa.respondentes ?? 0) > 0
+                        ? 'Já possui respostas e não pode ser excluída'
+                        : ''
+                    "
+                  >
+                    Excluir
+                  </button>
                 </ng-container>
               </div>
             </div>
@@ -73,7 +87,10 @@
 
     <div class="content-grid" *ngIf="modo === 'cadastrar' && isAdmin">
       <div class="card form-card">
-  <app-cadastro-pesquisa (criado)="onCriado($event)" [editarDe]="editando"></app-cadastro-pesquisa>
+        <app-cadastro-pesquisa
+          (criado)="onCriado($event)"
+          [editarDe]="editando"
+        ></app-cadastro-pesquisa>
       </div>
     </div>
   </div>
@@ -92,7 +109,6 @@
       <button class="btn-ghost" type="button" (click)="closeInfoModal()">Ok</button>
     </div>
   </div>
-
 </div>
 
 <!-- Modal de confirmação de exclusão -->
@@ -104,11 +120,18 @@
     <div class="md-body">
       <p>{{ confirmMessage }}</p>
     </div>
-    <div class="modal-actions" style="display:flex; gap:0.5rem; justify-content:flex-end;">
-      <button class="btn-ghost" type="button" (click)="cancelarExcluir()" [disabled]="deletando">Cancelar</button>
-      <button class="btn-ghost danger" type="button" (click)="confirmExcluir()" [disabled]="deletando">
+    <div class="modal-actions" style="display: flex; gap: 0.5rem; justify-content: flex-end">
+      <button class="btn-ghost" type="button" (click)="cancelarExcluir()" [disabled]="deletando">
+        Cancelar
+      </button>
+      <button
+        class="btn-ghost danger"
+        type="button"
+        (click)="confirmExcluir()"
+        [disabled]="deletando"
+      >
         <span *ngIf="deletando" class="loader-mini" aria-hidden="true"></span>
-        <span>{{ deletando ? 'Excluindo…' : 'Excluir' }}</span>
+        <span>{{ deletando ? "Excluindo…" : "Excluir" }}</span>
       </button>
     </div>
   </div>

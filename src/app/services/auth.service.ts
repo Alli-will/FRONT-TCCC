@@ -8,7 +8,6 @@ import { resolveApiBase } from "./api-base";
   providedIn: "root",
 })
 export class AuthService {
-  // Base da API (produção). Avalie mover para um arquivo de environment.
   private primaryBase = resolveApiBase();
   private remoteBase = "https://tcc-main.up.railway.app";
   private apiUrl = `${this.primaryBase}/auth`;
@@ -43,11 +42,9 @@ export class AuthService {
     if (typeof window !== "undefined") {
       localStorage.removeItem("token");
       sessionStorage.removeItem("token");
-      // Limpa qualquer cache relacionado ao avatar
       try {
         localStorage.removeItem("avatarUpdatedTs");
       } catch {}
-      // Notifica UI para limpar avatar em componentes ativos
       try {
         window.dispatchEvent(new CustomEvent("avatar-updated", { detail: { ts: Date.now() } }));
       } catch {}
@@ -61,18 +58,45 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.currentUserSubject.value;
+    const token = this.currentUserSubject.value;
+    if (!token) return false;
+    const payload = this.safeDecodePayload(token);
+    if (!payload) return false;
+    const exp = payload.exp;
+    if (typeof exp === 'number') {
+      const nowSec = Math.floor(Date.now() / 1000);
+      if (exp < nowSec) {
+        try { localStorage.removeItem('token'); } catch {}
+        this.currentUserSubject.next(null);
+        return false;
+      }
+    }
+    return true;
   }
 
   getUserInfoFromToken(): any {
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (!token) return null;
+    return this.safeDecodePayload(token);
+  }
+
+  private safeDecodePayload(token: string): any {
     try {
-      const payload = token.split(".")[1];
-      return JSON.parse(atob(payload));
-    } catch (e) {
+      const parts = token.split('.');
+      if (parts.length < 2) return null;
+      let payload = parts[1];
+      payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+      while (payload.length % 4) payload += '=';
+      const json = atob(payload);
+      return JSON.parse(json);
+    } catch {
       return null;
     }
+  }
+
+  getAuthHeaders(): Record<string, string> {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
   isAdmin(): boolean {

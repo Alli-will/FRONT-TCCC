@@ -232,9 +232,8 @@ export class UsuariosComponent implements OnInit, OnDestroy {
                 headers: { Authorization: `Bearer ${token}` },
               });
               if (dbg.ok) {
-                const info = await dbg.json();
-                // eslint-disable-next-line no-console
-                console.warn("Avatar debug", c.id, info);
+                // info de debug disponível, mas não logamos em console em produção
+                await dbg.json();
               }
             } catch {}
           }
@@ -463,12 +462,18 @@ export class UsuariosComponent implements OnInit, OnDestroy {
         body: JSON.stringify({ role: novo }),
       });
     tryUpdate(localBase)
-      .then((r) => (r.ok ? r.json() : tryUpdate(remoteBase).then((r2) => (r2.ok ? r2.json() : Promise.reject(r2)))))
+      .then((r) =>
+        r.ok
+          ? r.json()
+          : tryUpdate(remoteBase).then((r2) => (r2.ok ? r2.json() : Promise.reject(r2)))
+      )
       .then((resp) => {
         const updatedRole = resp?.user?.role || novo;
         c.role = updatedRole;
         this.showBanner(
-          updatedRole === "admin" ? "Usuário promovido a admin." : "Usuário definido como employee.",
+          updatedRole === "admin"
+            ? "Usuário promovido a admin."
+            : "Usuário definido como employee.",
           "sucesso"
         );
       })

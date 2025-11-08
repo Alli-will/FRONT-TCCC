@@ -78,14 +78,14 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.avatarEtag = null;
         this.avatarTs = Date.now();
         const payload = this.authService.getUserInfoFromToken();
-  // papel do usuário (admin/employee/support)
+        // papel do usuário (admin/employee/support)
         this.isAdmin = payload?.role === "admin";
         this.isSupport = payload?.role === "support";
         this.isEmployee = payload?.role === "employee";
-  // Exibir exatamente o campo first_Name (se presente), senão last_Name, senão parte local do e-mail
-  const pf = (payload?.first_Name || payload?.firstName || "").toString().trim();
-  const pl = (payload?.last_Name || payload?.lastName || "").toString().trim();
-  this.userName = pf || pl || (payload?.email ? (payload.email.split("@")[0] || null) : null);
+        // Exibir exatamente o campo first_Name (se presente), senão last_Name, senão parte local do e-mail
+        const pf = (payload?.first_Name || payload?.firstName || "").toString().trim();
+        const pl = (payload?.last_Name || payload?.lastName || "").toString().trim();
+        this.userName = pf || pl || (payload?.email ? payload.email.split("@")[0] || null : null);
         this.userEmail = payload?.email || null;
         // Após recarregar a página, o token pode estar desatualizado em relação ao banco.
         // Busca o usuário atual no backend e sobrescreve o nome exibido com o first_Name real.
@@ -199,7 +199,10 @@ export class MenuComponent implements OnInit, OnDestroy {
         // Buscar blob binário; só enviar If-None-Match se já tivermos etag anterior
         const headers: any = { Authorization: `Bearer ${token}` };
         if (this.avatarEtag) headers["If-None-Match"] = '"' + this.avatarEtag + '"';
-        return fetch(`${apiBase}/user/me/avatar?ts=${this.avatarTs}`, { headers, cache: 'no-store' as RequestCache })
+        return fetch(`${apiBase}/user/me/avatar?ts=${this.avatarTs}`, {
+          headers,
+          cache: "no-store" as RequestCache,
+        })
           .then(async (resp) => {
             if (resp.status === 304 && this.objectUrl) {
               this.avatarUrl = this.objectUrl;
@@ -207,7 +210,10 @@ export class MenuComponent implements OnInit, OnDestroy {
               return null;
             }
             if (!resp.ok) {
-              const r2 = await fetch(`${remoteBase}/user/me/avatar?ts=${this.avatarTs}`, { headers, cache: 'no-store' as RequestCache });
+              const r2 = await fetch(`${remoteBase}/user/me/avatar?ts=${this.avatarTs}`, {
+                headers,
+                cache: "no-store" as RequestCache,
+              });
               if (!r2.ok) throw new Error("avatar-fetch-failed");
               apiBase = remoteBase;
               this.avatarEtag = data.etag || null;

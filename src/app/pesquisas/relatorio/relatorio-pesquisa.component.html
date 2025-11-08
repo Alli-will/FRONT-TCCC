@@ -9,9 +9,7 @@
     <div class="meta">
       <div class="meta-left">
         <h3>{{ report?.titulo }}</h3>
-        <div class="data" *ngIf="report?.createdAt">
-          Data: {{ formatDate(report.createdAt) }}
-        </div>
+        <div class="data" *ngIf="report?.createdAt">Data: {{ formatDate(report.createdAt) }}</div>
         <div
           class="pill"
           [class.pulso]="report?.tipo === 'pulso'"
@@ -49,27 +47,19 @@
           <span [style.color]="getNpsColor(report?.nps)">{{ report?.nps }}</span>
         </div>
         <div class="metodo-hint">
-          Considera apenas a primeira resposta de cada usuário. Classificação: Promotores
-          (9–10), Neutros (7–8), Detratores (0–6). O eNPS é calculado por: %Promotores –
-          %Detratores. A distribuição mostra as notas da 1ª pergunta.
+          Considera apenas a primeira resposta de cada usuário. Classificação: Promotores (9–10),
+          Neutros (7–8), Detratores (0–6). O eNPS é calculado por: %Promotores – %Detratores. A
+          distribuição mostra as notas da 1ª pergunta.
         </div>
         <div class="nps-bars">
           <!-- Ordem: Detratores, Neutros, Promotores (cores alinhadas com distribuição) -->
-          <div
-            class="bar detratores"
-            [style.width]="pct(report?.detratores)"
-            title="Detratores"
-          >
+          <div class="bar detratores" [style.width]="pct(report?.detratores)" title="Detratores">
             Detratores {{ pct(report?.detratores) }}
           </div>
           <div class="bar neutros" [style.width]="pct(report?.neutros)" title="Neutros">
             Neutros {{ pct(report?.neutros) }}
           </div>
-          <div
-            class="bar promotores"
-            [style.width]="pct(report?.promotores)"
-            title="Promotores"
-          >
+          <div class="bar promotores" [style.width]="pct(report?.promotores)" title="Promotores">
             Promotores {{ pct(report?.promotores) }}
           </div>
         </div>
@@ -102,12 +92,75 @@
         </div>
       </div>
     </div>
+    <!-- Card Clima (Likert) semelhante ao NPS -->
+    <div *ngIf="canShowClimaCard()" class="nps-block clima-card-block">
+      <div class="nps-card clima-card">
+        <div class="nps-value">Clima (Likert)</div>
+        <div class="metodo-hint">
+          Escala 1–5 agregada (backend). Faixas: 1–1.8 Fortemente Negativo, 1.9–2.6 Negativo,
+          2.7–3.4 Neutro, 3.5–4.2 Positivo, 4.3–5.0 Fortemente Positivo.
+        </div>
+        <div class="nps-bars clima-bars">
+          <div
+            class="bar detratores"
+            [style.background]="'#e53935'"
+            [style.width]="formatPercent(climaPerc().desfav)"
+            title="1–2 (Desfavoráveis)"
+          >
+            Desfavoráveis {{ formatPercent(climaPerc().desfav) }}
+          </div>
+          <div
+            class="bar neutros"
+            [style.background]="'#fbc02d'"
+            [style.width]="formatPercent(climaPerc().neutro)"
+            title="3 (Neutras)"
+          >
+            Neutras {{ formatPercent(climaPerc().neutro) }}
+          </div>
+          <div
+            class="bar promotores"
+            [style.background]="'#43a047'"
+            [style.width]="formatPercent(climaPerc().fav)"
+            title="4–5 (Favoráveis)"
+          >
+            Favoráveis {{ formatPercent(climaPerc().fav) }}
+          </div>
+        </div>
+        <div class="dist-nps enhanced dist-clima">
+          <div
+            *ngFor="let k of climaKeys()"
+            class="nps-col"
+            [ngClass]="climaScoreClasse(k)"
+            [title]="climaScoreTooltip(k)"
+          >
+            <div class="score-line">{{ k }}</div>
+            <div class="meta-line">
+              <span class="cnt" [class.zero]="(climaDist()?.[k]?.count || 0) === 0">
+                {{ climaDist()?.[k]?.count || 0 }}x
+              </span>
+              <span class="sep">•</span>
+              <span class="perc" [class.zero]="(climaDist()?.[k]?.percent || 0) === 0">
+                {{ formatPercent(climaDist()?.[k]?.percent) }}
+              </span>
+            </div>
+            <div class="mini-bar-wrap">
+              <div class="mini-bar-bg"></div>
+              <div
+                class="mini-bar-fill"
+                [style.width]="(climaDist()?.[k]?.percent || 0) + '%'"
+                [style.background]="getScoreBandColor(+k, 'clima')"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div
       *ngIf="selectedDepartmentId && !canShowNps() && report?.tipo === 'pulso'"
       class="nps-bloqueado"
     >
-      NPS indisponível para este setor: não há dados suficientes para análise(mínimo 2
-      respondentes necessários).
+      NPS indisponível para este setor: não há dados suficientes para análise(mínimo 2 respondentes
+      necessários).
     </div>
     <h4 *ngIf="canShowPerguntas()">Perguntas</h4>
     <div *ngIf="!canShowPerguntas()" class="nps-bloqueado">
@@ -117,9 +170,9 @@
       <table class="tbl-perguntas desktop-table">
         <thead>
           <tr>
-            <th style="width:40px;">#</th>
+            <th style="width: 40px">#</th>
             <th>Pergunta</th>
-            <th style="width:90px;">Média</th>
+            <th style="width: 90px">Média</th>
             <th>Distribuição</th>
           </tr>
         </thead>
@@ -171,7 +224,9 @@
         <div class="mobile-pergunta-card" *ngFor="let p of report.perguntas; let i = index">
           <div class="mobile-pergunta-header">
             <span class="mobile-pergunta-num">{{ p.index + 1 }}</span>
-            <span class="mobile-pergunta-media" *ngIf="p.tipoResposta === 'quantitativa' && p.media !== null"
+            <span
+              class="mobile-pergunta-media"
+              *ngIf="p.tipoResposta === 'quantitativa' && p.media !== null"
               >Média: <strong>{{ p.media }}</strong></span
             >
           </div>
@@ -232,8 +287,14 @@
     <ng-template #textLoading>
       <div class="mini-list">
         <div class="placeholder" *ngIf="loadingTextAnswers">Carregando respostas...</div>
-        <div class="placeholder" *ngIf="!loadingTextAnswers && textMinThreshold && textTotal && textTotal < textMinThreshold">
-          Por privacidade, respostas só aparecem quando houver pelo menos {{ textMinThreshold }} respostas.
+        <div
+          class="placeholder"
+          *ngIf="
+            !loadingTextAnswers && textMinThreshold && textTotal && textTotal < textMinThreshold
+          "
+        >
+          Por privacidade, respostas só aparecem quando houver pelo menos
+          {{ textMinThreshold }} respostas.
         </div>
         <div class="placeholder" *ngIf="!loadingTextAnswers && (!textTotal || textTotal === 0)">
           Nenhuma resposta qualitativa disponível.

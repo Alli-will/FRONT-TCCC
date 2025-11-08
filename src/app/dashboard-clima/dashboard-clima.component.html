@@ -1,0 +1,188 @@
+<app-menu>
+  <div class="dashboard-container">
+    <div class="dashboard-main">
+      <div class="content-grid">
+        <div class="panel-card">
+          <div
+            class="panel-title-row"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              margin: 0 0 12px;
+            "
+          >
+            <h2 class="gradient-title" style="margin: 0">Dashboard de Clima</h2>
+            <div class="periodo-control" style="display: flex; gap: 8px; align-items: center">
+              <label for="periodo" style="font-size: 0.9rem; color: #555">Período:</label>
+              <select
+                id="periodo"
+                [(ngModel)]="selectedPeriod"
+                (change)="onPeriodChange()"
+                style="padding: 6px 8px; border-radius: 6px; border: 1px solid #ddd"
+              >
+                <option value="all">Todos</option>
+                <option value="30">Últimos 30 dias</option>
+                <option value="90">Últimos 90 dias</option>
+                <option value="180">Últimos 180 dias</option>
+              </select>
+            </div>
+          </div>
+          <div class="metricas-row-below">
+            <div class="metrica-card">
+              <span class="metrica-titulo">Respondentes</span>
+              <span class="metrica-valor">{{ metricas.respondentes }}</span>
+            </div>
+            <div class="metrica-card">
+              <span class="metrica-titulo">Pesquisas</span>
+              <span class="metrica-valor">{{ metricas.pesquisas }}</span>
+            </div>
+            <div class="metrica-card">
+              <span class="metrica-titulo">Média Geral</span>
+              <span class="metrica-valor">{{ metricas.mediaGeral }}</span>
+            </div>
+            <div class="metrica-card">
+              <span class="metrica-titulo">Favoráveis %</span>
+              <span class="metrica-valor">{{ metricas.favoraveis }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evolução Mensal do Clima (média Likert, eixos invertidos) -->
+        <div class="panel-card">
+          <h3 style="margin: 0 0 8px; font-size: 1.05rem">
+            Evolução Mensal do Clima (média Likert)
+          </h3>
+          <div
+            *ngIf="visibleEvolucaoClima.length; else semEvolucaoClima"
+            #climaChartHost
+            style="overflow-x: auto; padding-bottom: 2px"
+          >
+            <svg
+              [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+              style="width: 100%; max-width: 100%; height: auto"
+            >
+              <!-- Grid horizontal (ticks Likert 1..5) -->
+              <ng-container *ngFor="let tick of ticksClima">
+                <line
+                  [attr.x1]="xPlotLeft"
+                  [attr.y1]="mapLikertToY(tick)"
+                  [attr.x2]="xPlotRight"
+                  [attr.y2]="mapLikertToY(tick)"
+                  stroke="#f2f2f2"
+                  stroke-width="1"
+                  stroke-dasharray="4 4"
+                />
+                <text
+                  [attr.x]="xPlotLeft - 8"
+                  [attr.y]="mapLikertToY(tick) + 4"
+                  text-anchor="end"
+                  [attr.font-size]="tickFont"
+                  fill="#666"
+                >
+                  {{ tick }}
+                </text>
+              </ng-container>
+              <!-- Linha -->
+              <polyline
+                *ngIf="hasEvolucaoPoints()"
+                [attr.points]="buildPolylinePoints()"
+                fill="none"
+                stroke="#1976d2"
+                [attr.stroke-width]="isMobile ? 5 : 2"
+                stroke-linejoin="round"
+              ></polyline>
+              <!-- Pontos e labels -->
+              <ng-container *ngFor="let m of visibleEvolucaoClima; let idx = index">
+                <text
+                  [attr.x]="xPlotLeft + idx * colW"
+                  [attr.y]="monthLabelY"
+                  text-anchor="middle"
+                  [attr.font-size]="monthFont"
+                  fill="#222"
+                >
+                  {{ formatMesLabel(m.mesFormatado) }}
+                </text>
+                <circle
+                  *ngIf="m.media !== null"
+                  [attr.cx]="xPlotLeft + idx * colW"
+                  [attr.cy]="mapLikertToY(m.media)"
+                  [attr.r]="pointRadius"
+                  fill="#1976d2"
+                  stroke="#fff"
+                  stroke-width="2"
+                ></circle>
+                <text
+                  *ngIf="m.media !== null"
+                  [attr.x]="getLabelX(idx)"
+                  [attr.y]="getLabelY(idx)"
+                  [attr.text-anchor]="getLabelAnchor(idx)"
+                  [attr.font-size]="labelFont"
+                  fill="#222"
+                  font-weight="500"
+                  stroke="#fff"
+                  [attr.stroke-width]="isMobile ? 5 : 3"
+                  style="paint-order: stroke fill"
+                >
+                  {{ m.media | number: "1.1-2" }}
+                </text>
+              </ng-container>
+            </svg>
+          </div>
+          <ng-template #semEvolucaoClima>
+            <div
+              style="
+                padding: 0.75rem;
+                background: #f5f5f5;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                color: #555;
+              "
+            >
+              Sem dados de evolução nos últimos meses.
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="panel-card">
+          <h3 style="margin: 0 0 12px">Por Departamento</h3>
+          <div class="dept-cards">
+            <div class="dept-card" *ngFor="let d of departamentos">
+              <div class="dept-card-header">
+                <div class="dept-card-title">{{ d.nome }}</div>
+                <div class="dept-card-badge" *ngIf="d.uniqueUsers >= 3">
+                  {{ d.uniqueUsers }} respondentes
+                </div>
+              </div>
+
+              <ng-container *ngIf="d.uniqueUsers >= 3; else insufCard">
+                <div class="dept-card-metrics">
+                  <div class="metric-col">
+                    <div class="metric-label">Média</div>
+                    <div class="metric-value">{{ d.media }}</div>
+                  </div>
+                  <div class="metric-col pos">
+                    <div class="metric-label">Favoráveis%</div>
+                    <div class="metric-value">{{ d.favoraveis }}</div>
+                  </div>
+                  <div class="metric-col neu">
+                    <div class="metric-label">Neutros%</div>
+                    <div class="metric-value">{{ d.neutros }}</div>
+                  </div>
+                  <div class="metric-col neg">
+                    <div class="metric-label">Desfavoráveis%</div>
+                    <div class="metric-value">{{ d.desfavoraveis }}</div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #insufCard>
+                <div class="dept-card-warning">Amostra insuficiente para exibição</div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-menu>
